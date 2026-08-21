@@ -3,7 +3,21 @@
     <div class="cursor-cross" aria-hidden="true"></div>
 
     <header class="topbar">
-      <a class="wordmark" href="#top" aria-label="Cieav home">CIEAV</a>
+      <a
+        class="wordmark"
+        href="#top"
+        aria-label="Cieav home"
+        style="display: inline-flex; align-items: center; gap: 10px;"
+      >
+        <img
+          :src="logoMark"
+          alt=""
+          width="32"
+          height="32"
+          style="display: block; width: 32px; height: 32px; object-fit: contain; flex: 0 0 auto;"
+        />
+        <span>Cieav</span>
+      </a>
 
       <nav class="nav" aria-label="Primary navigation">
         <a href="#product">Product</a>
@@ -131,7 +145,21 @@
     </section>
 
     <footer class="footer">
-      <a class="wordmark footer-mark" href="#top">CIEAV</a>
+      <a
+        class="wordmark footer-mark"
+        href="#top"
+        aria-label="Cieav home"
+        style="display: inline-flex; align-items: center; gap: 12px;"
+      >
+        <img
+          :src="logoMark"
+          alt=""
+          width="40"
+          height="40"
+          style="display: block; width: 40px; height: 40px; object-fit: contain; flex: 0 0 auto;"
+        />
+        <span>Cieav</span>
+      </a>
       <p>AI-native website engineering.</p>
       <div class="footer-nav">
         <a href="#product">Product</a>
@@ -145,6 +173,7 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import logoMark from './public/logo.png'
 import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
