@@ -20,13 +20,13 @@
       </a>
 
       <nav class="nav" aria-label="Primary navigation">
-        <a href="#product">Product</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#developers">Developers</a>
+        <a href="#product">Gateway</a>
+        <a href="#workflow">Commit Flow</a>
+        <a href="#developers">Install</a>
       </nav>
 
       <a class="primary-button magnetic" href="#developers">
-        Start Building
+        Get CIEAV
       </a>
     </header>
 
@@ -43,30 +43,31 @@
       <div class="hero-grid" aria-hidden="true"></div>
 
       <div class="hero-copy reveal-on-load">
-        <p class="kicker"><span></span> AI website engineering</p>
-        <h1>Turn Every Product Idea<br />Into A Working Website</h1>
+        <p class="kicker"><span></span> The commit layer for the internet</p>
+        <h1>Local Authority.<br />Verified Consequence.</h1>
         <p class="hero-lede">
-          Cieav turns product requirements into production-ready websites —
-          generating structure, interfaces, and workflows your team can refine and ship.
+          CIEAV is an always-on local control plane between digital intent and digital consequence.
+          Cloud interprets. The local Gateway decides, commits, verifies, and exposes Undo only when success
+          and a concrete inverse are observed.
         </p>
 
         <div class="hero-actions">
           <a class="primary-button primary-button--large magnetic" href="#developers">
-            Start Building
+            Get CIEAV
           </a>
           <a class="outline-button magnetic" href="#workflow">
-            View Workflow
+            See the Flow
           </a>
         </div>
       </div>
 
       <div class="hero-index hero-index--left" aria-hidden="true">
         <span>01</span>
-        <span>PRODUCT / WEB</span>
+        <span>LOCAL / AUTHORITY</span>
       </div>
       <div class="hero-index hero-index--right" aria-hidden="true">
         <span>2026</span>
-        <span>BUILD SYSTEM</span>
+        <span>CLOUD / INTERPRETATION</span>
       </div>
     </section>
 
@@ -74,30 +75,31 @@
       <div class="red-noise" aria-hidden="true"></div>
 
       <div class="red-copy">
-        <p class="kicker kicker--light"><span></span> From intent to interface</p>
-        <h2>Build the foundation.<br />Keep the freedom.</h2>
+        <p class="kicker kicker--light"><span></span> Cloud = interpretation. Local = authority.</p>
+        <h2>Execution authority<br />stays on your device.</h2>
         <p>
-          Describe the product once. Cieav maps the structure, generates the interface,
-          and gives you a real codebase instead of a locked visual mockup.
+          The CIEAV Gateway starts with the operating system, mediates protected surfaces, applies a
+          deterministic safety floor, reduces data locally, and keeps replay and commit capability on-device.
+          CIEAV Cloud receives only the minimum semantic evidence needed for interpretation.
         </p>
-        <a class="light-button magnetic" href="#workflow">Explore the system</a>
+        <a class="light-button magnetic" href="#workflow">See commit flow</a>
 
         <div class="red-meta">
-          <span>ARCHITECTURE</span>
-          <span>INTERFACE</span>
-          <span>WORKFLOW</span>
-          <span>CODE</span>
+          <span>LOCAL GATEWAY</span>
+          <span>PRIVACY REDUCTION</span>
+          <span>SAFETY FLOOR</span>
+          <span>ACTION RECEIPTS</span>
         </div>
       </div>
     </section>
 
     <section id="workflow" class="workflow-section">
       <div class="section-heading reveal">
-        <p class="kicker"><span></span> One tool. Full pipeline.</p>
-        <h2>From a sentence to something you can ship.</h2>
+        <p class="kicker"><span></span> Commit is not success</p>
+        <h2>Preview. Commit. Observe. Undo—only when verified.</h2>
         <p>
-          Cieav keeps the workflow legible: define the product, generate the system,
-          then refine the output in the tools you already use.
+          CIEAV separates action dispatch from remote outcome. A committed action is not treated as success
+          until credible local evidence supports it. Ambiguous outcomes remain UNKNOWN.
         </p>
       </div>
 
@@ -116,11 +118,12 @@
 
     <section id="developers" class="developer-section reveal">
       <div class="developer-copy">
-        <p class="kicker kicker--light"><span></span> Download / CLI</p>
-        <h2>Install once.<br />Build from anywhere.</h2>
+        <p class="kicker kicker--light"><span></span> Consumer installation</p>
+        <h2>Small local runtime.<br />No model weights.</h2>
         <p>
-          A developer-first workflow for turning product intent into a real web project.
-          Keep the files, edit the code, deploy wherever you want.
+          Production releases package the CIEAV executable with its Node runtime. Users do not need Python,
+          npm, or large model downloads. The installer verifies the release, enrolls the device, runs a cloud
+          safety probe, and only then installs the always-on local Gateway service.
         </p>
       </div>
 
@@ -134,12 +137,17 @@
           <span>{{ copied ? 'COPIED' : 'COPY' }}</span>
         </button>
         <div class="terminal-lines" aria-hidden="true">
-          <p><b>→</b> resolving latest release</p>
-          <p><b>→</b> installing cieav</p>
-          <p><b>✓</b> ready to build</p>
+          <p><b>→</b> HTTPS manifest + SHA-256 verification</p>
+          <p><b>→</b> device enrollment + CRITICAL safety probe</p>
+          <p><b>✓</b> installs the always-on local Gateway</p>
         </div>
-        <a class="terminal-cta magnetic" href="https://github.com/Aravindh-dev12/Cieav-web" target="_blank" rel="noreferrer">
-          View on GitHub ↗
+        <a
+          class="terminal-cta magnetic"
+          href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
+          target="_blank"
+          rel="noreferrer"
+        >
+          View CIEAV on GitHub ↗
         </a>
       </div>
     </section>
@@ -160,11 +168,11 @@
         />
         <span>Cieav</span>
       </a>
-      <p>AI-native website engineering.</p>
+      <p>The commit layer for the internet.</p>
       <div class="footer-nav">
-        <a href="#product">Product</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#developers">Developers</a>
+        <a href="#product">Gateway</a>
+        <a href="#workflow">Commit Flow</a>
+        <a href="#developers">Install</a>
       </div>
       <span>© 2026 Cieav</span>
     </footer>
@@ -177,26 +185,26 @@ import logoMark from './public/logo.png'
 import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
-const installCommand = 'curl -fsSL cieav.dev/install | sh'
+const installCommand = 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh'
 
 const steps = [
   {
-    state: 'INPUT',
+    state: 'AUTHORITY',
     icon: '✦',
-    title: 'Describe',
-    copy: 'Write the product idea in plain language. Define the audience, pages, behavior, and constraints.',
+    title: 'Mediate',
+    copy: 'The local Gateway sits between intent and protected digital surfaces, applies deterministic safety policy, and reduces data before any cloud interpretation.',
   },
   {
-    state: 'SYSTEM',
+    state: 'CONTROL',
     icon: '⌘',
-    title: 'Generate',
-    copy: 'Cieav turns the requirements into structure, components, content, interaction, and implementation.',
+    title: 'Commit',
+    copy: 'Consequential actions move through PREVIEW → COMMIT / CANCEL, then trusted replay or submit. The resulting Action Receipt is signed and stored locally.',
   },
   {
-    state: 'OUTPUT',
+    state: 'OUTCOME',
     icon: '↗',
-    title: 'Ship',
-    copy: 'Open the generated project, refine anything you want, and deploy through your existing workflow.',
+    title: 'Verify',
+    copy: 'Local observation records OBSERVED_SUCCESS, OBSERVED_FAILURE, or UNKNOWN. Undo appears only after verified success and discovery of a concrete inverse.',
   },
 ]
 
