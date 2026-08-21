@@ -26,8 +26,8 @@ button { color: inherit; font: inherit; }
 ::selection { background: var(--red); color: white; }
 
 body::before, body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
-body::before { opacity: .13; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.46'/%3E%3C/svg%3E"); }
-body::after { opacity: .16; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(30,30,30,.09) 4px, transparent 5px); }
+body::before { opacity: .07; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.46'/%3E%3C/svg%3E"); }
+body::after { opacity: .08; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(30,30,30,.09) 4px, transparent 5px); }
 
 .site { min-height: 100vh; }
 .cursor-cross { position: fixed; left: var(--mx); top: var(--my); width: 28px; height: 28px; z-index: 900; pointer-events: none; transform: translate(-50%, -50%); opacity: .3; }
@@ -46,8 +46,8 @@ body::after { opacity: .16; background: repeating-linear-gradient(0deg, transpar
 .primary-button { justify-self: end; background: var(--ink); color: white; }
 .primary-button:hover { background: var(--red); border-color: var(--red); }
 
-.hero { min-height: 100svh; position: relative; display: grid; place-items: start center; overflow: hidden; padding: 116px 24px 0; background: radial-gradient(circle at 50% 38%, rgba(255,255,255,.92), rgba(255,255,255,.25) 44%, transparent 70%), var(--paper); }
-.hero-grid { position: absolute; inset: 0; opacity: .15; background-image: linear-gradient(rgba(75,0,0,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(75,0,0,.12) 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom, rgba(0,0,0,.7), transparent 78%); }
+.hero { min-height: 100svh; position: relative; display: grid; place-items: start center; overflow: hidden; padding: 116px 24px 0; background: radial-gradient(circle at 50% 34%, rgba(255,255,255,.82), rgba(255,255,255,.12) 45%, transparent 72%), var(--paper); }
+.hero-grid { position: absolute; inset: 0; opacity: .07; background-image: linear-gradient(rgba(75,0,0,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(75,0,0,.12) 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom, rgba(0,0,0,.55), transparent 82%); }
 .hero-copy { position: relative; z-index: 8; width: min(900px, 100%); text-align: center; }
 .reveal-on-load { animation: loadReveal .9s cubic-bezier(.2,.78,.2,1) both; }
 @keyframes loadReveal { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
@@ -60,10 +60,13 @@ h1 { font-size: clamp(58px, 6.5vw, 104px); line-height: .91; text-wrap: balance;
 .hero-lede { width: min(650px, 100%); margin: 24px auto 0; font-size: clamp(13px, 1.15vw, 16px); line-height: 1.45; text-wrap: balance; }
 .hero-actions { position: relative; z-index: 15; display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
 .primary-button--large, .outline-button { min-height: 50px; padding-inline: 20px; }
-.outline-button { background: rgba(248,246,241,.6); }
+.outline-button { background: rgba(248,246,241,.72); }
 .outline-button:hover { background: white; }
-.stairs-stage { position: absolute; left: 50%; bottom: -5px; width: min(920px, 76vw); transform: translateX(calc(-50% + (var(--px) * 13px))); z-index: 3; pointer-events: none; filter: saturate(1.05) contrast(1.04); transition: transform .12s linear; }
-.stairs-stage img { display: block; width: 100%; mix-blend-mode: multiply; mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 100%); }
+
+/* Keep the hero artwork fully visible and crisp. The old fade mask made the stairs look washed out. */
+.stairs-stage { position: absolute; left: 50%; bottom: -8px; width: min(1080px, 84vw); transform: translateX(calc(-50% + (var(--px) * 10px))); z-index: 4; pointer-events: none; transition: transform .12s linear; }
+.stairs-stage::after { content: ''; position: absolute; left: 12%; right: 12%; bottom: 1%; height: 13%; background: radial-gradient(ellipse at center, rgba(92,0,0,.16), transparent 68%); filter: blur(16px); z-index: -1; }
+.stairs-stage img { display: block; width: 100%; height: auto; opacity: 1; object-fit: contain; mix-blend-mode: multiply; filter: contrast(1.22) brightness(.99) saturate(1.14); }
 .hero-index { position: absolute; bottom: 25px; z-index: 10; display: flex; gap: 12px; align-items: center; font-size: 9px; letter-spacing: .08em; }
 .hero-index span:first-child { color: var(--red); }
 .hero-index--left { left: 28px; }
@@ -122,7 +125,7 @@ h1 { font-size: clamp(58px, 6.5vw, 104px); line-height: .91; text-wrap: balance;
   .nav { display: none; }
   .hero { min-height: 850px; padding-top: 128px; }
   h1 { font-size: clamp(54px, 10vw, 86px); }
-  .stairs-stage { width: 94vw; }
+  .stairs-stage { width: min(1040px, 98vw); bottom: -4px; }
   .red-story { min-height: 900px; grid-template-columns: 1fr; align-items: start; }
   .red-copy { max-width: 760px; padding: 100px 28px 0; }
   .ruins-stage { width: min(660px, 78vw); height: 62%; right: -5%; }
@@ -147,7 +150,8 @@ h1 { font-size: clamp(58px, 6.5vw, 104px); line-height: .91; text-wrap: balance;
   .hero-lede { font-size: 12px; }
   .hero-actions { flex-direction: column; align-items: center; }
   .hero-actions a { width: min(280px, 100%); }
-  .stairs-stage { width: 130vw; left: 50%; bottom: 20px; }
+  .stairs-stage { width: 138vw; left: 50%; bottom: 8px; }
+  .stairs-stage img { filter: contrast(1.2) brightness(1) saturate(1.12); }
   .hero-index { display: none; }
   .red-story { min-height: 860px; }
   .red-copy { padding-top: 82px; }
