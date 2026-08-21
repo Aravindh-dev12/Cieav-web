@@ -80,7 +80,7 @@
     <section id="workflow" class="workflow-section">
       <div class="section-heading reveal">
         <p class="kicker"><span></span> Commit is not success</p>
-        <h2>Preview. Commit. Observe. Undo—only when verified.</h2>
+        <h2>Preview. Commit. Observe. Undo only when verified.</h2>
         <p>
           CIEAV separates action dispatch from remote outcome. A committed action is not treated as success
           until credible local evidence supports it. Ambiguous outcomes remain UNKNOWN.
