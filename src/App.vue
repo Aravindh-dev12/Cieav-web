@@ -1,14 +1,14 @@
 <template>
-  <main @pointermove="trackPointer">
-    <div class="cursor-aura" aria-hidden="true"></div>
+  <main class="site" @pointermove="trackPointer">
+    <div class="cursor-halo" aria-hidden="true"></div>
 
     <header class="site-header">
       <a class="brand" href="#top" aria-label="Cieav AI home">
-        <span class="brand-star">✦</span>
+        <span class="brand-mark" aria-hidden="true">✦</span>
         <span>Cieav AI</span>
       </a>
 
-      <nav class="desktop-nav" aria-label="Primary">
+      <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="#about">About</a>
         <a href="#product">Product</a>
         <a href="#features">Features</a>
@@ -18,201 +18,126 @@
 
       <div class="header-actions">
         <a class="login" href="#contact">Login</a>
-        <a class="button button-light magnetic" href="#contact">Join waitlist <span>→</span></a>
+        <a class="button button-cream magnetic" href="#contact">Join Waitlist <span>→</span></a>
       </div>
     </header>
 
     <section id="top" class="hero section-shell">
-      <div class="hero-copy hero-intro">
-        <div class="hero-system hero-reveal delay-1">
-          <span class="status-dot"></span>
-          <span>Motion intelligence / private preview</span>
-        </div>
-
+      <div class="hero-copy">
         <p class="eyebrow hero-reveal delay-1">Launching a new era of intelligent motion</p>
-        <h1 class="hero-reveal delay-2">
-          <span>The AI that turns</span>
-          <em>vision into motion.</em>
-        </h1>
+        <h1 class="hero-reveal delay-2">The AI That<br />Turns Vision<br />Into Motion</h1>
         <p class="hero-lede hero-reveal delay-3">
-          Cieav AI turns product ideas into cinematic, motion-native experiences — interactive, responsive, and ready to launch.
+          Cieav AI transforms your ideas into intelligent, beautifully animated products — powered by WebGPU and built for the motion generation era.
         </p>
 
         <div class="hero-actions hero-reveal delay-4">
-          <a class="button button-light magnetic" href="#contact">Join waitlist <span>→</span></a>
-          <button class="button button-ghost magnetic" type="button" @click="scrollToProduct">
+          <a class="button button-cream magnetic" href="#contact">Join Waitlist <span>→</span></a>
+          <button class="watch-button magnetic" type="button" @click="scrollToProduct">
             <span class="play">▶</span>
-            Watch demo
+            <span>Watch Trailer</span>
           </button>
         </div>
 
-        <div class="hero-meta hero-reveal delay-5">
-          <div class="avatar-stack" aria-hidden="true"><span></span><span></span><span></span></div>
-          <p>Built for teams shipping the future.</p>
-        </div>
-
         <div class="hero-stack hero-reveal delay-5" aria-label="Technology stack">
-          <span>Vue 3</span>
-          <i></i>
-          <span>Zustand</span>
-          <i></i>
-          <span>WebGPU</span>
+          <span>Vue 3</span><i></i><span>Zustand</span><i></i><span>WebGPU</span>
         </div>
       </div>
 
-      <div class="hero-visual hero-reveal delay-2">
+      <div class="hero-art hero-reveal delay-2" aria-label="Animated concentric motion field">
         <WebGPUField />
-        <div class="hero-coordinate coordinate-a" aria-hidden="true">X 48.12 / Y 72.04</div>
-        <div class="hero-coordinate coordinate-b" aria-hidden="true">FIELD 01 — ACTIVE</div>
-      </div>
-
-      <div class="scroll-cue hero-reveal delay-5">SCROLL TO EXPLORE <span>↓</span></div>
-    </section>
-
-    <section class="motion-marquee" aria-label="Cieav animation capabilities">
-      <div class="marquee-track">
-        <template v-for="n in 2" :key="n">
-          <span>REALTIME MOTION</span><b>✦</b>
-          <span>WEBGPU</span><b>✦</b>
-          <span>GENERATIVE INTERFACES</span><b>✦</b>
-          <span>POINTER REACTIVE</span><b>✦</b>
-          <span>SCROLL DRIVEN</span><b>✦</b>
-        </template>
       </div>
     </section>
 
-    <section id="features" class="features-wrap section-shell reveal">
-      <div class="section-heading">
-        <p class="eyebrow">Capabilities</p>
-        <h2>Motion is not decoration.<br /><em>It is the product language.</em></h2>
-      </div>
-
-      <div class="features-grid">
-        <article v-for="feature in features" :key="feature.title" class="feature-card tilt-card">
-          <div class="feature-top">
-            <div class="feature-icon" aria-hidden="true">{{ feature.icon }}</div>
-            <p class="feature-kicker">0{{ feature.id }}</p>
-          </div>
-          <div>
-            <h3>{{ feature.title }}</h3>
-            <p>{{ feature.copy }}</p>
-          </div>
-        </article>
-      </div>
+    <section id="features" class="feature-strip section-shell reveal" aria-label="Product capabilities">
+      <article v-for="feature in features" :key="feature.title" class="feature-item">
+        <div class="feature-glyph" aria-hidden="true">{{ feature.icon }}</div>
+        <div>
+          <h2>{{ feature.title }}</h2>
+          <p>{{ feature.copy }}</p>
+        </div>
+      </article>
     </section>
 
-    <section id="product" class="product-showcase section-shell reveal">
-      <div class="product-copy">
-        <p class="eyebrow">Motion that understands context</p>
-        <h2>From prompt to<br /><em>product story.</em></h2>
+    <section id="product" class="story-panel lamp-panel section-shell reveal">
+      <div class="story-copy">
+        <p class="eyebrow">Adaptive motion intelligence</p>
+        <h2>Motion That<br />Feels Alive</h2>
         <p>
-          Compose responsive launch scenes, kinetic interfaces, generative transitions, and ambient product worlds from one motion-native system.
+          Cieav AI doesn’t just animate. It interprets, adapts, and brings ideas to life with emotion, rhythm, and flow.
         </p>
-
-        <ul class="product-list">
-          <li><span>01</span><strong>Context-aware animation logic</strong><small>Motion that reacts to content and intent.</small></li>
-          <li><span>02</span><strong>Interactive state-driven motion</strong><small>Every transition follows the product state.</small></li>
-          <li><span>03</span><strong>GPU-accelerated visual systems</strong><small>Realtime fields, particles, and shaders.</small></li>
-        </ul>
+        <a class="text-link magnetic" href="#stack">Explore Features <span>→</span></a>
       </div>
 
-      <div class="product-canvas product-console" aria-label="Realtime Cieav system preview">
-        <div class="canvas-grid"></div>
-        <div class="scan-line"></div>
+      <div class="lamp-scene" aria-hidden="true">
+        <div class="lamp-moon"></div>
+        <div class="lamp-energy energy-a"></div>
+        <div class="lamp-energy energy-b"></div>
+        <div class="lamp-energy energy-c"></div>
+        <div class="lamp-rays"></div>
+        <div class="street-lamp">
+          <span class="lamp-cap"></span>
+          <span class="lamp-light"></span>
+          <span class="lamp-stem"></span>
+          <span class="lamp-base"></span>
+        </div>
+      </div>
+    </section>
 
-        <div class="console-title">
-          <small>CIEAV / MOTION ENGINE</small>
-          <strong>Realtime system</strong>
-          <span><i></i> Online</span>
-        </div>
+    <section id="about" class="story-panel city-panel section-shell reveal">
+      <div class="city-scene" aria-hidden="true">
+        <div class="city-star">✦</div>
+        <div class="building building-a"></div>
+        <div class="building building-b"></div>
+        <div class="building building-c"></div>
+        <div class="building building-d"></div>
+        <div class="city-path"></div>
+        <div class="city-person"><span></span></div>
+      </div>
 
-        <div class="console-wave" aria-hidden="true">
-          <span v-for="n in 22" :key="n" :style="{ '--bar': n }"></span>
-        </div>
-
-        <div class="console-orbits" aria-hidden="true">
-          <i></i><i></i><i></i><b>✦</b>
-        </div>
-
-        <div class="floating-panel panel-a">
-          <small>SCENE</small>
-          <strong>Launch sequence</strong>
-          <span><i></i> Running</span>
-        </div>
-        <div class="floating-panel panel-b">
-          <small>RENDER</small>
-          <strong>60 FPS</strong>
-          <span><i></i> WebGPU live</span>
-        </div>
-        <div class="floating-panel panel-c">
-          <small>STATE</small>
-          <strong>Reactive</strong>
-          <span><i></i> Zustand sync</span>
-        </div>
+      <div class="story-copy city-copy">
+        <p class="eyebrow">Made for ambitious teams</p>
+        <h2>Built for Visionaries,<br />Designed for Impact</h2>
+        <p>
+          Create stunning animated products, faster. Cieav AI is the motion engine for a new generation of builders, designers, and dreamers.
+        </p>
+        <a class="text-link magnetic" href="#stack">See the Product <span>→</span></a>
       </div>
     </section>
 
     <section id="stack" class="stack-section section-shell reveal">
-      <div class="stack-intro">
-        <p class="eyebrow">Built with a modern stack</p>
-        <h2>Fast by<br /><em>architecture.</em></h2>
-        <p>
-          A reactive Vue interface, lightweight shared state, and native GPU rendering keep Cieav fluid from first input to final frame.
-        </p>
+      <div class="stack-heading">
+        <p class="eyebrow">Modern by architecture</p>
+        <h2>Built for the realtime web.</h2>
       </div>
 
       <div class="stack-grid">
-        <article v-for="item in stack" :key="item.name" class="stack-card tilt-card">
-          <div class="stack-mark">{{ item.mark }}</div>
-          <div class="stack-copy">
+        <article v-for="item in stack" :key="item.name" class="stack-card">
+          <span class="stack-mark">{{ item.mark }}</span>
+          <div>
             <strong>{{ item.name }}</strong>
             <small>{{ item.label }}</small>
           </div>
-          <span class="stack-index">{{ item.index }}</span>
         </article>
       </div>
     </section>
 
-    <section id="about" class="manifesto section-shell reveal">
-      <div class="manifesto-index">04 / MANIFESTO</div>
-      <p class="eyebrow">Cieav AI</p>
-      <h2>Interfaces should not just respond.<br /><em>They should feel alive.</em></h2>
-      <div class="manifesto-copy">
-        <p>
-          We are building an AI-native animation system for teams that want product launches to feel authored, cinematic, and deeply interactive — without trading away speed or control.
-        </p>
-        <a href="#contact" class="text-link">Build with Cieav <span>↗</span></a>
+    <section class="launch-band section-shell reveal">
+      <div>
+        <p class="eyebrow">Private preview</p>
+        <h2>Bring your next idea<br />to life in motion.</h2>
       </div>
+      <a class="button button-cream button-large magnetic" href="#contact">Request Access <span>→</span></a>
     </section>
 
-    <section class="metrics section-shell reveal" aria-label="Launch metrics">
-      <div><span>01</span><strong>10×</strong><small>Faster prototyping</small></div>
-      <div><span>02</span><strong>92%</strong><small>Faster iteration</small></div>
-      <div><span>03</span><strong>25K+</strong><small>Waitlist target</small></div>
-      <div><span>04</span><strong>SOON</strong><small>Private launch</small></div>
-    </section>
-
-    <footer id="contact" class="footer section-shell reveal">
-      <div class="footer-art" aria-hidden="true">
-        <span class="footer-orbit orbit-one"></span>
-        <span class="footer-orbit orbit-two"></span>
-        <span class="footer-orbit orbit-three"></span>
-        <i>✦</i>
+    <footer id="contact" class="footer section-shell">
+      <a class="brand footer-brand" href="#top"><span class="brand-mark">✦</span><span>Cieav AI</span></a>
+      <p>AI-native motion for product teams.</p>
+      <div class="footer-links">
+        <a href="#product">Product</a>
+        <a href="#stack">Technology</a>
+        <a href="mailto:hello@cieav.ai">hello@cieav.ai</a>
       </div>
-
-      <div class="footer-main">
-        <div>
-          <p class="eyebrow">Ready when you are</p>
-          <h2>Turn vision<br /><em>into motion.</em></h2>
-        </div>
-        <a class="button button-light button-large magnetic" href="mailto:hello@cieav.ai">Join the launch <span>→</span></a>
-      </div>
-
-      <div class="footer-bottom">
-        <span>© 2026 Cieav AI</span>
-        <span>Vue 3 / Zustand / WebGPU</span>
-        <span>Built for motion-native products.</span>
-      </div>
+      <span>© 2026 Cieav AI</span>
     </footer>
   </main>
 </template>
@@ -224,36 +149,27 @@ import { appStore } from './store'
 
 const features = [
   {
-    id: 1,
-    icon: '◌',
-    title: 'Motion Engine',
-    copy: 'Generate cinematic interaction systems that react to content, pointer movement, scroll, and state.',
-  },
-  {
-    id: 2,
     icon: '✦',
-    title: 'Launch Faster',
-    copy: 'Move from static concepts to expressive product stories without rebuilding every animation by hand.',
+    title: 'Intelligent Animation',
+    copy: 'AI-powered motion design that understands intent and context.',
   },
   {
-    id: 3,
-    icon: '⌁',
-    title: 'Realtime Visuals',
-    copy: 'Use GPU-rendered particles, fields, and procedural scenes that stay smooth and responsive.',
+    icon: '◇',
+    title: 'Built for the Web',
+    copy: 'Realtime generation with WebGPU for cinematic, interactive experiences.',
   },
   {
-    id: 4,
     icon: '◎',
-    title: 'Stay Aligned',
-    copy: 'Keep narrative, interaction, and visual direction inside one coherent product experience.',
+    title: 'Limitless Possibilities',
+    copy: 'From product demos to immersive stories — your imagination, animated.',
   },
 ]
 
 const stack = [
-  { index: '01', mark: 'V', name: 'Vue 3', label: 'Reactive interface layer' },
-  { index: '02', mark: 'Z', name: 'Zustand', label: 'Lightweight shared state' },
-  { index: '03', mark: 'W', name: 'WebGPU', label: 'Realtime GPU rendering' },
-  { index: '04', mark: 'V', name: 'Vite', label: 'Instant development loop' },
+  { mark: 'V', name: 'Vue 3', label: 'Reactive interface layer' },
+  { mark: 'Z', name: 'Zustand', label: 'Shared interaction state' },
+  { mark: 'W', name: 'WebGPU', label: 'Realtime GPU rendering' },
+  { mark: 'V', name: 'Vite', label: 'Fast development pipeline' },
 ]
 
 function trackPointer(event) {
@@ -264,80 +180,46 @@ function trackPointer(event) {
   document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`)
 }
 
-function onScroll() {
-  const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
-  const progress = window.scrollY / max
-  appStore.getState().setScroll(progress)
-  document.documentElement.style.setProperty('--page-scroll', `${progress}`)
-}
-
 function scrollToProduct() {
   document.querySelector('#product')?.scrollIntoView({ behavior: 'smooth' })
 }
 
-function bindMagneticButtons() {
+function bindMagnetic() {
   const cleanups = []
-  document.querySelectorAll('.magnetic').forEach((el) => {
+  document.querySelectorAll('.magnetic').forEach((element) => {
     const move = (event) => {
-      const rect = el.getBoundingClientRect()
+      const rect = element.getBoundingClientRect()
       const x = event.clientX - rect.left - rect.width / 2
       const y = event.clientY - rect.top - rect.height / 2
-      el.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`
+      element.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`
     }
-    const leave = () => { el.style.transform = '' }
-    el.addEventListener('pointermove', move)
-    el.addEventListener('pointerleave', leave)
+    const leave = () => { element.style.transform = '' }
+    element.addEventListener('pointermove', move)
+    element.addEventListener('pointerleave', leave)
     cleanups.push(() => {
-      el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerleave', leave)
+      element.removeEventListener('pointermove', move)
+      element.removeEventListener('pointerleave', leave)
     })
   })
-  return () => cleanups.forEach((fn) => fn())
-}
-
-function bindTiltCards() {
-  const cleanups = []
-  document.querySelectorAll('.tilt-card').forEach((el) => {
-    const move = (event) => {
-      const rect = el.getBoundingClientRect()
-      const px = (event.clientX - rect.left) / rect.width - 0.5
-      const py = (event.clientY - rect.top) / rect.height - 0.5
-      el.style.transform = `perspective(900px) rotateX(${py * -3}deg) rotateY(${px * 4}deg) translateY(-3px)`
-    }
-    const leave = () => { el.style.transform = '' }
-    el.addEventListener('pointermove', move)
-    el.addEventListener('pointerleave', leave)
-    cleanups.push(() => {
-      el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerleave', leave)
-    })
-  })
-  return () => cleanups.forEach((fn) => fn())
+  return () => cleanups.forEach((cleanup) => cleanup())
 }
 
 let observer
 let unbindMagnetic
-let unbindTilt
 
 onMounted(() => {
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onScroll()
-
   observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) entry.target.classList.add('is-visible')
     })
-  }, { threshold: 0.1 })
+  }, { threshold: 0.12 })
 
-  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el))
-  unbindMagnetic = bindMagneticButtons()
-  unbindTilt = bindTiltCards()
+  document.querySelectorAll('.reveal').forEach((element) => observer.observe(element))
+  unbindMagnetic = bindMagnetic()
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', onScroll)
   observer?.disconnect()
   unbindMagnetic?.()
-  unbindTilt?.()
 })
 </script>
