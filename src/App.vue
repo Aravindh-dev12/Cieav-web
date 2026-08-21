@@ -38,7 +38,7 @@
       </div>
 
       <div class="stairs-stage" aria-hidden="true">
-        <img src="/forma-stairs.webp" alt="" />
+        <img :src="formulaStairs" alt="" />
       </div>
 
       <div class="hero-index hero-index--left" aria-hidden="true">
@@ -144,6 +144,7 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
 const installCommand = 'curl -fsSL cieav.dev/install | sh'
