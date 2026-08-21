@@ -72,7 +72,7 @@
       </div>
 
       <div class="ruins-stage" aria-hidden="true">
-        <img src="/forma-ruins.webp" alt="" />
+        <img :src="formulaStairs" alt="" />
       </div>
     </section>
 
