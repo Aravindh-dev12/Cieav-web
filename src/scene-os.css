@@ -1,0 +1,378 @@
+@property --ring-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  --scene-x: 50vw;
+  --scene-y: 50vh;
+}
+
+.scene-os {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  pointer-events: none;
+  color: #f4f1e8;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.scene-status,
+.scene-rail,
+.scene-dock,
+.command-surface { pointer-events: auto; }
+
+.scene-status {
+  position: absolute;
+  top: 96px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 999px;
+  background: rgba(5,5,5,.42);
+  backdrop-filter: blur(18px) saturate(120%);
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.status-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 rgba(255,255,255,.45);
+  animation: scenePulse 2.6s ease-out infinite;
+}
+
+.status-index { color: #8f8d87; }
+.status-divider { width: 1px; height: 12px; background: rgba(255,255,255,.18); }
+.status-name { color: #ece9e1; }
+
+.scene-rail {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 7px;
+  padding: 10px 7px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
+  background: rgba(6,6,6,.32);
+  backdrop-filter: blur(18px);
+}
+
+.scene-node {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #aaa79f;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.scene-node::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  transition: border-color .3s ease, transform .3s ease, background .3s ease;
+}
+
+.scene-node:hover::before,
+.scene-node.active::before {
+  border-color: rgba(255,255,255,.52);
+  background: rgba(255,255,255,.06);
+  transform: scale(1.08);
+}
+
+.node-index {
+  font-size: 8px;
+  letter-spacing: .06em;
+  transition: opacity .25s ease;
+}
+.node-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+}
+.scene-node.active .node-index { opacity: 0; }
+.scene-node.active .node-dot { opacity: 1; box-shadow: 0 0 12px rgba(255,255,255,.8); }
+.node-label {
+  position: absolute;
+  right: 48px;
+  opacity: 0;
+  transform: translateX(7px);
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(5,5,5,.78);
+  border: 1px solid rgba(255,255,255,.12);
+  white-space: nowrap;
+  font-size: 10px;
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.scene-node:hover .node-label { opacity: 1; transform: translateX(0); }
+
+.scene-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: 42px auto auto 96px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 999px;
+  background: rgba(5,5,5,.56);
+  backdrop-filter: blur(24px) saturate(130%);
+  box-shadow: 0 18px 55px rgba(0,0,0,.32);
+}
+
+.dock-brand,
+.dock-action {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dock-brand {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  background: #f3f0e7;
+  color: #090909;
+}
+
+.dock-brand span { animation: sceneStarSpin 11s linear infinite; }
+
+.dock-action {
+  min-height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  color: #c7c3ba;
+  font-size: 11px;
+  transition: background .25s ease, color .25s ease;
+}
+.dock-action:hover { background: rgba(255,255,255,.07); color: white; }
+.dock-key,
+.dock-icon {
+  color: #817e77;
+  font-size: 9px;
+}
+.dock-progress {
+  width: 82px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+}
+.dock-progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #ece8de;
+  transform-origin: left center;
+  transition: transform .08s linear;
+}
+
+.command-surface {
+  position: absolute;
+  left: 50%;
+  bottom: 82px;
+  width: min(560px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  padding: 12px;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(7,7,7,.82);
+  backdrop-filter: blur(28px) saturate(125%);
+  box-shadow: 0 28px 100px rgba(0,0,0,.5);
+  animation: commandIn .25s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.command-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 10px;
+  color: #88857e;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.command-head kbd {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font: inherit;
+}
+.command-input {
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  outline: 0;
+  background: transparent;
+  color: #f2efe7;
+  font: 400 24px/1.1 'Instrument Serif', serif;
+  padding: 8px 8px 14px;
+}
+.command-input::placeholder { color: #66635d; }
+.command-list { display: grid; gap: 3px; margin-top: 8px; }
+.command-list button {
+  border: 0;
+  background: transparent;
+  color: #c5c1b8;
+  min-height: 56px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  cursor: pointer;
+}
+.command-list button.selected,
+.command-list button:hover { background: rgba(255,255,255,.07); color: white; }
+.command-glyph {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.command-list strong { display: block; font-size: 12px; font-weight: 500; }
+.command-list small { display: block; color: #7e7b74; margin-top: 3px; font-size: 10px; }
+.command-arrow { color: #77746d; }
+
+.scene-orbit {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  left: calc(var(--scene-x) - 120px);
+  top: calc(var(--scene-y) - 120px);
+  opacity: .12;
+  mix-blend-mode: screen;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.48);
+  animation: orbitBreath 4s ease-in-out infinite alternate;
+}
+.orbit-b { inset: 24px; animation-delay: -1.4s; }
+.orbit-c { inset: 55px; animation-delay: -2.8s; }
+
+.cursor-lens {
+  position: absolute;
+  left: var(--scene-x);
+  top: var(--scene-y);
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 0 0 8px rgba(255,255,255,.025), 0 0 38px rgba(255,255,255,.12);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.cieav-focus-mode .site-header,
+.cieav-focus-mode .motion-marquee,
+.cieav-focus-mode .scene-status,
+.cieav-focus-mode .scene-rail {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.cieav-focus-mode .scene-dock {
+  opacity: .5;
+}
+.cieav-focus-mode .hero-copy,
+.cieav-focus-mode .product-copy,
+.cieav-focus-mode .manifesto-copy,
+.cieav-focus-mode .feature-card,
+.cieav-focus-mode .stack-card {
+  opacity: .18;
+  filter: blur(1.5px);
+  transition: opacity .45s ease, filter .45s ease;
+}
+
+@keyframes scenePulse {
+  70%, 100% { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+}
+@keyframes sceneStarSpin { to { transform: rotate(360deg); } }
+@keyframes orbitBreath {
+  to { transform: scale(1.12) rotate(16deg); opacity: .38; }
+}
+@keyframes commandIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scene-status {
+    animation: sceneStatusDrift linear both;
+    animation-timeline: scroll();
+  }
+  @keyframes sceneStatusDrift {
+    from { transform: translateY(0); }
+    to { transform: translateY(26vh); }
+  }
+}
+
+@media (max-width: 760px) {
+  .scene-status { top: 82px; left: 12px; }
+  .scene-rail { right: 8px; }
+  .scene-dock {
+    bottom: 12px;
+    grid-template-columns: 38px auto auto;
+  }
+  .dock-progress { display: none; }
+  .dock-action { padding: 0 9px; }
+  .dock-key { display: none; }
+  .node-label { display: none; }
+  .scene-orbit { display: none; }
+}
+
+@media (pointer: coarse) {
+  .cursor-lens,
+  .scene-orbit { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-os *,
+  .scene-os *::before,
+  .scene-os *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
