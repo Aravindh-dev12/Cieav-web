@@ -81,54 +81,6 @@
       </div>
     </section>
 
-    <section class="scene-gallery section-shell reveal" aria-label="Cieav motion language">
-      <article class="scene-card scene-rings tilt-card">
-        <div class="scene-label"><span>01</span><strong>ORBIT</strong></div>
-        <div class="scene-art" aria-hidden="true">
-          <div class="ring ring-1"></div>
-          <div class="ring ring-2"></div>
-          <div class="ring ring-3"></div>
-          <div class="ring ring-4"></div>
-          <div class="scene-person"></div>
-          <div class="scene-moon"></div>
-        </div>
-        <div class="scene-copy">
-          <p class="eyebrow">Align every signal</p>
-          <h2>One center.<br />Infinite motion.</h2>
-        </div>
-      </article>
-
-      <article class="scene-card scene-light tilt-card">
-        <div class="scene-label"><span>02</span><strong>LIGHT</strong></div>
-        <div class="scene-art" aria-hidden="true">
-          <div class="light-rays"></div>
-          <div class="lamp-post"><i></i><b></b></div>
-          <div class="scene-moon moon-right"></div>
-        </div>
-        <div class="scene-copy">
-          <p class="eyebrow">Reveal the idea</p>
-          <h2>Make the product<br />feel inevitable.</h2>
-        </div>
-      </article>
-
-      <article class="scene-card scene-city tilt-card">
-        <div class="scene-label"><span>03</span><strong>LAUNCH</strong></div>
-        <div class="scene-art" aria-hidden="true">
-          <div class="city-block block-a"></div>
-          <div class="city-block block-b"></div>
-          <div class="city-block block-c"></div>
-          <div class="city-block block-d"></div>
-          <div class="city-path"></div>
-          <div class="city-star">✦</div>
-          <div class="city-person"></div>
-        </div>
-        <div class="scene-copy">
-          <p class="eyebrow">Launch with momentum</p>
-          <h2>Turn direction<br />into velocity.</h2>
-        </div>
-      </article>
-    </section>
-
     <section id="features" class="features-wrap section-shell reveal">
       <div class="section-heading">
         <p class="eyebrow">Capabilities</p>
@@ -164,16 +116,26 @@
         </ul>
       </div>
 
-      <div class="product-canvas" aria-label="Animated product preview">
+      <div class="product-canvas product-console" aria-label="Realtime Cieav system preview">
         <div class="canvas-grid"></div>
-        <div class="city-lines"></div>
         <div class="scan-line"></div>
-        <div class="launch-star">✦</div>
-        <div class="walker"><span></span></div>
-        <div class="path-beam"></div>
+
+        <div class="console-title">
+          <small>CIEAV / MOTION ENGINE</small>
+          <strong>Realtime system</strong>
+          <span><i></i> Online</span>
+        </div>
+
+        <div class="console-wave" aria-hidden="true">
+          <span v-for="n in 22" :key="n" :style="{ '--bar': n }"></span>
+        </div>
+
+        <div class="console-orbits" aria-hidden="true">
+          <i></i><i></i><i></i><b>✦</b>
+        </div>
 
         <div class="floating-panel panel-a">
-          <small>SCENE 04</small>
+          <small>SCENE</small>
           <strong>Launch sequence</strong>
           <span><i></i> Running</span>
         </div>
