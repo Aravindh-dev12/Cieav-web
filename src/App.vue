@@ -16,7 +16,16 @@
       </a>
     </header>
 
-    <section id="top" class="hero">
+    <section
+      id="top"
+      class="hero"
+      :style="{
+        backgroundImage: `url(${formulaStairs})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center bottom',
+        backgroundRepeat: 'no-repeat',
+      }"
+    >
       <div class="hero-grid" aria-hidden="true"></div>
 
       <div class="hero-copy reveal-on-load">
@@ -35,10 +44,6 @@
             View Workflow
           </a>
         </div>
-      </div>
-
-      <div class="stairs-stage" aria-hidden="true">
-        <img :src="formulaStairs" alt="" />
       </div>
 
       <div class="hero-index hero-index--left" aria-hidden="true">
@@ -69,10 +74,6 @@
           <span>WORKFLOW</span>
           <span>CODE</span>
         </div>
-      </div>
-
-      <div class="ruins-stage" aria-hidden="true">
-        <img :src="formulaStairs" alt="" />
       </div>
     </section>
 
