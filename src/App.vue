@@ -3,19 +3,8 @@
     <div class="cursor-cross" aria-hidden="true"></div>
 
     <header class="topbar">
-      <a
-        class="wordmark"
-        href="#top"
-        aria-label="Cieav home"
-        style="display: inline-flex; align-items: center; gap: 10px;"
-      >
-        <img
-          :src="logoMark"
-          alt=""
-          width="32"
-          height="32"
-          style="display: block; width: 32px; height: 32px; object-fit: contain; flex: 0 0 auto;"
-        />
+      <a class="wordmark" href="#top" aria-label="Cieav home">
+        <img :src="logoMark" alt="" class="wordmark-logo" />
         <span>Cieav</span>
       </a>
 
@@ -25,7 +14,7 @@
         <a href="#developers">Install</a>
       </nav>
 
-      <a class="primary-button magnetic" href="#developers">
+      <a class="primary-button topbar-cta magnetic" href="#developers">
         Get CIEAV
       </a>
     </header>
@@ -33,12 +22,7 @@
     <section
       id="top"
       class="hero"
-      :style="{
-        backgroundImage: `url(${formulaStairs})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center bottom',
-        backgroundRepeat: 'no-repeat',
-      }"
+      :style="{ backgroundImage: `url(${formulaStairs})` }"
     >
       <div class="hero-grid" aria-hidden="true"></div>
 
@@ -153,19 +137,8 @@
     </section>
 
     <footer class="footer">
-      <a
-        class="wordmark footer-mark"
-        href="#top"
-        aria-label="Cieav home"
-        style="display: inline-flex; align-items: center; gap: 12px;"
-      >
-        <img
-          :src="logoMark"
-          alt=""
-          width="40"
-          height="40"
-          style="display: block; width: 40px; height: 40px; object-fit: contain; flex: 0 0 auto;"
-        />
+      <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
+        <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
         <span>Cieav</span>
       </a>
       <p>The commit layer for the internet.</p>
