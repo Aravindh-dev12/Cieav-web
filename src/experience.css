@@ -1,0 +1,353 @@
+/* Middle-section motion only: hero and red-carpet footer remain visually unchanged. */
+
+.motion-section {
+  --section-progress: 0;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.motion-layer {
+  transform: translate3d(0, var(--motion-y, 0px), 0);
+  will-change: transform;
+  transition: transform .16s linear;
+}
+
+/* Product section: moving volumetric light, no center line. */
+.red-story .red-noise {
+  animation: redNoiseDrift 13s linear infinite alternate;
+}
+
+.red-story::before {
+  transform: scale(1.08) translate3d(calc(var(--px, 0) * -15px), calc(var(--py, 0) * -10px), 0);
+  transition: transform .18s linear;
+}
+
+.ambient-orb {
+  position: absolute;
+  z-index: 1;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(18px);
+  mix-blend-mode: screen;
+  opacity: .26;
+}
+
+.ambient-orb--one {
+  width: min(46vw, 680px);
+  aspect-ratio: 1;
+  left: -16%;
+  top: 8%;
+  background: radial-gradient(circle, rgba(255,130,130,.45), rgba(255,30,30,.1) 45%, transparent 72%);
+  animation: orbFloatOne 12s ease-in-out infinite alternate;
+}
+
+.ambient-orb--two {
+  width: min(34vw, 520px);
+  aspect-ratio: 1;
+  right: -10%;
+  bottom: -18%;
+  background: radial-gradient(circle, rgba(255,255,255,.22), rgba(255,80,80,.08) 44%, transparent 72%);
+  animation: orbFloatTwo 15s ease-in-out infinite alternate;
+}
+
+.red-copy {
+  text-shadow: 0 12px 40px rgba(70,0,0,.1);
+}
+
+.red-copy h2 {
+  transform-origin: left center;
+  animation: redHeadlineBreathe 7s ease-in-out infinite;
+}
+
+.stagger-group span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.red-story.is-visible .stagger-group span {
+  animation: metaIn .65s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+.red-story.is-visible .stagger-group span:nth-child(1) { animation-delay: .12s; }
+.red-story.is-visible .stagger-group span:nth-child(2) { animation-delay: .22s; }
+.red-story.is-visible .stagger-group span:nth-child(3) { animation-delay: .32s; }
+.red-story.is-visible .stagger-group span:nth-child(4) { animation-delay: .42s; }
+
+@keyframes redNoiseDrift {
+  from { transform: translate3d(-1%, -1%, 0) scale(1.03); }
+  to { transform: translate3d(1.5%, 1%, 0) scale(1.06); }
+}
+
+@keyframes orbFloatOne {
+  from { transform: translate3d(0, 0, 0) scale(.94); }
+  to { transform: translate3d(9vw, 7vh, 0) scale(1.08); }
+}
+
+@keyframes orbFloatTwo {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-8vw, -5vh, 0) scale(1.12); }
+}
+
+@keyframes redHeadlineBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.006); }
+}
+
+@keyframes metaIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Workflow: tactile cards with restrained 3D depth and moving highlight. */
+.workflow-section {
+  position: relative;
+}
+
+.workflow-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .55;
+  background:
+    radial-gradient(circle at calc(50% + (var(--px, 0) * 22%)) calc(34% + (var(--py, 0) * 12%)), rgba(195,0,0,.075), transparent 33%),
+    linear-gradient(180deg, rgba(255,255,255,.42), transparent 18%, transparent 82%, rgba(195,0,0,.025));
+}
+
+.workflow-grid {
+  perspective: 1200px;
+}
+
+.depth-card {
+  --card-rx: 0deg;
+  --card-ry: 0deg;
+  --card-glow-x: 50%;
+  --card-glow-y: 50%;
+  transform: perspective(1000px) rotateX(var(--card-rx)) rotateY(var(--card-ry));
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform .32s cubic-bezier(.16,1,.3,1), box-shadow .32s ease, background .32s ease;
+}
+
+.workflow-card {
+  background:
+    radial-gradient(circle at var(--card-glow-x) var(--card-glow-y), rgba(195,0,0,.09), transparent 28%),
+    rgba(240,237,231,.76);
+  backdrop-filter: blur(2px);
+}
+
+.workflow-card:hover {
+  z-index: 2;
+  background:
+    radial-gradient(circle at var(--card-glow-x) var(--card-glow-y), rgba(195,0,0,.13), transparent 30%),
+    rgba(248,246,241,.9);
+  box-shadow: 0 28px 70px rgba(35,0,0,.12);
+}
+
+.workflow-card .card-top,
+.workflow-card .card-icon,
+.workflow-card h3,
+.workflow-card p {
+  transform: translateZ(18px);
+}
+
+.workflow-card .card-icon {
+  transition: transform .45s cubic-bezier(.16,1,.3,1), color .35s ease;
+}
+
+.workflow-card:hover .card-icon {
+  transform: translateZ(30px) translateY(-6px) scale(1.04);
+  color: var(--red);
+}
+
+.workflow-card h3 {
+  transition: transform .4s cubic-bezier(.16,1,.3,1);
+}
+
+.workflow-card:hover h3 {
+  transform: translateZ(28px) translateY(-2px);
+}
+
+.workflow-grid.is-visible .workflow-card {
+  animation: cardSettle .8s cubic-bezier(.16,1,.3,1) both;
+  animation-delay: var(--card-delay, 0ms);
+}
+
+@keyframes cardSettle {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translateY(34px) rotateX(5deg) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) translateY(0) rotateX(0) scale(1);
+  }
+}
+
+/* Developer section: subtle industrial light field + terminal scan. */
+.developer-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.developer-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at calc(58% + (var(--px, 0) * 18%)) calc(45% + (var(--py, 0) * 10%)), rgba(195,0,0,.14), transparent 30%),
+    radial-gradient(circle at 88% 16%, rgba(255,255,255,.055), transparent 24%);
+  opacity: .8;
+}
+
+.developer-glow {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(36px);
+  opacity: .24;
+}
+
+.developer-glow--one {
+  width: 520px;
+  height: 520px;
+  right: -170px;
+  top: -170px;
+  background: rgba(195,0,0,.42);
+  animation: devGlowOne 11s ease-in-out infinite alternate;
+}
+
+.developer-glow--two {
+  width: 360px;
+  height: 360px;
+  left: 34%;
+  bottom: -190px;
+  background: rgba(255,255,255,.12);
+  animation: devGlowTwo 14s ease-in-out infinite alternate;
+}
+
+.terminal-card {
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0,0,0,.32);
+}
+
+.terminal-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--card-glow-x) var(--card-glow-y), rgba(255,255,255,.09), transparent 34%);
+  opacity: .8;
+}
+
+.terminal-scan {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  height: 120px;
+  top: -140px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.035), rgba(195,0,0,.08), transparent);
+  animation: terminalScan 5.8s linear infinite;
+}
+
+.terminal-head,
+.command,
+.terminal-lines,
+.terminal-cta {
+  position: relative;
+  z-index: 2;
+}
+
+.command {
+  transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease, background .35s ease;
+}
+
+.command:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 38px rgba(0,0,0,.22);
+  background: #fffdf8;
+}
+
+.terminal-lines p {
+  opacity: .72;
+  transform: translateX(0);
+  transition: opacity .28s ease, transform .28s ease;
+}
+
+.terminal-card:hover .terminal-lines p {
+  opacity: .9;
+  transform: translateX(4px);
+}
+
+.terminal-card:hover .terminal-lines p:nth-child(2) { transition-delay: .04s; }
+.terminal-card:hover .terminal-lines p:nth-child(3) { transition-delay: .08s; }
+
+@keyframes terminalScan {
+  0% { transform: translateY(0); opacity: 0; }
+  8% { opacity: 1; }
+  72% { opacity: .8; }
+  100% { transform: translateY(580px); opacity: 0; }
+}
+
+@keyframes devGlowOne {
+  to { transform: translate3d(-80px, 70px, 0) scale(1.15); }
+}
+
+@keyframes devGlowTwo {
+  to { transform: translate3d(100px, -60px, 0) scale(.9); }
+}
+
+/* More cinematic reveals without altering structure. */
+.reveal {
+  filter: blur(8px);
+  transform: translateY(36px) scale(.992);
+  transition:
+    opacity .9s cubic-bezier(.16,1,.3,1),
+    transform 1s cubic-bezier(.16,1,.3,1),
+    filter .85s ease;
+}
+
+.reveal.is-visible {
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+}
+
+@media (max-width: 820px) {
+  .ambient-orb { opacity: .18; }
+  .workflow-card:hover { box-shadow: none; }
+  .developer-glow { opacity: .16; }
+}
+
+@media (pointer: coarse) {
+  .depth-card {
+    transform: none !important;
+  }
+
+  .workflow-card:hover .card-icon,
+  .workflow-card:hover h3 {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-layer,
+  .red-story .red-noise,
+  .ambient-orb,
+  .red-copy h2,
+  .workflow-grid.is-visible .workflow-card,
+  .developer-glow,
+  .terminal-scan {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .stagger-group span {
+    opacity: 1;
+    transform: none;
+  }
+}
