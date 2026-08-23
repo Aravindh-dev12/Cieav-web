@@ -55,105 +55,98 @@
       </div>
     </section>
 
-    <section id="product" class="red-story motion-section">
-      <div class="red-story__glow" aria-hidden="true"></div>
+    <section id="product" class="authority-scene motion-section">
+      <div class="authority-glow" aria-hidden="true"></div>
+      <div class="authority-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
 
-      <div class="red-statement reveal motion-layer" data-depth="0.16">
-        <div class="section-number" aria-hidden="true">02</div>
-        <p class="kicker kicker--light"><span></span> Cloud interprets. Local decides.</p>
-        <h2>
-          <span>Execution authority</span>
-          <span>stays local.</span>
-        </h2>
-
-        <div class="red-story__lower">
-          <p>
-            The CIEAV Gateway mediates protected surfaces, applies a deterministic safety floor, reduces data
-            locally, and keeps replay and commit capability on-device. The cloud receives only the semantic
-            evidence required to interpret intent.
-          </p>
-          <a class="light-button magnetic" href="#workflow">Follow the commit</a>
+      <div class="authority-inner reveal motion-layer" data-depth="0.08">
+        <div class="authority-meta">
+          <span>02 / AUTHORITY</span>
+          <span>LOCAL CONTROL PLANE</span>
         </div>
 
-        <div class="red-facts" aria-label="Gateway capabilities">
-          <span><b>01</b> LOCAL GATEWAY</span>
-          <span><b>02</b> PRIVACY REDUCTION</span>
-          <span><b>03</b> SAFETY FLOOR</span>
-          <span><b>04</b> ACTION RECEIPTS</span>
+        <div class="authority-headline">
+          <span class="authority-headline__ghost">CLOUD INTERPRETS.</span>
+          <span>LOCAL DECIDES.</span>
+        </div>
+
+        <div class="authority-lower">
+          <p>
+            CIEAV keeps consequential execution where the user can control it. The Gateway applies local policy,
+            reduces data before cloud interpretation, commits only after an explicit boundary, and records what
+            actually happened on-device.
+          </p>
+          <a class="authority-link magnetic" href="#workflow">
+            Enter the commit corridor <span>↘</span>
+          </a>
         </div>
       </div>
 
-      <div class="kinetic-marquee" aria-hidden="true">
+      <div class="authority-ticker" aria-hidden="true">
         <div>
-          <span>LOCAL</span><i>•</i><span>DECIDE</span><i>•</i><span>COMMIT</span><i>•</i><span>VERIFY</span><i>•</i>
-          <span>LOCAL</span><i>•</i><span>DECIDE</span><i>•</i><span>COMMIT</span><i>•</i><span>VERIFY</span><i>•</i>
+          <span>INTENT</span><i>—</i><span>POLICY</span><i>—</i><span>PREVIEW</span><i>—</i><span>COMMIT</span><i>—</i><span>EVIDENCE</span><i>—</i><span>VERIFY</span><i>—</i>
+          <span>INTENT</span><i>—</i><span>POLICY</span><i>—</i><span>PREVIEW</span><i>—</i><span>COMMIT</span><i>—</i><span>EVIDENCE</span><i>—</i><span>VERIFY</span><i>—</i>
         </div>
       </div>
     </section>
 
-    <section id="workflow" class="workflow-section motion-section">
-      <div class="workflow-intro reveal motion-layer" data-depth="0.1">
-        <p class="kicker"><span></span> Commit is not success</p>
-        <h2>Action is immediate.<br />Truth takes evidence.</h2>
-        <p>
-          CIEAV treats execution as a sequence of observable states. Dispatch does not become success until
-          credible local evidence supports the outcome. Anything ambiguous stays UNKNOWN.
-        </p>
-      </div>
+    <section id="workflow" class="commit-corridor motion-section">
+      <div class="commit-pin">
+        <div class="corridor-chrome" aria-hidden="true">
+          <span>03 / COMMIT CORRIDOR</span>
+          <div class="corridor-progress"><i></i></div>
+          <span>SCROLL TO EXECUTE</span>
+        </div>
 
-      <div class="workflow-story">
-        <aside class="workflow-sticky" aria-hidden="true">
-          <span class="workflow-sticky__number">03</span>
-          <p>PREVIEW → COMMIT → OBSERVE</p>
-          <div class="workflow-rail"><i></i></div>
-          <small>VERIFIED CONSEQUENCE</small>
-        </aside>
-
-        <div class="workflow-steps">
+        <div class="commit-track">
           <article
-            v-for="(step, index) in steps"
+            v-for="(step, index) in corridorSteps"
             :key="step.title"
-            class="story-step reveal"
-            :style="{ '--step-delay': `${index * 90}ms` }"
+            class="corridor-panel"
+            :class="`corridor-panel--${index + 1}`"
           >
-            <div class="story-step__index">0{{ index + 1 }}</div>
-            <div class="story-step__body">
-              <p class="story-step__state">{{ step.state }}</p>
-              <h3>{{ step.title }}</h3>
-              <p>{{ step.copy }}</p>
+            <div class="panel-grid" aria-hidden="true"></div>
+
+            <div class="panel-number">0{{ index + 1 }}</div>
+
+            <div class="panel-copy">
+              <p class="panel-state">{{ step.state }}</p>
+              <h2>{{ step.title }}</h2>
+              <p class="panel-description">{{ step.copy }}</p>
             </div>
-            <div class="story-step__mark" aria-hidden="true">
-              <span>{{ step.icon }}</span>
-              <i></i>
+
+            <div class="panel-signal" aria-hidden="true">
+              <div class="panel-signal__ring"><span>{{ step.symbol }}</span></div>
+              <p>{{ step.signal }}</p>
+            </div>
+
+            <div class="panel-foot" aria-hidden="true">
+              <span>{{ step.left }}</span>
+              <span>{{ step.right }}</span>
             </div>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="developers" class="developer-section motion-section">
-      <div class="developer-marquee" aria-hidden="true">
-        <div>
-          <span>LOCAL RUNTIME</span><i>•</i><span>NO MODEL WEIGHTS</span><i>•</i><span>VERIFIED INSTALL</span><i>•</i>
-          <span>LOCAL RUNTIME</span><i>•</i><span>NO MODEL WEIGHTS</span><i>•</i><span>VERIFIED INSTALL</span><i>•</i>
-        </div>
-      </div>
+    <section id="developers" class="install-stage motion-section">
+      <div class="install-backdrop" aria-hidden="true">LOCAL</div>
+      <div class="install-glow" aria-hidden="true"></div>
 
-      <div class="developer-layout">
-        <div class="developer-copy reveal motion-layer" data-depth="0.12">
+      <div class="install-layout">
+        <div class="install-copy reveal motion-layer" data-depth="0.08">
           <p class="kicker kicker--light"><span></span> Consumer installation</p>
-          <h2>Small runtime.<br />Serious authority.</h2>
+          <h2>Run authority<br />where it matters.</h2>
           <p>
-            Production releases package the CIEAV executable with its Node runtime. No Python, npm, or model
-            downloads. Installation verifies the release, enrolls the device, runs a cloud safety probe, then
-            starts the always-on local Gateway.
+            CIEAV ships as a small local runtime. No Python, npm, or model-weight downloads. Installation verifies
+            the release, enrolls the device, runs a safety probe, and starts the always-on Gateway service.
           </p>
         </div>
 
-        <div class="install-panel reveal motion-layer" data-depth="0.2">
-          <div class="install-panel__head">
-            <span>INSTALL CIEAV</span>
-            <span>macOS · Linux</span>
+        <div class="install-terminal reveal motion-layer" data-depth="0.13">
+          <div class="install-terminal__head">
+            <span>CIEAV / LOCAL</span>
+            <span>READY</span>
           </div>
 
           <button class="command install-command" type="button" @click="copyCommand">
@@ -161,14 +154,14 @@
             <span>{{ copied ? 'COPIED' : 'COPY' }}</span>
           </button>
 
-          <div class="install-sequence" aria-hidden="true">
-            <div><span>01</span><p>Verify release manifest + SHA-256</p><b>PASS</b></div>
-            <div><span>02</span><p>Enroll device + run safety probe</p><b>PASS</b></div>
-            <div><span>03</span><p>Start always-on local Gateway</p><b>ACTIVE</b></div>
+          <div class="install-steps" aria-hidden="true">
+            <div><span>01</span><p>VERIFY RELEASE</p><b>PASS</b></div>
+            <div><span>02</span><p>ENROLL DEVICE</p><b>PASS</b></div>
+            <div><span>03</span><p>START GATEWAY</p><b>ACTIVE</b></div>
           </div>
 
           <a
-            class="install-link magnetic"
+            class="install-cta magnetic"
             href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
             target="_blank"
             rel="noreferrer"
@@ -203,24 +196,51 @@ import formulaStairs from './formula-stairs.png'
 const copied = ref(false)
 const installCommand = 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh'
 
-const steps = [
+const corridorSteps = [
   {
-    state: 'AUTHORITY',
-    icon: '✦',
-    title: 'Mediate',
-    copy: 'Intent reaches the local Gateway first. Deterministic policy protects consequential surfaces and reduces data before interpretation leaves the device.',
+    state: 'INPUT / INTENT',
+    title: 'INTENT',
+    symbol: 'I',
+    signal: 'REQUEST RECEIVED',
+    left: 'CLOUD MAY INTERPRET',
+    right: 'LOCAL AUTHORITY BEGINS',
+    copy: 'A digital intention arrives, but it does not receive execution authority simply because a model understood it. CIEAV routes consequential intent through the local Gateway first.',
   },
   {
-    state: 'CONTROL',
-    icon: '⌘',
-    title: 'Commit',
-    copy: 'The user crosses an explicit commit boundary. Trusted replay or submit follows, while a signed Action Receipt records exactly what was authorized.',
+    state: 'BOUNDARY / PREVIEW',
+    title: 'PREVIEW',
+    symbol: 'P',
+    signal: 'CONSEQUENCE VISIBLE',
+    left: 'DETERMINISTIC POLICY',
+    right: 'USER CAN CANCEL',
+    copy: 'Before consequence, the Gateway applies the safety floor and makes the action legible. The user sees what is about to happen before crossing the commit boundary.',
   },
   {
-    state: 'OUTCOME',
-    icon: '↗',
-    title: 'Verify',
-    copy: 'Local observation resolves the result as success, failure, or unknown. Undo appears only after verified success and discovery of a concrete inverse.',
+    state: 'AUTHORITY / COMMIT',
+    title: 'COMMIT',
+    symbol: 'C',
+    signal: 'BOUNDARY CROSSED',
+    left: 'SIGNED ACTION RECEIPT',
+    right: 'TRUSTED REPLAY',
+    copy: 'Commit is deliberate. Once authorized, CIEAV performs trusted replay or submit and records the exact action locally. Dispatch is real — but it is still not proof of success.',
+  },
+  {
+    state: 'EVIDENCE / OBSERVE',
+    title: 'OBSERVE',
+    symbol: 'O',
+    signal: 'LOCAL EVIDENCE',
+    left: 'SUCCESS / FAILURE / UNKNOWN',
+    right: 'NO ASSUMED OUTCOME',
+    copy: 'After dispatch, CIEAV observes the local environment for credible evidence. Ambiguous results remain UNKNOWN rather than being promoted into a convenient success state.',
+  },
+  {
+    state: 'OUTCOME / VERIFIED',
+    title: 'VERIFIED',
+    symbol: 'V',
+    signal: 'CONSEQUENCE PROVEN',
+    left: 'SUCCESS REQUIRES EVIDENCE',
+    right: 'UNDO REQUIRES AN INVERSE',
+    copy: 'Only observed evidence resolves consequence. Undo appears only after verified success and discovery of a concrete inverse. The system exposes what it knows — and what it does not.',
   },
 ]
 
@@ -263,44 +283,77 @@ function bindMagnetic() {
   return () => cleanups.forEach((cleanup) => cleanup())
 }
 
-function bindSectionMotion() {
+function bindMiddleMotion() {
   const sections = Array.from(document.querySelectorAll('.motion-section'))
+  const corridor = document.querySelector('.commit-corridor')
+  const track = document.querySelector('.commit-track')
+  const panels = Array.from(document.querySelectorAll('.corridor-panel'))
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   let rafId = 0
 
   const update = () => {
     rafId = 0
     const viewport = window.innerHeight
+
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect()
       const center = rect.top + rect.height / 2
       const progress = (center - viewport / 2) / Math.max(viewport, rect.height)
       const clamped = Math.max(-1, Math.min(1, progress))
       section.style.setProperty('--section-progress', clamped.toFixed(3))
+
       section.querySelectorAll('.motion-layer').forEach((layer) => {
-        const depth = Number(layer.dataset.depth || 0.1)
-        layer.style.setProperty('--motion-y', `${clamped * depth * -50}px`)
+        const depth = Number(layer.dataset.depth || 0.08)
+        layer.style.setProperty('--motion-y', `${clamped * depth * -48}px`)
       })
+    })
+
+    if (!corridor || !track) return
+
+    const horizontal = window.innerWidth > 820 && !reduceMotion.matches
+    if (!horizontal) {
+      track.style.transform = ''
+      corridor.style.setProperty('--corridor-progress', '0')
+      panels.forEach((panel) => panel.style.setProperty('--panel-focus', '1'))
+      return
+    }
+
+    const rect = corridor.getBoundingClientRect()
+    const scrollable = Math.max(1, corridor.offsetHeight - viewport)
+    const progress = Math.max(0, Math.min(1, -rect.top / scrollable))
+    const distance = Math.max(0, track.scrollWidth - window.innerWidth)
+    const position = progress * distance
+
+    track.style.transform = `translate3d(${-position}px, 0, 0)`
+    corridor.style.setProperty('--corridor-progress', progress.toFixed(4))
+
+    const panelProgress = progress * Math.max(1, panels.length - 1)
+    panels.forEach((panel, index) => {
+      const focus = Math.max(0, 1 - Math.abs(index - panelProgress) * 0.72)
+      panel.style.setProperty('--panel-focus', focus.toFixed(3))
     })
   }
 
-  const onScroll = () => {
+  const requestUpdate = () => {
     if (!rafId) rafId = requestAnimationFrame(update)
   }
 
   update()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('resize', onScroll)
+  window.addEventListener('scroll', requestUpdate, { passive: true })
+  window.addEventListener('resize', requestUpdate)
+  reduceMotion.addEventListener?.('change', requestUpdate)
 
   return () => {
     if (rafId) cancelAnimationFrame(rafId)
-    window.removeEventListener('scroll', onScroll)
-    window.removeEventListener('resize', onScroll)
+    window.removeEventListener('scroll', requestUpdate)
+    window.removeEventListener('resize', requestUpdate)
+    reduceMotion.removeEventListener?.('change', requestUpdate)
   }
 }
 
 let observer
 let unbindMagnetic
-let unbindSectionMotion
+let unbindMiddleMotion
 
 onMounted(() => {
   observer = new IntersectionObserver((entries) => {
@@ -311,12 +364,12 @@ onMounted(() => {
 
   document.querySelectorAll('.reveal').forEach((element) => observer.observe(element))
   unbindMagnetic = bindMagnetic()
-  unbindSectionMotion = bindSectionMotion()
+  unbindMiddleMotion = bindMiddleMotion()
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
   unbindMagnetic?.()
-  unbindSectionMotion?.()
+  unbindMiddleMotion?.()
 })
 </script>
