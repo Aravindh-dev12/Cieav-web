@@ -55,6 +55,13 @@
       </div>
     </section>
 
+    <div class="commit-route" aria-hidden="true">
+      <span class="commit-route__rail"></span>
+      <span class="commit-route__pulse commit-route__pulse--one"></span>
+      <span class="commit-route__pulse commit-route__pulse--two"></span>
+      <span class="commit-route__pulse commit-route__pulse--three"></span>
+    </div>
+
     <section id="product" class="red-story reveal">
       <div class="red-noise" aria-hidden="true"></div>
 
@@ -136,18 +143,31 @@
       </div>
     </section>
 
-    <footer class="footer">
-      <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
-        <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
-        <span>Cieav</span>
-      </a>
-      <p>The commit layer for the internet.</p>
-      <div class="footer-nav">
-        <a href="#product">Gateway</a>
-        <a href="#workflow">Commit Flow</a>
-        <a href="#developers">Install</a>
+    <footer class="footer reveal">
+      <div class="red-carpet" aria-hidden="true">
+        <span class="red-carpet__edge red-carpet__edge--left"></span>
+        <span class="red-carpet__edge red-carpet__edge--right"></span>
+        <span class="red-carpet__shine"></span>
       </div>
-      <span>© 2026 Cieav</span>
+
+      <div class="footer-stage">
+        <p class="footer-stage__eyebrow">THE COMMIT LAYER FOR THE INTERNET</p>
+        <a class="footer-cieav" href="#top" aria-label="Cieav home">
+          <img :src="logoMark" alt="" class="footer-cieav__logo" />
+          <span>CIEAV</span>
+        </a>
+        <p class="footer-stage__status"><span></span> LOCAL AUTHORITY · VERIFIED CONSEQUENCE</p>
+      </div>
+
+      <div class="footer-bottom">
+        <p>The commit layer for the internet.</p>
+        <div class="footer-nav">
+          <a href="#product">Gateway</a>
+          <a href="#workflow">Commit Flow</a>
+          <a href="#developers">Install</a>
+        </div>
+        <span>© 2026 Cieav</span>
+      </div>
     </footer>
   </main>
 </template>
