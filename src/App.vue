@@ -55,10 +55,12 @@
       </div>
     </section>
 
-    <section id="product" class="red-story reveal">
+    <section id="product" class="red-story reveal motion-section">
       <div class="red-noise" aria-hidden="true"></div>
+      <div class="ambient-orb ambient-orb--one" aria-hidden="true"></div>
+      <div class="ambient-orb ambient-orb--two" aria-hidden="true"></div>
 
-      <div class="red-copy">
+      <div class="red-copy motion-layer" data-depth="0.45">
         <p class="kicker kicker--light"><span></span> Cloud = interpretation. Local = authority.</p>
         <h2>Execution authority<br />stays on your device.</h2>
         <p>
@@ -68,7 +70,7 @@
         </p>
         <a class="light-button magnetic" href="#workflow">See commit flow</a>
 
-        <div class="red-meta">
+        <div class="red-meta stagger-group">
           <span>LOCAL GATEWAY</span>
           <span>PRIVACY REDUCTION</span>
           <span>SAFETY FLOOR</span>
@@ -77,8 +79,8 @@
       </div>
     </section>
 
-    <section id="workflow" class="workflow-section">
-      <div class="section-heading reveal">
+    <section id="workflow" class="workflow-section motion-section">
+      <div class="section-heading reveal motion-layer" data-depth="0.28">
         <p class="kicker"><span></span> Commit is not success</p>
         <h2>Preview. Commit. Observe. Undo only when verified.</h2>
         <p>
@@ -88,7 +90,12 @@
       </div>
 
       <div class="workflow-grid reveal">
-        <article v-for="(step, index) in steps" :key="step.title" class="workflow-card">
+        <article
+          v-for="(step, index) in steps"
+          :key="step.title"
+          class="workflow-card depth-card"
+          :style="{ '--card-delay': `${index * 90}ms` }"
+        >
           <div class="card-top">
             <span>0{{ index + 1 }}</span>
             <span>{{ step.state }}</span>
@@ -100,8 +107,11 @@
       </div>
     </section>
 
-    <section id="developers" class="developer-section reveal">
-      <div class="developer-copy">
+    <section id="developers" class="developer-section reveal motion-section">
+      <div class="developer-glow developer-glow--one" aria-hidden="true"></div>
+      <div class="developer-glow developer-glow--two" aria-hidden="true"></div>
+
+      <div class="developer-copy motion-layer" data-depth="0.22">
         <p class="kicker kicker--light"><span></span> Consumer installation</p>
         <h2>Small local runtime.<br />No model weights.</h2>
         <p>
@@ -111,7 +121,8 @@
         </p>
       </div>
 
-      <div class="terminal-card">
+      <div class="terminal-card motion-layer depth-card" data-depth="0.35">
+        <div class="terminal-scan" aria-hidden="true"></div>
         <div class="terminal-head">
           <span>INSTALL CIEAV</span>
           <span>macOS · Linux</span>
@@ -220,8 +231,74 @@ function bindMagnetic() {
   return () => cleanups.forEach((cleanup) => cleanup())
 }
 
+function bindSectionMotion() {
+  const sections = Array.from(document.querySelectorAll('.motion-section'))
+  let rafId = 0
+
+  const update = () => {
+    rafId = 0
+    const viewport = window.innerHeight
+
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect()
+      const center = rect.top + rect.height / 2
+      const progress = (center - viewport / 2) / Math.max(viewport, rect.height)
+      const clamped = Math.max(-1, Math.min(1, progress))
+      section.style.setProperty('--section-progress', clamped.toFixed(3))
+
+      section.querySelectorAll('.motion-layer').forEach((layer) => {
+        const depth = Number(layer.dataset.depth || 0.2)
+        layer.style.setProperty('--motion-y', `${clamped * depth * -42}px`)
+      })
+    })
+  }
+
+  const onScroll = () => {
+    if (!rafId) rafId = requestAnimationFrame(update)
+  }
+
+  update()
+  window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll)
+
+  return () => {
+    if (rafId) cancelAnimationFrame(rafId)
+    window.removeEventListener('scroll', onScroll)
+    window.removeEventListener('resize', onScroll)
+  }
+}
+
+function bindDepthCards() {
+  const cleanups = []
+  document.querySelectorAll('.depth-card').forEach((card) => {
+    const move = (event) => {
+      if (window.matchMedia('(pointer: coarse)').matches) return
+      const rect = card.getBoundingClientRect()
+      const px = (event.clientX - rect.left) / rect.width - 0.5
+      const py = (event.clientY - rect.top) / rect.height - 0.5
+      card.style.setProperty('--card-rx', `${(-py * 5).toFixed(2)}deg`)
+      card.style.setProperty('--card-ry', `${(px * 6).toFixed(2)}deg`)
+      card.style.setProperty('--card-glow-x', `${((px + 0.5) * 100).toFixed(1)}%`)
+      card.style.setProperty('--card-glow-y', `${((py + 0.5) * 100).toFixed(1)}%`)
+    }
+    const leave = () => {
+      card.style.setProperty('--card-rx', '0deg')
+      card.style.setProperty('--card-ry', '0deg')
+    }
+    card.addEventListener('pointermove', move)
+    card.addEventListener('pointerleave', leave)
+    cleanups.push(() => {
+      card.removeEventListener('pointermove', move)
+      card.removeEventListener('pointerleave', leave)
+    })
+  })
+  return () => cleanups.forEach((cleanup) => cleanup())
+}
+
 let observer
 let unbindMagnetic
+let unbindSectionMotion
+let unbindDepthCards
 
 onMounted(() => {
   observer = new IntersectionObserver((entries) => {
@@ -232,10 +309,14 @@ onMounted(() => {
 
   document.querySelectorAll('.reveal').forEach((element) => observer.observe(element))
   unbindMagnetic = bindMagnetic()
+  unbindSectionMotion = bindSectionMotion()
+  unbindDepthCards = bindDepthCards()
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
   unbindMagnetic?.()
+  unbindSectionMotion?.()
+  unbindDepthCards?.()
 })
 </script>
