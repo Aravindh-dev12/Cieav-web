@@ -1,0 +1,424 @@
+/*
+ * Middle-section layout polish only.
+ * Hero and footer are intentionally not targeted in this file.
+ */
+
+.red-story h2,
+.workflow-section h2,
+.workflow-section h3,
+.developer-section h2 {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+.red-story p,
+.workflow-section p,
+.developer-section p {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: pretty;
+}
+
+/* Gateway: give the copy a stable editorial column instead of squeezing it. */
+.gateway-layout {
+  width: min(100%, 1320px);
+  grid-template-columns: minmax(0, 1.04fr) minmax(420px, .76fr);
+  gap: clamp(56px, 6.5vw, 96px);
+  align-items: center;
+}
+
+.red-copy {
+  width: 100%;
+  max-width: 760px;
+}
+
+.red-copy .kicker {
+  max-width: 100%;
+  margin-bottom: 22px;
+  line-height: 1.45;
+}
+
+.red-copy h2 {
+  max-width: 760px;
+  font-size: clamp(60px, 5.7vw, 98px);
+  line-height: .91;
+  letter-spacing: -.048em;
+}
+
+.red-copy > p:not(.kicker) {
+  max-width: 62ch;
+  margin-top: 28px;
+  font-size: 13.5px;
+  line-height: 1.72;
+}
+
+.red-copy .light-button {
+  margin-top: 32px;
+}
+
+.red-meta {
+  width: min(100%, 680px);
+  margin-top: 54px;
+  gap: 12px 22px;
+  line-height: 1.5;
+}
+
+.gateway-visual {
+  width: 100%;
+  max-width: 560px;
+  justify-self: end;
+}
+
+.gateway-readouts div {
+  min-width: 0;
+  align-items: center;
+}
+
+.gateway-readouts span,
+.gateway-readouts b {
+  white-space: nowrap;
+}
+
+/* Workflow: keep all text on the same editorial grid. */
+.workflow-section {
+  padding-inline: max(32px, calc((100vw - 1320px) / 2));
+}
+
+.section-heading,
+.flow-track,
+.workflow-grid {
+  width: 100%;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-heading {
+  grid-template-columns: minmax(150px, .32fr) minmax(0, 1.68fr);
+  column-gap: clamp(44px, 5vw, 78px);
+  align-items: start;
+}
+
+.section-heading .kicker {
+  align-self: start;
+  margin-top: 8px;
+  line-height: 1.45;
+}
+
+.section-heading h2 {
+  max-width: 940px;
+  font-size: clamp(56px, 5.2vw, 86px);
+  line-height: .95;
+  letter-spacing: -.047em;
+}
+
+.section-heading > p:not(.kicker) {
+  max-width: 62ch;
+  margin-top: 26px;
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.flow-track {
+  margin-top: 64px;
+  margin-bottom: 24px;
+}
+
+.workflow-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.workflow-card {
+  min-width: 0;
+  min-height: 510px;
+  padding: 28px 28px 88px;
+  display: flex;
+  flex-direction: column;
+}
+
+.workflow-card .card-top {
+  min-height: 18px;
+  align-items: start;
+}
+
+.card-icon-wrap {
+  margin-top: 66px;
+}
+
+.workflow-card h3 {
+  margin-top: 34px;
+  font-size: clamp(38px, 3.2vw, 48px);
+  line-height: .98;
+}
+
+.workflow-card > p {
+  width: 100%;
+  max-width: 35ch;
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.68;
+}
+
+.card-status {
+  left: 28px !important;
+  right: 28px !important;
+  bottom: 30px !important;
+  min-height: 16px;
+}
+
+/* Runtime: align copy and terminal as two deliberate columns. */
+.developer-section {
+  grid-template-columns: minmax(0, .92fr) minmax(480px, 1.08fr);
+  gap: clamp(64px, 7vw, 104px);
+  padding-inline: max(32px, calc((100vw - 1320px) / 2));
+}
+
+.developer-copy {
+  width: 100%;
+  max-width: 650px;
+}
+
+.developer-copy .kicker {
+  margin-bottom: 22px;
+  line-height: 1.45;
+}
+
+.developer-copy h2 {
+  max-width: 650px;
+  font-size: clamp(58px, 5.1vw, 86px);
+  line-height: .92;
+  letter-spacing: -.048em;
+}
+
+.developer-copy > p:not(.kicker) {
+  max-width: 60ch;
+  margin-top: 28px;
+  font-size: 13px;
+  line-height: 1.74;
+}
+
+.runtime-status {
+  width: min(100%, 590px);
+  margin-top: 42px;
+}
+
+.runtime-status div {
+  padding-inline: 2px;
+}
+
+.terminal-shell {
+  width: 100%;
+  max-width: 690px;
+  justify-self: end;
+}
+
+.terminal-card {
+  width: 100%;
+}
+
+.terminal-head,
+.terminal-lines,
+.terminal-meter {
+  width: 100%;
+}
+
+.terminal-lines {
+  max-width: 620px;
+}
+
+.terminal-lines p {
+  line-height: 1.55;
+}
+
+/* Avoid the squeezed two-column state on laptop widths. */
+@media (max-width: 1180px) {
+  .gateway-layout {
+    grid-template-columns: 1fr;
+    gap: 62px;
+  }
+
+  .red-copy {
+    max-width: 860px;
+  }
+
+  .red-copy h2 {
+    max-width: 820px;
+  }
+
+  .gateway-visual {
+    width: min(100%, 720px);
+    max-width: 720px;
+    justify-self: end;
+  }
+
+  .developer-section {
+    grid-template-columns: 1fr;
+    gap: 64px;
+  }
+
+  .developer-copy {
+    max-width: 780px;
+  }
+
+  .terminal-shell {
+    width: min(100%, 860px);
+    max-width: 860px;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 820px) {
+  .red-story,
+  .workflow-section,
+  .developer-section {
+    padding-inline: 24px;
+  }
+
+  .gateway-layout {
+    gap: 50px;
+  }
+
+  .red-copy h2 {
+    max-width: 700px;
+    font-size: clamp(54px, 10.5vw, 76px);
+  }
+
+  .red-copy > p:not(.kicker) {
+    max-width: 58ch;
+  }
+
+  .gateway-visual {
+    justify-self: stretch;
+  }
+
+  .section-heading {
+    grid-template-columns: 1fr;
+    row-gap: 20px;
+  }
+
+  .section-heading .kicker {
+    grid-row: auto;
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .section-heading h2 {
+    grid-column: 1;
+    max-width: 720px;
+    font-size: clamp(50px, 9.5vw, 72px);
+  }
+
+  .section-heading > p:not(.kicker) {
+    grid-column: 1;
+    max-width: 58ch;
+    margin-top: 4px;
+  }
+
+  .flow-track {
+    margin-top: 48px;
+  }
+
+  .workflow-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .workflow-card {
+    min-height: 390px;
+    padding: 24px 24px 76px;
+  }
+
+  .card-icon-wrap {
+    margin-top: 38px;
+  }
+
+  .workflow-card > p {
+    max-width: 58ch;
+  }
+
+  .card-status {
+    left: 24px !important;
+    right: 24px !important;
+    bottom: 24px !important;
+  }
+
+  .developer-copy,
+  .terminal-shell {
+    justify-self: stretch;
+  }
+
+  .developer-copy h2 {
+    max-width: 720px;
+    font-size: clamp(52px, 10vw, 76px);
+  }
+
+  .developer-copy > p:not(.kicker) {
+    max-width: 58ch;
+  }
+}
+
+@media (max-width: 560px) {
+  .red-story,
+  .workflow-section,
+  .developer-section {
+    padding-inline: 20px;
+  }
+
+  .red-copy h2,
+  .section-heading h2,
+  .developer-copy h2 {
+    font-size: clamp(46px, 13.2vw, 62px);
+    line-height: .94;
+    letter-spacing: -.045em;
+  }
+
+  .red-copy > p:not(.kicker),
+  .section-heading > p:not(.kicker),
+  .developer-copy > p:not(.kicker) {
+    max-width: none;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+
+  .red-meta {
+    margin-top: 42px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 18px;
+  }
+
+  .gateway-visual {
+    min-height: 440px;
+  }
+
+  .workflow-card {
+    min-height: 380px;
+    padding-inline: 20px;
+  }
+
+  .workflow-card h3 {
+    font-size: 40px;
+  }
+
+  .workflow-card > p {
+    max-width: none;
+  }
+
+  .card-status {
+    left: 20px !important;
+    right: 20px !important;
+  }
+
+  .runtime-status div {
+    grid-template-columns: 8px minmax(0, 1fr) auto;
+    font-size: 7px;
+  }
+
+  .terminal-frame-label {
+    font-size: 6px;
+  }
+}
