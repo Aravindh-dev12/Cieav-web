@@ -55,160 +55,125 @@
       </div>
     </section>
 
-    <section id="product" class="red-story reveal motion-section">
-      <div class="red-noise" aria-hidden="true"></div>
-      <div class="ambient-orb ambient-orb--one" aria-hidden="true"></div>
-      <div class="ambient-orb ambient-orb--two" aria-hidden="true"></div>
+    <section id="product" class="red-story motion-section">
+      <div class="red-story__glow" aria-hidden="true"></div>
 
-      <div class="gateway-layout">
-        <div class="red-copy motion-layer" data-depth="0.34">
-          <p class="kicker kicker--light"><span></span> Cloud = interpretation. Local = authority.</p>
-          <h2>Execution authority<br />stays on your device.</h2>
+      <div class="red-statement reveal motion-layer" data-depth="0.16">
+        <div class="section-number" aria-hidden="true">02</div>
+        <p class="kicker kicker--light"><span></span> Cloud interprets. Local decides.</p>
+        <h2>
+          <span>Execution authority</span>
+          <span>stays local.</span>
+        </h2>
+
+        <div class="red-story__lower">
           <p>
-            The CIEAV Gateway starts with the operating system, mediates protected surfaces, applies a
-            deterministic safety floor, reduces data locally, and keeps replay and commit capability on-device.
-            CIEAV Cloud receives only the minimum semantic evidence needed for interpretation.
+            The CIEAV Gateway mediates protected surfaces, applies a deterministic safety floor, reduces data
+            locally, and keeps replay and commit capability on-device. The cloud receives only the semantic
+            evidence required to interpret intent.
           </p>
-          <a class="light-button magnetic" href="#workflow">See commit flow</a>
-
-          <div class="red-meta stagger-group">
-            <span>LOCAL GATEWAY</span>
-            <span>PRIVACY REDUCTION</span>
-            <span>SAFETY FLOOR</span>
-            <span>ACTION RECEIPTS</span>
-          </div>
+          <a class="light-button magnetic" href="#workflow">Follow the commit</a>
         </div>
 
-        <div class="gateway-visual motion-layer" data-depth="0.58" aria-hidden="true">
-          <div class="gateway-hud gateway-hud--top">
-            <span>LOCAL CONTROL PLANE</span>
-            <b>ONLINE</b>
-          </div>
+        <div class="red-facts" aria-label="Gateway capabilities">
+          <span><b>01</b> LOCAL GATEWAY</span>
+          <span><b>02</b> PRIVACY REDUCTION</span>
+          <span><b>03</b> SAFETY FLOOR</span>
+          <span><b>04</b> ACTION RECEIPTS</span>
+        </div>
+      </div>
 
-          <div class="gateway-core">
-            <div class="core-ring core-ring--outer"></div>
-            <div class="core-ring core-ring--middle"></div>
-            <div class="core-ring core-ring--inner"></div>
-            <div class="core-orbit core-orbit--one"><i></i></div>
-            <div class="core-orbit core-orbit--two"><i></i></div>
-            <div class="core-center">
-              <span>C</span>
-              <small>AUTHORITY</small>
-            </div>
-          </div>
-
-          <div class="signal-column signal-column--left">
-            <span>INTENT</span>
-            <i></i><i></i><i></i>
-          </div>
-          <div class="signal-column signal-column--right">
-            <span>OUTCOME</span>
-            <i></i><i></i><i></i>
-          </div>
-
-          <div class="gateway-readouts">
-            <div><span>POLICY</span><b>PASS</b></div>
-            <div><span>PRIVACY</span><b>LOCAL</b></div>
-            <div><span>REPLAY</span><b>READY</b></div>
-          </div>
+      <div class="kinetic-marquee" aria-hidden="true">
+        <div>
+          <span>LOCAL</span><i>•</i><span>DECIDE</span><i>•</i><span>COMMIT</span><i>•</i><span>VERIFY</span><i>•</i>
+          <span>LOCAL</span><i>•</i><span>DECIDE</span><i>•</i><span>COMMIT</span><i>•</i><span>VERIFY</span><i>•</i>
         </div>
       </div>
     </section>
 
     <section id="workflow" class="workflow-section motion-section">
-      <div class="section-heading reveal motion-layer" data-depth="0.22">
+      <div class="workflow-intro reveal motion-layer" data-depth="0.1">
         <p class="kicker"><span></span> Commit is not success</p>
-        <h2>Preview. Commit. Observe. Undo only when verified.</h2>
+        <h2>Action is immediate.<br />Truth takes evidence.</h2>
         <p>
-          CIEAV separates action dispatch from remote outcome. A committed action is not treated as success
-          until credible local evidence supports it. Ambiguous outcomes remain UNKNOWN.
+          CIEAV treats execution as a sequence of observable states. Dispatch does not become success until
+          credible local evidence supports the outcome. Anything ambiguous stays UNKNOWN.
         </p>
       </div>
 
-      <div class="flow-track reveal" aria-hidden="true">
-        <span class="flow-track__label">TRUSTED EXECUTION PATH</span>
-        <div class="flow-track__line"><i></i></div>
-        <span class="flow-track__state">OBSERVE → VERIFY</span>
-      </div>
+      <div class="workflow-story">
+        <aside class="workflow-sticky" aria-hidden="true">
+          <span class="workflow-sticky__number">03</span>
+          <p>PREVIEW → COMMIT → OBSERVE</p>
+          <div class="workflow-rail"><i></i></div>
+          <small>VERIFIED CONSEQUENCE</small>
+        </aside>
 
-      <div class="workflow-grid reveal">
-        <article
-          v-for="(step, index) in steps"
-          :key="step.title"
-          class="workflow-card depth-card"
-          :style="{ '--card-delay': `${index * 110}ms`, '--step-index': index + 1 }"
-        >
-          <div class="card-surface" aria-hidden="true"></div>
-          <div class="card-top">
-            <span>0{{ index + 1 }}</span>
-            <span>{{ step.state }}</span>
-          </div>
-          <div class="card-icon-wrap">
-            <div class="card-icon" aria-hidden="true">{{ step.icon }}</div>
-            <span class="card-pulse" aria-hidden="true"></span>
-          </div>
-          <h3>{{ step.title }}</h3>
-          <p>{{ step.copy }}</p>
-          <div class="card-status" aria-hidden="true">
-            <span></span>
-            <span>{{ index === 0 ? 'POLICY CHECK' : index === 1 ? 'SIGNED RECEIPT' : 'LOCAL EVIDENCE' }}</span>
-          </div>
-        </article>
+        <div class="workflow-steps">
+          <article
+            v-for="(step, index) in steps"
+            :key="step.title"
+            class="story-step reveal"
+            :style="{ '--step-delay': `${index * 90}ms` }"
+          >
+            <div class="story-step__index">0{{ index + 1 }}</div>
+            <div class="story-step__body">
+              <p class="story-step__state">{{ step.state }}</p>
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.copy }}</p>
+            </div>
+            <div class="story-step__mark" aria-hidden="true">
+              <span>{{ step.icon }}</span>
+              <i></i>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section id="developers" class="developer-section reveal motion-section">
-      <div class="developer-glow developer-glow--one" aria-hidden="true"></div>
-      <div class="developer-glow developer-glow--two" aria-hidden="true"></div>
-      <div class="developer-grid-field" aria-hidden="true"></div>
-
-      <div class="developer-copy motion-layer" data-depth="0.18">
-        <p class="kicker kicker--light"><span></span> Consumer installation</p>
-        <h2>Small local runtime.<br />No model weights.</h2>
-        <p>
-          Production releases package the CIEAV executable with its Node runtime. Users do not need Python,
-          npm, or large model downloads. The installer verifies the release, enrolls the device, runs a cloud
-          safety probe, and only then installs the always-on local Gateway service.
-        </p>
-
-        <div class="runtime-status" aria-hidden="true">
-          <div><i></i><span>GATEWAY SERVICE</span><b>ACTIVE</b></div>
-          <div><i></i><span>LOCAL POLICY</span><b>ENFORCED</b></div>
-          <div><i></i><span>CLOUD LINK</span><b>MINIMAL</b></div>
+    <section id="developers" class="developer-section motion-section">
+      <div class="developer-marquee" aria-hidden="true">
+        <div>
+          <span>LOCAL RUNTIME</span><i>•</i><span>NO MODEL WEIGHTS</span><i>•</i><span>VERIFIED INSTALL</span><i>•</i>
+          <span>LOCAL RUNTIME</span><i>•</i><span>NO MODEL WEIGHTS</span><i>•</i><span>VERIFIED INSTALL</span><i>•</i>
         </div>
       </div>
 
-      <div class="terminal-shell motion-layer" data-depth="0.31">
-        <div class="terminal-frame-label terminal-frame-label--left">CIEAV / LOCAL</div>
-        <div class="terminal-frame-label terminal-frame-label--right">SECURE RUNTIME</div>
+      <div class="developer-layout">
+        <div class="developer-copy reveal motion-layer" data-depth="0.12">
+          <p class="kicker kicker--light"><span></span> Consumer installation</p>
+          <h2>Small runtime.<br />Serious authority.</h2>
+          <p>
+            Production releases package the CIEAV executable with its Node runtime. No Python, npm, or model
+            downloads. Installation verifies the release, enrolls the device, runs a cloud safety probe, then
+            starts the always-on local Gateway.
+          </p>
+        </div>
 
-        <div class="terminal-card depth-card">
-          <div class="terminal-scan" aria-hidden="true"></div>
-          <div class="terminal-head">
+        <div class="install-panel reveal motion-layer" data-depth="0.2">
+          <div class="install-panel__head">
             <span>INSTALL CIEAV</span>
             <span>macOS · Linux</span>
           </div>
-          <button class="command" type="button" @click="copyCommand">
+
+          <button class="command install-command" type="button" @click="copyCommand">
             <code>{{ installCommand }}</code>
             <span>{{ copied ? 'COPIED' : 'COPY' }}</span>
           </button>
-          <div class="terminal-lines" aria-hidden="true">
-            <p><b>→</b> HTTPS manifest + SHA-256 verification</p>
-            <p><b>→</b> device enrollment + CRITICAL safety probe</p>
-            <p><b>✓</b> installs the always-on local Gateway</p>
+
+          <div class="install-sequence" aria-hidden="true">
+            <div><span>01</span><p>Verify release manifest + SHA-256</p><b>PASS</b></div>
+            <div><span>02</span><p>Enroll device + run safety probe</p><b>PASS</b></div>
+            <div><span>03</span><p>Start always-on local Gateway</p><b>ACTIVE</b></div>
           </div>
-          <div class="terminal-meter" aria-hidden="true">
-            <span>LOCAL TRUST</span>
-            <i><b></b></i>
-            <em>VERIFIED</em>
-          </div>
+
           <a
-            class="terminal-cta magnetic"
+            class="install-link magnetic"
             href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
             target="_blank"
             rel="noreferrer"
           >
-            View CIEAV on GitHub ↗
+            View CIEAV on GitHub <span>↗</span>
           </a>
         </div>
       </div>
@@ -243,19 +208,19 @@ const steps = [
     state: 'AUTHORITY',
     icon: '✦',
     title: 'Mediate',
-    copy: 'The local Gateway sits between intent and protected digital surfaces, applies deterministic safety policy, and reduces data before any cloud interpretation.',
+    copy: 'Intent reaches the local Gateway first. Deterministic policy protects consequential surfaces and reduces data before interpretation leaves the device.',
   },
   {
     state: 'CONTROL',
     icon: '⌘',
     title: 'Commit',
-    copy: 'Consequential actions move through PREVIEW → COMMIT / CANCEL, then trusted replay or submit. The resulting Action Receipt is signed and stored locally.',
+    copy: 'The user crosses an explicit commit boundary. Trusted replay or submit follows, while a signed Action Receipt records exactly what was authorized.',
   },
   {
     state: 'OUTCOME',
     icon: '↗',
     title: 'Verify',
-    copy: 'Local observation records OBSERVED_SUCCESS, OBSERVED_FAILURE, or UNKNOWN. Undo appears only after verified success and discovery of a concrete inverse.',
+    copy: 'Local observation resolves the result as success, failure, or unknown. Undo appears only after verified success and discovery of a concrete inverse.',
   },
 ]
 
@@ -305,17 +270,15 @@ function bindSectionMotion() {
   const update = () => {
     rafId = 0
     const viewport = window.innerHeight
-
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect()
       const center = rect.top + rect.height / 2
       const progress = (center - viewport / 2) / Math.max(viewport, rect.height)
       const clamped = Math.max(-1, Math.min(1, progress))
       section.style.setProperty('--section-progress', clamped.toFixed(3))
-
       section.querySelectorAll('.motion-layer').forEach((layer) => {
-        const depth = Number(layer.dataset.depth || 0.2)
-        layer.style.setProperty('--motion-y', `${clamped * depth * -54}px`)
+        const depth = Number(layer.dataset.depth || 0.1)
+        layer.style.setProperty('--motion-y', `${clamped * depth * -50}px`)
       })
     })
   }
@@ -335,55 +298,25 @@ function bindSectionMotion() {
   }
 }
 
-function bindDepthCards() {
-  const cleanups = []
-  document.querySelectorAll('.depth-card').forEach((card) => {
-    const move = (event) => {
-      if (window.matchMedia('(pointer: coarse)').matches) return
-      const rect = card.getBoundingClientRect()
-      const px = (event.clientX - rect.left) / rect.width - 0.5
-      const py = (event.clientY - rect.top) / rect.height - 0.5
-      card.style.setProperty('--card-rx', `${(-py * 4.5).toFixed(2)}deg`)
-      card.style.setProperty('--card-ry', `${(px * 5.5).toFixed(2)}deg`)
-      card.style.setProperty('--card-glow-x', `${((px + 0.5) * 100).toFixed(1)}%`)
-      card.style.setProperty('--card-glow-y', `${((py + 0.5) * 100).toFixed(1)}%`)
-    }
-    const leave = () => {
-      card.style.setProperty('--card-rx', '0deg')
-      card.style.setProperty('--card-ry', '0deg')
-    }
-    card.addEventListener('pointermove', move)
-    card.addEventListener('pointerleave', leave)
-    cleanups.push(() => {
-      card.removeEventListener('pointermove', move)
-      card.removeEventListener('pointerleave', leave)
-    })
-  })
-  return () => cleanups.forEach((cleanup) => cleanup())
-}
-
 let observer
 let unbindMagnetic
 let unbindSectionMotion
-let unbindDepthCards
 
 onMounted(() => {
   observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) entry.target.classList.add('is-visible')
     })
-  }, { threshold: 0.14 })
+  }, { threshold: 0.12 })
 
   document.querySelectorAll('.reveal').forEach((element) => observer.observe(element))
   unbindMagnetic = bindMagnetic()
   unbindSectionMotion = bindSectionMotion()
-  unbindDepthCards = bindDepthCards()
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
   unbindMagnetic?.()
   unbindSectionMotion?.()
-  unbindDepthCards?.()
 })
 </script>
