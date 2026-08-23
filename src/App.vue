@@ -139,7 +139,7 @@
     <footer class="footer">
       <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
         <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
-        <span>Cieav</span>
+        <span>CIEAV</span>
       </a>
       <p>The commit layer for the internet.</p>
       <div class="footer-nav">
