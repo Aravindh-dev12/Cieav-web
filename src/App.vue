@@ -59,80 +59,122 @@
       <div class="authority-shell">
         <div class="authority-copy reveal motion-layer" data-depth="0.06">
           <div class="section-code">
-            <span>02 / LOCAL AUTHORITY</span>
+            <span>02 / CONSEQUENCE LENS</span>
             <i></i>
-            <span>CONTROL PLANE</span>
+            <span>INTERACTIVE AUTHORITY</span>
           </div>
 
-          <p class="authority-kicker">Execution should have a boundary.</p>
+          <p class="authority-kicker">Don’t explain the boundary. Show it.</p>
           <h2>
-            Cloud interprets.<br />
-            <span>Local decides.</span>
+            Watch intent become<br />
+            <span>consequence.</span>
           </h2>
           <p class="authority-lede">
-            CIEAV keeps consequential execution on the device. The Gateway applies local policy, reveals the
-            consequence before commit, records what was actually sent, and refuses to call an outcome successful
-            until evidence exists.
+            The Consequence Lens is a live model of CIEAV’s local authority boundary. Move through Preview,
+            Commit, and Verify to see exactly what the Gateway knows, what it permits, and when it can prove an outcome.
           </p>
 
           <div class="authority-principles">
             <div>
               <span>01</span>
-              <strong>Policy first</strong>
-              <p>Local rules decide whether an action may cross the boundary.</p>
+              <strong>Visible state</strong>
+              <p>Every stage exposes what is known before the next action is available.</p>
             </div>
             <div>
               <span>02</span>
-              <strong>Preview before commit</strong>
-              <p>The exact consequence is visible while there is still time to cancel.</p>
+              <strong>Local boundary</strong>
+              <p>The commit surface exists on-device, not inside remote model reasoning.</p>
             </div>
             <div>
               <span>03</span>
-              <strong>Evidence after action</strong>
-              <p>Observed state, not model confidence, determines the result.</p>
+              <strong>Proof after action</strong>
+              <p>Only observed evidence changes an action from dispatched to verified.</p>
             </div>
           </div>
         </div>
 
-        <div class="authority-console reveal motion-layer" data-depth="0.1">
-          <div class="authority-console__head">
-            <div class="console-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span>CIEAV / GATEWAY</span>
-            <span class="console-live"><i></i> LOCAL</span>
+        <div class="consequence-lens reveal motion-layer" data-depth="0.09">
+          <div class="lens-topbar">
+            <div class="lens-brand">
+              <span class="lens-mark">C</span>
+              <div><strong>CIEAV</strong><small>CONSEQUENCE LENS</small></div>
+            </div>
+            <span class="lens-local"><i></i> LOCAL SESSION</span>
           </div>
 
-          <div class="intent-card">
-            <span>INCOMING INTENT</span>
-            <p>Send the approved proposal to the client.</p>
-            <div><small>CLOUD / INTERPRETED</small><b>→</b><small>LOCAL / AUTHORITY</small></div>
+          <div class="lens-tabs" role="tablist" aria-label="Consequence stages">
+            <button
+              v-for="stage in simulatorStages"
+              :key="stage.id"
+              type="button"
+              role="tab"
+              :aria-selected="activeStage === stage.id"
+              :class="{ 'is-active': activeStage === stage.id }"
+              @click="activeStage = stage.id"
+            >
+              <span>{{ stage.number }}</span>
+              <strong>{{ stage.label }}</strong>
+            </button>
           </div>
 
-          <div class="authority-stack">
-            <div class="authority-row is-done">
-              <span class="authority-row__index">01</span>
-              <div><strong>Policy checked</strong><small>Recipient + document approved</small></div>
-              <b>PASS</b>
+          <div class="lens-stage" :class="`lens-stage--${activeStage}`">
+            <div class="lens-stage__grid" aria-hidden="true"></div>
+            <div class="lens-scan" aria-hidden="true"></div>
+
+            <div class="lens-request">
+              <span>INTENT / REQUEST</span>
+              <p>Send the approved proposal to the client.</p>
+              <div class="lens-request__meta">
+                <span>recipient / verified</span>
+                <span>document / approved</span>
+              </div>
             </div>
-            <div class="authority-row is-done">
-              <span class="authority-row__index">02</span>
-              <div><strong>Preview generated</strong><small>Consequence visible before submit</small></div>
-              <b>READY</b>
+
+            <div class="lens-core" aria-live="polite">
+              <div class="lens-core__rings" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span class="lens-core__index">{{ currentSimulatorStage.number }}</span>
+              <strong>{{ currentSimulatorStage.label }}</strong>
+              <small>{{ currentSimulatorStage.core }}</small>
             </div>
-            <div class="authority-row is-active">
-              <span class="authority-row__index">03</span>
-              <div><strong>Commit boundary</strong><small>User authorization required</small></div>
-              <b>WAIT</b>
+
+            <div class="lens-evidence">
+              <div class="lens-evidence__head">
+                <span>LOCAL EVIDENCE</span>
+                <b>{{ currentSimulatorStage.evidenceState }}</b>
+              </div>
+              <div class="evidence-wave" aria-hidden="true">
+                <i v-for="n in 22" :key="n" :style="{ '--bar': ((n * 7) % 13) + 4 }"></i>
+              </div>
+              <div class="lens-evidence__rows">
+                <div><span>Policy</span><strong>{{ currentSimulatorStage.policy }}</strong></div>
+                <div><span>Dispatch</span><strong>{{ currentSimulatorStage.dispatch }}</strong></div>
+                <div><span>Outcome</span><strong>{{ currentSimulatorStage.outcome }}</strong></div>
+              </div>
             </div>
-            <div class="authority-row">
-              <span class="authority-row__index">04</span>
-              <div><strong>Outcome evidence</strong><small>Success / failure / unknown</small></div>
-              <b>—</b>
+
+            <div class="lens-boundary" aria-hidden="true">
+              <span>LOCAL AUTHORITY BOUNDARY</span>
+              <i></i>
             </div>
           </div>
 
-          <div class="authority-console__foot">
-            <span>AUTHORITY STAYS LOCAL</span>
-            <span>NOTHING IS ASSUMED</span>
+          <div class="lens-bottom">
+            <div>
+              <span>STATE</span>
+              <strong>{{ currentSimulatorStage.status }}</strong>
+            </div>
+            <p>{{ currentSimulatorStage.description }}</p>
+            <button
+              v-if="activeStage !== 'verify'"
+              type="button"
+              class="lens-next"
+              @click="advanceSimulator"
+            >
+              Advance <span>→</span>
+            </button>
+            <button v-else type="button" class="lens-next lens-next--undo" @click="activeStage = 'preview'">
+              Replay <span>↺</span>
+            </button>
           </div>
         </div>
       </div>
@@ -263,12 +305,56 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import logoMark from './public/logo.png'
 import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
+const activeStage = ref('preview')
 const installCommand = 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh'
+
+const simulatorStages = [
+  {
+    id: 'preview',
+    number: '01',
+    label: 'PREVIEW',
+    core: 'Consequence visible',
+    status: 'AWAITING AUTHORITY',
+    evidenceState: 'READY',
+    policy: 'PASS',
+    dispatch: 'NOT SENT',
+    outcome: 'UNKNOWN',
+    description: 'The action is concrete and inspectable, but no consequence has crossed the local authority boundary.',
+  },
+  {
+    id: 'commit',
+    number: '02',
+    label: 'COMMIT',
+    core: 'Boundary crossed',
+    status: 'DISPATCHED LOCALLY',
+    evidenceState: 'OBSERVING',
+    policy: 'PASS',
+    dispatch: 'SIGNED',
+    outcome: 'UNKNOWN',
+    description: 'CIEAV has authorized and dispatched the action. The request is real, but success is still unproven.',
+  },
+  {
+    id: 'verify',
+    number: '03',
+    label: 'VERIFY',
+    core: 'Consequence proven',
+    status: 'VERIFIED',
+    evidenceState: 'PROVEN',
+    policy: 'PASS',
+    dispatch: 'SIGNED',
+    outcome: 'SUCCESS',
+    description: 'Observed local evidence confirms the intended result. Only now can CIEAV expose a valid inverse for Undo.',
+  },
+]
+
+const currentSimulatorStage = computed(() => (
+  simulatorStages.find((stage) => stage.id === activeStage.value) || simulatorStages[0]
+))
 
 const corridorSteps = [
   {
@@ -317,6 +403,11 @@ const corridorSteps = [
     copy: 'Only observed evidence resolves consequence. Undo appears only after verified success and discovery of a concrete inverse. The system exposes what it knows — and what it does not.',
   },
 ]
+
+function advanceSimulator() {
+  const current = simulatorStages.findIndex((stage) => stage.id === activeStage.value)
+  activeStage.value = simulatorStages[Math.min(current + 1, simulatorStages.length - 1)].id
+}
 
 function trackPointer(event) {
   const x = event.clientX / window.innerWidth - 0.5
