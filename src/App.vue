@@ -1,372 +1,375 @@
 <template>
-  <main class="site-shell">
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="CIEAV home">
-        <img :src="logoMark" alt="" class="brand__mark" />
-        <span class="brand__name">CIEAV</span>
+  <main class="site" @pointermove="trackPointer">
+    <div class="cursor-cross" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="wordmark" href="#top" aria-label="Cieav home">
+        <img :src="logoMark" alt="" class="wordmark-logo" />
+        <span>Cieav</span>
       </a>
 
-      <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#platform">Platform</a>
-        <a href="#flow">Commit flow</a>
-        <a href="#install">Install</a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#product">Gateway</a>
+        <a href="#workflow">Commit Flow</a>
+        <a href="#developers">Install</a>
       </nav>
 
-      <a class="button button--small button--dark" href="#install">
+      <a class="primary-button topbar-cta magnetic" href="#developers">
         Get CIEAV
-        <span aria-hidden="true">↘</span>
       </a>
     </header>
 
-    <section id="top" class="hero section-wrap">
-      <div class="hero__ambient" aria-hidden="true">
-        <div class="hero__orb hero__orb--one"></div>
-        <div class="hero__orb hero__orb--two"></div>
-        <div class="hero__grid"></div>
-      </div>
+    <section
+      id="top"
+      class="hero"
+      :style="{ backgroundImage: `url(${formulaStairs})` }"
+    >
+      <div class="hero-grid" aria-hidden="true"></div>
 
-      <div class="hero__copy">
-        <div class="eyebrow">
-          <span class="status-dot"></span>
-          Local authority for AI actions
-        </div>
-
-        <h1>
-          AI can propose.<br />
-          <span>You decide what happens.</span>
-        </h1>
-
-        <p class="hero__lede">
-          CIEAV is the local commit layer between digital intent and real consequence.
-          It previews actions, applies device policy, commits deliberately, and verifies the result before calling anything done.
+      <div class="hero-copy reveal-on-load">
+        <p class="kicker"><span></span> The commit layer for the internet</p>
+        <h1>Local Authority.<br />Verified Consequence.</h1>
+        <p class="hero-lede">
+          CIEAV is an always-on local control plane between digital intent and digital consequence.
+          Cloud interprets. The local Gateway decides, commits, verifies, and exposes Undo only when success
+          and a concrete inverse are observed.
         </p>
 
-        <div class="hero__actions">
-          <a class="button button--accent" href="#install">
-            Install CIEAV
-            <span aria-hidden="true">→</span>
+        <div class="hero-actions">
+          <a class="primary-button primary-button--large magnetic" href="#developers">
+            Get CIEAV
           </a>
-          <a class="text-link" href="#flow">
-            See how commit works
-            <span aria-hidden="true">↓</span>
+          <a class="outline-button magnetic" href="#workflow">
+            See the Flow
           </a>
         </div>
-
-        <div class="hero__meta" aria-label="Product characteristics">
-          <div>
-            <strong>Local-first</strong>
-            <span>Authority stays on your device</span>
-          </div>
-          <div>
-            <strong>Evidence-based</strong>
-            <span>Success requires observation</span>
-          </div>
-          <div>
-            <strong>Reversible</strong>
-            <span>Undo only when an inverse exists</span>
-          </div>
-        </div>
       </div>
 
-      <div class="hero__visual" aria-label="CIEAV commit sequence illustration">
-        <div class="console-card">
-          <div class="console-card__header">
-            <div>
-              <span class="window-dot"></span>
-              <span class="window-dot"></span>
-              <span class="window-dot"></span>
-            </div>
-            <span>CIEAV / GATEWAY</span>
-            <span class="live-pill"><i></i> LIVE</span>
-          </div>
-
-          <div class="console-card__body">
-            <div class="request-card">
-              <span class="request-card__label">Incoming intent</span>
-              <p>“Send the approved proposal to the client.”</p>
-              <div class="request-card__route">
-                <span>cloud interpretation</span>
-                <b>→</b>
-                <span class="request-card__route-local">local authority</span>
-              </div>
-            </div>
-
-            <div class="commit-stack">
-              <div class="commit-row is-complete">
-                <span class="commit-row__icon">✓</span>
-                <div>
-                  <strong>Policy checked</strong>
-                  <small>Recipient + document approved</small>
-                </div>
-                <time>12ms</time>
-              </div>
-              <div class="commit-row is-complete">
-                <span class="commit-row__icon">✓</span>
-                <div>
-                  <strong>Preview confirmed</strong>
-                  <small>Consequence shown before submit</small>
-                </div>
-                <time>local</time>
-              </div>
-              <div class="commit-row is-active">
-                <span class="commit-row__icon">03</span>
-                <div>
-                  <strong>Commit authorized</strong>
-                  <small>Trusted replay in progress</small>
-                </div>
-                <span class="pulse-line"></span>
-              </div>
-              <div class="commit-row">
-                <span class="commit-row__icon">04</span>
-                <div>
-                  <strong>Verify evidence</strong>
-                  <small>Waiting for observed outcome</small>
-                </div>
-                <span class="pending-pill">PENDING</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="console-card__footer">
-            <span>Authority boundary</span>
-            <span>Nothing is assumed successful.</span>
-          </div>
-        </div>
-
-        <div class="floating-card floating-card--policy">
-          <span class="floating-card__icon">⌁</span>
-          <div>
-            <small>Policy engine</small>
-            <strong>Local rules applied</strong>
-          </div>
-        </div>
-
-        <div class="floating-card floating-card--verify">
-          <span class="floating-card__icon">◎</span>
-          <div>
-            <small>Outcome</small>
-            <strong>Verified, not guessed</strong>
-          </div>
-        </div>
+      <div class="hero-index hero-index--left" aria-hidden="true">
+        <span>01</span>
+        <span>LOCAL / AUTHORITY</span>
+      </div>
+      <div class="hero-index hero-index--right" aria-hidden="true">
+        <span>2026</span>
+        <span>CLOUD / INTERPRETATION</span>
       </div>
     </section>
 
-    <section class="trust-strip" aria-label="CIEAV operating principles">
-      <div class="section-wrap trust-strip__inner">
-        <span>THE COMMIT LAYER FOR THE INTERNET</span>
-        <div class="trust-strip__items">
-          <span>Intent</span><i>→</i>
-          <span>Policy</span><i>→</i>
-          <span>Preview</span><i>→</i>
-          <span>Commit</span><i>→</i>
-          <span>Evidence</span><i>→</i>
-          <span>Verify</span>
+    <section id="product" class="authority-scene motion-section">
+      <div class="authority-glow" aria-hidden="true"></div>
+      <div class="authority-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <div class="authority-inner reveal motion-layer" data-depth="0.08">
+        <div class="authority-meta">
+          <span>02 / AUTHORITY</span>
+          <span>LOCAL CONTROL PLANE</span>
         </div>
-      </div>
-    </section>
 
-    <section id="platform" class="platform section-wrap section-space">
-      <div class="section-intro">
-        <div class="eyebrow eyebrow--dark">01 / Platform</div>
-        <h2>Put consequence behind a boundary.</h2>
-        <p>
-          Models are good at interpretation. They should not silently become the authority for every consequential action.
-          CIEAV introduces a local layer that makes execution legible, controllable, and observable.
-        </p>
-      </div>
+        <div class="authority-headline">
+          <span class="authority-headline__ghost">CLOUD INTERPRETS.</span>
+          <span>LOCAL DECIDES.</span>
+        </div>
 
-      <div class="feature-grid">
-        <article class="feature-card feature-card--accent">
-          <div class="feature-card__top">
-            <span>01</span>
-            <span class="feature-card__symbol">⌁</span>
-          </div>
-          <div>
-            <h3>Local authority</h3>
-            <p>Policy and execution boundaries stay close to the user instead of disappearing inside a remote model call.</p>
-          </div>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-card__top">
-            <span>02</span>
-            <span class="feature-card__symbol">◫</span>
-          </div>
-          <div>
-            <h3>Visible consequence</h3>
-            <p>Preview makes the action concrete before commit, so the user can understand, change, or cancel it.</p>
-          </div>
-        </article>
-
-        <article class="feature-card feature-card--dark">
-          <div class="feature-card__top">
-            <span>03</span>
-            <span class="feature-card__symbol">◎</span>
-          </div>
-          <div>
-            <h3>Verified outcome</h3>
-            <p>Dispatch is not success. CIEAV waits for credible evidence and preserves UNKNOWN when the result is ambiguous.</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="flow" class="flow-section">
-      <div class="section-wrap section-space">
-        <div class="section-intro section-intro--inverse">
-          <div class="eyebrow eyebrow--light">02 / Commit flow</div>
-          <h2>A five-step path from intent to proof.</h2>
+        <div class="authority-lower">
           <p>
-            Every consequential action moves through the same explicit sequence. The boundary is easy to inspect and hard to accidentally skip.
+            CIEAV keeps consequential execution where the user can control it. The Gateway applies local policy,
+            reduces data before cloud interpretation, commits only after an explicit boundary, and records what
+            actually happened on-device.
           </p>
+          <a class="authority-link magnetic" href="#workflow">
+            Enter the commit corridor <span>↘</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="authority-ticker" aria-hidden="true">
+        <div>
+          <span>INTENT</span><i>—</i><span>POLICY</span><i>—</i><span>PREVIEW</span><i>—</i><span>COMMIT</span><i>—</i><span>EVIDENCE</span><i>—</i><span>VERIFY</span><i>—</i>
+          <span>INTENT</span><i>—</i><span>POLICY</span><i>—</i><span>PREVIEW</span><i>—</i><span>COMMIT</span><i>—</i><span>EVIDENCE</span><i>—</i><span>VERIFY</span><i>—</i>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow" class="commit-corridor motion-section">
+      <div class="commit-pin">
+        <div class="corridor-chrome" aria-hidden="true">
+          <span>03 / COMMIT CORRIDOR</span>
+          <div class="corridor-progress"><i></i></div>
+          <span>SCROLL TO EXECUTE</span>
         </div>
 
-        <div class="flow-list">
-          <article v-for="(step, index) in flowSteps" :key="step.title" class="flow-item">
-            <div class="flow-item__index">0{{ index + 1 }}</div>
-            <div class="flow-item__symbol" aria-hidden="true">{{ step.symbol }}</div>
-            <div class="flow-item__copy">
-              <span>{{ step.state }}</span>
-              <h3>{{ step.title }}</h3>
-              <p>{{ step.copy }}</p>
+        <div class="commit-track">
+          <article
+            v-for="(step, index) in corridorSteps"
+            :key="step.title"
+            class="corridor-panel"
+            :class="`corridor-panel--${index + 1}`"
+          >
+            <div class="panel-grid" aria-hidden="true"></div>
+
+            <div class="panel-number">0{{ index + 1 }}</div>
+
+            <div class="panel-copy">
+              <p class="panel-state">{{ step.state }}</p>
+              <h2>{{ step.title }}</h2>
+              <p class="panel-description">{{ step.copy }}</p>
             </div>
-            <div class="flow-item__rule">
-              <span>{{ step.rule }}</span>
-              <i></i>
+
+            <div class="panel-signal" aria-hidden="true">
+              <div class="panel-signal__ring"><span>{{ step.symbol }}</span></div>
+              <p>{{ step.signal }}</p>
+            </div>
+
+            <div class="panel-foot" aria-hidden="true">
+              <span>{{ step.left }}</span>
+              <span>{{ step.right }}</span>
             </div>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="statement section-wrap section-space">
-      <div class="statement__label">
-        <span class="status-dot"></span>
-        Design principle
-      </div>
-      <blockquote>
-        “The model can interpret the world.<br />
-        <em>The device owns the consequence.</em>”
-      </blockquote>
-      <p>
-        CIEAV keeps a deliberate separation between intelligence and authority—so powerful automation can remain useful without making every action invisible or irreversible.
-      </p>
-    </section>
+    <section id="developers" class="install-stage motion-section">
+      <div class="install-backdrop" aria-hidden="true">LOCAL</div>
+      <div class="install-glow" aria-hidden="true"></div>
 
-    <section id="install" class="install-section">
-      <div class="section-wrap install-layout">
-        <div class="install-copy">
-          <div class="eyebrow eyebrow--light">03 / Install</div>
-          <h2>Bring the commit layer onto your device.</h2>
+      <div class="install-layout">
+        <div class="install-copy reveal motion-layer" data-depth="0.08">
+          <p class="kicker kicker--light"><span></span> Consumer installation</p>
+          <h2>Run authority<br />where it matters.</h2>
           <p>
-            CIEAV runs as a small local gateway. Installation verifies the release, enrolls the device, runs a safety probe, and starts the local service.
+            CIEAV ships as a small local runtime. No Python, npm, or model-weight downloads. Installation verifies
+            the release, enrolls the device, runs a safety probe, and starts the always-on Gateway service.
           </p>
+        </div>
+
+        <div class="install-terminal reveal motion-layer" data-depth="0.13">
+          <div class="install-terminal__head">
+            <span>CIEAV / LOCAL</span>
+            <span>READY</span>
+          </div>
+
+          <button class="command install-command" type="button" @click="copyCommand">
+            <code>{{ installCommand }}</code>
+            <span>{{ copied ? 'COPIED' : 'COPY' }}</span>
+          </button>
+
+          <div class="install-steps" aria-hidden="true">
+            <div><span>01</span><p>VERIFY RELEASE</p><b>PASS</b></div>
+            <div><span>02</span><p>ENROLL DEVICE</p><b>PASS</b></div>
+            <div><span>03</span><p>START GATEWAY</p><b>ACTIVE</b></div>
+          </div>
+
           <a
-            class="button button--light"
+            class="install-cta magnetic"
             href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
             target="_blank"
             rel="noreferrer"
           >
-            View project on GitHub
-            <span aria-hidden="true">↗</span>
+            View CIEAV on GitHub <span>↗</span>
           </a>
-        </div>
-
-        <div class="install-card">
-          <div class="install-card__header">
-            <span>QUICK START</span>
-            <span class="live-pill live-pill--dark"><i></i> LOCAL</span>
-          </div>
-
-          <button class="command-box" type="button" @click="copyCommand" aria-label="Copy install command">
-            <code>{{ installCommand }}</code>
-            <span>{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
-          </button>
-
-          <div class="install-checks">
-            <div><span>01</span><p>Verify release signature</p><strong>PASS</strong></div>
-            <div><span>02</span><p>Enroll this device</p><strong>PASS</strong></div>
-            <div><span>03</span><p>Start local gateway</p><strong>ACTIVE</strong></div>
-          </div>
-
-          <div class="install-card__note">
-            <span>Note</span>
-            <p>Replace the download-domain placeholder with the official release host when distribution is ready.</p>
-          </div>
         </div>
       </div>
     </section>
 
-    <footer class="site-footer section-wrap">
-      <a class="brand brand--footer" href="#top" aria-label="CIEAV home">
-        <img :src="logoMark" alt="" class="brand__mark" />
-        <span class="brand__name">CIEAV</span>
+    <footer class="footer">
+      <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
+        <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
+        <span>CIEAV</span>
       </a>
       <p>The commit layer for the internet.</p>
-      <nav aria-label="Footer navigation">
-        <a href="#platform">Platform</a>
-        <a href="#flow">Commit flow</a>
-        <a href="#install">Install</a>
-      </nav>
-      <span>© 2026 CIEAV</span>
+      <div class="footer-nav">
+        <a href="#product">Gateway</a>
+        <a href="#workflow">Commit Flow</a>
+        <a href="#developers">Install</a>
+      </div>
+      <span>© 2026 Cieav</span>
     </footer>
   </main>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import logoMark from './public/logo.png'
+import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
 const installCommand = 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh'
 
-const flowSteps = [
+const corridorSteps = [
   {
-    state: 'INPUT',
-    title: 'Intent',
+    state: 'INPUT / INTENT',
+    title: 'INTENT',
     symbol: 'I',
-    rule: 'Interpretation is not authority',
-    copy: 'A request arrives and can be interpreted by cloud intelligence, but execution authority remains local.',
+    signal: 'REQUEST RECEIVED',
+    left: 'CLOUD MAY INTERPRET',
+    right: 'LOCAL AUTHORITY BEGINS',
+    copy: 'A digital intention arrives, but it does not receive execution authority simply because a model understood it. CIEAV routes consequential intent through the local Gateway first.',
   },
   {
-    state: 'BOUNDARY',
-    title: 'Preview',
+    state: 'BOUNDARY / PREVIEW',
+    title: 'PREVIEW',
     symbol: 'P',
-    rule: 'Consequence becomes visible',
-    copy: 'Policy is applied and the concrete action is shown before the user crosses the commit boundary.',
+    signal: 'CONSEQUENCE VISIBLE',
+    left: 'DETERMINISTIC POLICY',
+    right: 'USER CAN CANCEL',
+    copy: 'Before consequence, the Gateway applies the safety floor and makes the action legible. The user sees what is about to happen before crossing the commit boundary.',
   },
   {
-    state: 'AUTHORITY',
-    title: 'Commit',
+    state: 'AUTHORITY / COMMIT',
+    title: 'COMMIT',
     symbol: 'C',
-    rule: 'Authorization is explicit',
-    copy: 'Once authorized, the Gateway performs trusted replay or submit and records exactly what was dispatched.',
+    signal: 'BOUNDARY CROSSED',
+    left: 'SIGNED ACTION RECEIPT',
+    right: 'TRUSTED REPLAY',
+    copy: 'Commit is deliberate. Once authorized, CIEAV performs trusted replay or submit and records the exact action locally. Dispatch is real — but it is still not proof of success.',
   },
   {
-    state: 'EVIDENCE',
-    title: 'Observe',
+    state: 'EVIDENCE / OBSERVE',
+    title: 'OBSERVE',
     symbol: 'O',
-    rule: 'Dispatch is not success',
-    copy: 'CIEAV watches the local environment for credible evidence instead of assuming the intended result occurred.',
+    signal: 'LOCAL EVIDENCE',
+    left: 'SUCCESS / FAILURE / UNKNOWN',
+    right: 'NO ASSUMED OUTCOME',
+    copy: 'After dispatch, CIEAV observes the local environment for credible evidence. Ambiguous results remain UNKNOWN rather than being promoted into a convenient success state.',
   },
   {
-    state: 'OUTCOME',
-    title: 'Verify',
+    state: 'OUTCOME / VERIFIED',
+    title: 'VERIFIED',
     symbol: 'V',
-    rule: 'Undo requires a real inverse',
-    copy: 'The outcome resolves only when evidence supports it. Reversal appears only when success and a concrete inverse are known.',
+    signal: 'CONSEQUENCE PROVEN',
+    left: 'SUCCESS REQUIRES EVIDENCE',
+    right: 'UNDO REQUIRES AN INVERSE',
+    copy: 'Only observed evidence resolves consequence. Undo appears only after verified success and discovery of a concrete inverse. The system exposes what it knows — and what it does not.',
   },
 ]
+
+function trackPointer(event) {
+  const x = event.clientX / window.innerWidth - 0.5
+  const y = event.clientY / window.innerHeight - 0.5
+  document.documentElement.style.setProperty('--mx', `${event.clientX}px`)
+  document.documentElement.style.setProperty('--my', `${event.clientY}px`)
+  document.documentElement.style.setProperty('--px', x.toFixed(3))
+  document.documentElement.style.setProperty('--py', y.toFixed(3))
+}
 
 async function copyCommand() {
   try {
     await navigator.clipboard.writeText(installCommand)
     copied.value = true
-    window.setTimeout(() => {
-      copied.value = false
-    }, 1600)
+    window.setTimeout(() => { copied.value = false }, 1600)
   } catch {
     copied.value = false
   }
 }
+
+function bindMagnetic() {
+  const cleanups = []
+  document.querySelectorAll('.magnetic').forEach((element) => {
+    const move = (event) => {
+      const rect = element.getBoundingClientRect()
+      const x = event.clientX - rect.left - rect.width / 2
+      const y = event.clientY - rect.top - rect.height / 2
+      element.style.transform = `translate(${x * 0.075}px, ${y * 0.075}px)`
+    }
+    const leave = () => { element.style.transform = '' }
+    element.addEventListener('pointermove', move)
+    element.addEventListener('pointerleave', leave)
+    cleanups.push(() => {
+      element.removeEventListener('pointermove', move)
+      element.removeEventListener('pointerleave', leave)
+    })
+  })
+  return () => cleanups.forEach((cleanup) => cleanup())
+}
+
+function bindMiddleMotion() {
+  const sections = Array.from(document.querySelectorAll('.motion-section'))
+  const corridor = document.querySelector('.commit-corridor')
+  const track = document.querySelector('.commit-track')
+  const panels = Array.from(document.querySelectorAll('.corridor-panel'))
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+  let rafId = 0
+
+  const update = () => {
+    rafId = 0
+    const viewport = window.innerHeight
+
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect()
+      const center = rect.top + rect.height / 2
+      const progress = (center - viewport / 2) / Math.max(viewport, rect.height)
+      const clamped = Math.max(-1, Math.min(1, progress))
+      section.style.setProperty('--section-progress', clamped.toFixed(3))
+
+      section.querySelectorAll('.motion-layer').forEach((layer) => {
+        const depth = Number(layer.dataset.depth || 0.08)
+        layer.style.setProperty('--motion-y', `${clamped * depth * -48}px`)
+      })
+    })
+
+    if (!corridor || !track) return
+
+    const horizontal = window.innerWidth > 820 && !reduceMotion.matches
+    if (!horizontal) {
+      track.style.transform = ''
+      corridor.style.setProperty('--corridor-progress', '0')
+      panels.forEach((panel) => panel.style.setProperty('--panel-focus', '1'))
+      return
+    }
+
+    const rect = corridor.getBoundingClientRect()
+    const scrollable = Math.max(1, corridor.offsetHeight - viewport)
+    const progress = Math.max(0, Math.min(1, -rect.top / scrollable))
+    const distance = Math.max(0, track.scrollWidth - window.innerWidth)
+    const position = progress * distance
+
+    track.style.transform = `translate3d(${-position}px, 0, 0)`
+    corridor.style.setProperty('--corridor-progress', progress.toFixed(4))
+
+    const panelProgress = progress * Math.max(1, panels.length - 1)
+    panels.forEach((panel, index) => {
+      const focus = Math.max(0, 1 - Math.abs(index - panelProgress) * 0.72)
+      panel.style.setProperty('--panel-focus', focus.toFixed(3))
+    })
+  }
+
+  const requestUpdate = () => {
+    if (!rafId) rafId = requestAnimationFrame(update)
+  }
+
+  update()
+  window.addEventListener('scroll', requestUpdate, { passive: true })
+  window.addEventListener('resize', requestUpdate)
+  reduceMotion.addEventListener?.('change', requestUpdate)
+
+  return () => {
+    if (rafId) cancelAnimationFrame(rafId)
+    window.removeEventListener('scroll', requestUpdate)
+    window.removeEventListener('resize', requestUpdate)
+    reduceMotion.removeEventListener?.('change', requestUpdate)
+  }
+}
+
+let observer
+let unbindMagnetic
+let unbindMiddleMotion
+
+onMounted(() => {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add('is-visible')
+    })
+  }, { threshold: 0.12 })
+
+  document.querySelectorAll('.reveal').forEach((element) => observer.observe(element))
+  unbindMagnetic = bindMagnetic()
+  unbindMiddleMotion = bindMiddleMotion()
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  unbindMagnetic?.()
+  unbindMiddleMotion?.()
+})
 </script>
