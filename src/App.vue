@@ -55,233 +55,177 @@
       </div>
     </section>
 
-    <section id="product" class="authority-scene motion-section">
-      <div class="authority-shell">
-        <div class="authority-copy reveal motion-layer" data-depth="0.06">
-          <div class="section-code">
-            <span>02 / CONSEQUENCE LENS</span>
-            <i></i>
-            <span>INTERACTIVE AUTHORITY</span>
+    <section id="product" class="protocol-split motion-section">
+      <div class="protocol-noise" aria-hidden="true"></div>
+      <div class="protocol-shell">
+        <div class="section-code section-code--light reveal">
+          <span>02 / PROTOCOL SPLIT</span>
+          <i></i>
+          <span>INTELLIGENCE ≠ AUTHORITY</span>
+        </div>
+
+        <div class="protocol-stage">
+          <div class="protocol-side protocol-side--cloud reveal motion-layer" data-depth="0.05">
+            <span class="protocol-label">CLOUD</span>
+            <h2>Interpret<br />anything.</h2>
+            <p>
+              Models can understand intent, reason over context, and propose what should happen next.
+            </p>
+            <div class="protocol-capabilities">
+              <span>REASONING</span>
+              <span>PLANNING</span>
+              <span>INTERPRETATION</span>
+            </div>
           </div>
 
-          <p class="authority-kicker">Don’t explain the boundary. Show it.</p>
-          <h2>
-            Watch intent become<br />
-            <span>consequence.</span>
-          </h2>
-          <p class="authority-lede">
-            The Consequence Lens is a live model of CIEAV’s local authority boundary. Move through Preview,
-            Commit, and Verify to see exactly what the Gateway knows, what it permits, and when it can prove an outcome.
-          </p>
+          <div class="protocol-axis" aria-hidden="true">
+            <span>LOCAL AUTHORITY BOUNDARY</span>
+            <div class="axis-line"><i></i></div>
+            <div class="axis-core">
+              <b>C</b>
+              <small>GATEWAY</small>
+            </div>
+            <div class="axis-packet">INTENT</div>
+          </div>
 
-          <div class="authority-principles">
-            <div>
-              <span>01</span>
-              <strong>Visible state</strong>
-              <p>Every stage exposes what is known before the next action is available.</p>
-            </div>
-            <div>
-              <span>02</span>
-              <strong>Local boundary</strong>
-              <p>The commit surface exists on-device, not inside remote model reasoning.</p>
-            </div>
-            <div>
-              <span>03</span>
-              <strong>Proof after action</strong>
-              <p>Only observed evidence changes an action from dispatched to verified.</p>
+          <div class="protocol-side protocol-side--local reveal motion-layer" data-depth="0.09">
+            <span class="protocol-label">LOCAL</span>
+            <h2>Decide what<br />becomes real.</h2>
+            <p>
+              CIEAV owns the consequence boundary: policy, preview, commit, observation, and verified outcome.
+            </p>
+            <div class="protocol-capabilities protocol-capabilities--local">
+              <span>POLICY</span>
+              <span>COMMIT</span>
+              <span>EVIDENCE</span>
             </div>
           </div>
         </div>
 
-        <div class="consequence-lens reveal motion-layer" data-depth="0.09">
-          <div class="lens-topbar">
-            <div class="lens-brand">
-              <span class="lens-mark">C</span>
-              <div><strong>CIEAV</strong><small>CONSEQUENCE LENS</small></div>
-            </div>
-            <span class="lens-local"><i></i> LOCAL SESSION</span>
+        <div class="protocol-status reveal">
+          <div>
+            <span>REQUEST</span>
+            <strong>Send approved proposal</strong>
           </div>
-
-          <div class="lens-tabs" role="tablist" aria-label="Consequence stages">
-            <button
-              v-for="stage in simulatorStages"
-              :key="stage.id"
-              type="button"
-              role="tab"
-              :aria-selected="activeStage === stage.id"
-              :class="{ 'is-active': activeStage === stage.id }"
-              @click="activeStage = stage.id"
-            >
-              <span>{{ stage.number }}</span>
-              <strong>{{ stage.label }}</strong>
-            </button>
+          <i></i>
+          <div>
+            <span>POLICY</span>
+            <strong>PASS</strong>
           </div>
-
-          <div class="lens-stage" :class="`lens-stage--${activeStage}`">
-            <div class="lens-stage__grid" aria-hidden="true"></div>
-            <div class="lens-scan" aria-hidden="true"></div>
-
-            <div class="lens-request">
-              <span>INTENT / REQUEST</span>
-              <p>Send the approved proposal to the client.</p>
-              <div class="lens-request__meta">
-                <span>recipient / verified</span>
-                <span>document / approved</span>
-              </div>
-            </div>
-
-            <div class="lens-core" aria-live="polite">
-              <div class="lens-core__rings" aria-hidden="true"><i></i><i></i><i></i></div>
-              <span class="lens-core__index">{{ currentSimulatorStage.number }}</span>
-              <strong>{{ currentSimulatorStage.label }}</strong>
-              <small>{{ currentSimulatorStage.core }}</small>
-            </div>
-
-            <div class="lens-evidence">
-              <div class="lens-evidence__head">
-                <span>LOCAL EVIDENCE</span>
-                <b>{{ currentSimulatorStage.evidenceState }}</b>
-              </div>
-              <div class="evidence-wave" aria-hidden="true">
-                <i v-for="n in 22" :key="n" :style="{ '--bar': ((n * 7) % 13) + 4 }"></i>
-              </div>
-              <div class="lens-evidence__rows">
-                <div><span>Policy</span><strong>{{ currentSimulatorStage.policy }}</strong></div>
-                <div><span>Dispatch</span><strong>{{ currentSimulatorStage.dispatch }}</strong></div>
-                <div><span>Outcome</span><strong>{{ currentSimulatorStage.outcome }}</strong></div>
-              </div>
-            </div>
-
-            <div class="lens-boundary" aria-hidden="true">
-              <span>LOCAL AUTHORITY BOUNDARY</span>
-              <i></i>
-            </div>
+          <i></i>
+          <div>
+            <span>AUTHORITY</span>
+            <strong>LOCAL ONLY</strong>
           </div>
-
-          <div class="lens-bottom">
-            <div>
-              <span>STATE</span>
-              <strong>{{ currentSimulatorStage.status }}</strong>
-            </div>
-            <p>{{ currentSimulatorStage.description }}</p>
-            <button
-              v-if="activeStage !== 'verify'"
-              type="button"
-              class="lens-next"
-              @click="advanceSimulator"
-            >
-              Advance <span>→</span>
-            </button>
-            <button v-else type="button" class="lens-next lens-next--undo" @click="activeStage = 'preview'">
-              Replay <span>↺</span>
-            </button>
+          <i></i>
+          <div>
+            <span>OUTCOME</span>
+            <strong>UNPROVEN</strong>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="workflow" class="commit-corridor motion-section">
-      <div class="flow-shell">
-        <div class="flow-heading reveal motion-layer" data-depth="0.05">
-          <div class="section-code section-code--light">
-            <span>03 / COMMIT FLOW</span>
+    <section id="workflow" class="signal-rail motion-section">
+      <div class="signal-shell">
+        <div class="signal-heading reveal motion-layer" data-depth="0.05">
+          <div class="section-code">
+            <span>03 / SIGNAL RAIL</span>
             <i></i>
-            <span>INTENT → EVIDENCE</span>
+            <span>REQUEST → PROOF</span>
           </div>
-          <div class="flow-heading__grid">
-            <h2>A deliberate path<br />from request to proof.</h2>
-            <p>
-              Every consequential action moves through the same explicit sequence. Each stage makes the next one
-              harder to trigger accidentally and easier to inspect afterward.
-            </p>
-          </div>
+          <h2>One action.<br /><span>Five controlled states.</span></h2>
+          <p>
+            Instead of burying execution inside automation, CIEAV turns consequence into a visible sequence.
+            Every transition has a reason, a state, and evidence behind it.
+          </p>
         </div>
 
-        <div class="flow-list">
+        <div class="rail-layout">
+          <div class="rail-line" aria-hidden="true">
+            <div class="rail-line__active"></div>
+          </div>
+
           <article
             v-for="(step, index) in corridorSteps"
             :key="step.title"
-            class="flow-card reveal"
-            :class="{ 'flow-card--commit': index === 2 }"
+            class="rail-stop reveal"
+            :class="{ 'rail-stop--commit': index === 2 }"
           >
-            <div class="flow-card__index">0{{ index + 1 }}</div>
-            <div class="flow-card__symbol" aria-hidden="true">{{ step.symbol }}</div>
-            <div class="flow-card__copy">
+            <div class="rail-stop__node">
+              <span>0{{ index + 1 }}</span>
+              <i></i>
+            </div>
+            <div class="rail-stop__title">
               <span>{{ step.state }}</span>
               <h3>{{ step.title }}</h3>
-              <p>{{ step.copy }}</p>
             </div>
-            <div class="flow-card__status">
+            <p class="rail-stop__copy">{{ step.copy }}</p>
+            <div class="rail-stop__signal">
               <span>{{ step.signal }}</span>
-              <i></i>
-              <small>{{ step.right }}</small>
+              <b>{{ step.right }}</b>
             </div>
           </article>
         </div>
 
-        <div class="flow-rule reveal">
-          <span>01</span><p>Interpretation is not authority.</p>
-          <span>02</span><p>Dispatch is not success.</p>
-          <span>03</span><p>Undo is earned by evidence.</p>
+        <div class="rail-manifest reveal">
+          <div><span>RULE 01</span><strong>Interpretation is not authority.</strong></div>
+          <div><span>RULE 02</span><strong>Dispatch is not success.</strong></div>
+          <div><span>RULE 03</span><strong>Undo requires an observed inverse.</strong></div>
         </div>
       </div>
     </section>
 
-    <section id="developers" class="install-stage motion-section">
-      <div class="install-grid" aria-hidden="true"></div>
-      <div class="install-glow" aria-hidden="true"></div>
-
-      <div class="install-layout">
-        <div class="install-copy reveal motion-layer" data-depth="0.06">
+    <section id="developers" class="access-bay motion-section">
+      <div class="access-grid" aria-hidden="true"></div>
+      <div class="access-shell">
+        <div class="access-copy reveal motion-layer" data-depth="0.06">
           <div class="section-code section-code--light">
-            <span>04 / INSTALL</span>
+            <span>04 / ACCESS BAY</span>
             <i></i>
             <span>LOCAL RUNTIME</span>
           </div>
-          <p class="install-kicker">Small runtime. Clear boundary.</p>
-          <h2>Put authority<br />on your device.</h2>
+          <span class="access-kicker">DEPLOY AUTHORITY</span>
+          <h2>Install the<br />boundary.</h2>
           <p>
-            CIEAV ships as a lightweight local runtime. Installation verifies the release, enrolls the device,
-            runs a safety probe, and starts the always-on Gateway service—without model-weight downloads.
+            The Gateway runs locally, verifies its release, enrolls the device, and starts the service that stands
+            between intent and consequence.
           </p>
-
-          <div class="install-badges" aria-label="Installation features">
-            <span>Signed release</span>
-            <span>Local policy</span>
-            <span>Always-on gateway</span>
+          <div class="access-meta">
+            <div><span>01</span><strong>Signed release</strong></div>
+            <div><span>02</span><strong>Device enrollment</strong></div>
+            <div><span>03</span><strong>Always-on gateway</strong></div>
           </div>
         </div>
 
-        <div class="install-terminal reveal motion-layer" data-depth="0.1">
-          <div class="install-terminal__head">
-            <div>
-              <span class="terminal-dot"></span>
-              <span>CIEAV / LOCAL</span>
-            </div>
-            <span class="terminal-ready"><i></i> READY</span>
+        <div class="access-terminal reveal motion-layer" data-depth="0.1">
+          <div class="access-terminal__top">
+            <div><i></i><span>CIEAV / ACCESS</span></div>
+            <b>READY</b>
           </div>
 
-          <div class="install-terminal__body">
-            <span class="terminal-label">QUICK START</span>
-            <button class="command install-command" type="button" @click="copyCommand">
+          <div class="access-terminal__screen">
+            <span class="terminal-label">INSTALL COMMAND</span>
+            <button class="access-command" type="button" @click="copyCommand">
               <code>{{ installCommand }}</code>
               <span>{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
             </button>
 
-            <div class="install-steps">
-              <div><span>01</span><p>Verify release signature</p><b>PASS</b></div>
-              <div><span>02</span><p>Enroll this device</p><b>PASS</b></div>
-              <div><span>03</span><p>Start local gateway</p><b>ACTIVE</b></div>
+            <div class="access-log" aria-label="Installation sequence">
+              <div><span>[01]</span><p>verify release signature</p><b>PASS</b></div>
+              <div><span>[02]</span><p>enroll local device</p><b>PASS</b></div>
+              <div><span>[03]</span><p>probe safety boundary</p><b>PASS</b></div>
+              <div><span>[04]</span><p>start gateway service</p><b>ACTIVE</b></div>
             </div>
           </div>
 
           <a
-            class="install-cta magnetic"
+            class="access-terminal__cta magnetic"
             href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
             target="_blank"
             rel="noreferrer"
           >
-            <span>Explore the project on GitHub</span>
+            <span>Open source / GitHub</span>
             <b>↗</b>
           </a>
         </div>
@@ -305,56 +249,12 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import logoMark from './public/logo.png'
 import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
-const activeStage = ref('preview')
 const installCommand = 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh'
-
-const simulatorStages = [
-  {
-    id: 'preview',
-    number: '01',
-    label: 'PREVIEW',
-    core: 'Consequence visible',
-    status: 'AWAITING AUTHORITY',
-    evidenceState: 'READY',
-    policy: 'PASS',
-    dispatch: 'NOT SENT',
-    outcome: 'UNKNOWN',
-    description: 'The action is concrete and inspectable, but no consequence has crossed the local authority boundary.',
-  },
-  {
-    id: 'commit',
-    number: '02',
-    label: 'COMMIT',
-    core: 'Boundary crossed',
-    status: 'DISPATCHED LOCALLY',
-    evidenceState: 'OBSERVING',
-    policy: 'PASS',
-    dispatch: 'SIGNED',
-    outcome: 'UNKNOWN',
-    description: 'CIEAV has authorized and dispatched the action. The request is real, but success is still unproven.',
-  },
-  {
-    id: 'verify',
-    number: '03',
-    label: 'VERIFY',
-    core: 'Consequence proven',
-    status: 'VERIFIED',
-    evidenceState: 'PROVEN',
-    policy: 'PASS',
-    dispatch: 'SIGNED',
-    outcome: 'SUCCESS',
-    description: 'Observed local evidence confirms the intended result. Only now can CIEAV expose a valid inverse for Undo.',
-  },
-]
-
-const currentSimulatorStage = computed(() => (
-  simulatorStages.find((stage) => stage.id === activeStage.value) || simulatorStages[0]
-))
 
 const corridorSteps = [
   {
@@ -364,7 +264,7 @@ const corridorSteps = [
     signal: 'REQUEST RECEIVED',
     left: 'CLOUD MAY INTERPRET',
     right: 'LOCAL AUTHORITY BEGINS',
-    copy: 'A digital intention arrives, but it does not receive execution authority simply because a model understood it. CIEAV routes consequential intent through the local Gateway first.',
+    copy: 'A digital intention arrives, but understanding the request does not grant execution authority. CIEAV receives the proposed action at the local boundary.',
   },
   {
     state: 'BOUNDARY / PREVIEW',
@@ -373,7 +273,7 @@ const corridorSteps = [
     signal: 'CONSEQUENCE VISIBLE',
     left: 'DETERMINISTIC POLICY',
     right: 'USER CAN CANCEL',
-    copy: 'Before consequence, the Gateway applies the safety floor and makes the action legible. The user sees what is about to happen before crossing the commit boundary.',
+    copy: 'The Gateway applies local policy and renders the consequence before anything irreversible happens. The action is legible while cancellation is still possible.',
   },
   {
     state: 'AUTHORITY / COMMIT',
@@ -382,7 +282,7 @@ const corridorSteps = [
     signal: 'BOUNDARY CROSSED',
     left: 'SIGNED ACTION RECEIPT',
     right: 'TRUSTED REPLAY',
-    copy: 'Commit is deliberate. Once authorized, CIEAV performs trusted replay or submit and records the exact action locally. Dispatch is real — but it is still not proof of success.',
+    copy: 'Authorization becomes explicit. CIEAV dispatches the exact approved action and records the commit locally, but does not confuse dispatch with success.',
   },
   {
     state: 'EVIDENCE / OBSERVE',
@@ -391,7 +291,7 @@ const corridorSteps = [
     signal: 'LOCAL EVIDENCE',
     left: 'SUCCESS / FAILURE / UNKNOWN',
     right: 'NO ASSUMED OUTCOME',
-    copy: 'After dispatch, CIEAV observes the local environment for credible evidence. Ambiguous results remain UNKNOWN rather than being promoted into a convenient success state.',
+    copy: 'After dispatch, the Gateway watches the environment for credible evidence. Ambiguity remains UNKNOWN instead of becoming a convenient success state.',
   },
   {
     state: 'OUTCOME / VERIFIED',
@@ -400,14 +300,9 @@ const corridorSteps = [
     signal: 'CONSEQUENCE PROVEN',
     left: 'SUCCESS REQUIRES EVIDENCE',
     right: 'UNDO REQUIRES AN INVERSE',
-    copy: 'Only observed evidence resolves consequence. Undo appears only after verified success and discovery of a concrete inverse. The system exposes what it knows — and what it does not.',
+    copy: 'Only observed evidence resolves the consequence. Undo is exposed only when success is verified and a concrete inverse is actually available.',
   },
 ]
-
-function advanceSimulator() {
-  const current = simulatorStages.findIndex((stage) => stage.id === activeStage.value)
-  activeStage.value = simulatorStages[Math.min(current + 1, simulatorStages.length - 1)].id
-}
 
 function trackPointer(event) {
   const x = event.clientX / window.innerWidth - 0.5
@@ -450,20 +345,17 @@ function bindMagnetic() {
 
 function bindMiddleMotion() {
   const sections = Array.from(document.querySelectorAll('.motion-section'))
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   let rafId = 0
 
   const update = () => {
     rafId = 0
     const viewport = window.innerHeight
-
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect()
       const center = rect.top + rect.height / 2
       const progress = (center - viewport / 2) / Math.max(viewport, rect.height)
       const clamped = Math.max(-1, Math.min(1, progress))
       section.style.setProperty('--section-progress', clamped.toFixed(3))
-
       section.querySelectorAll('.motion-layer').forEach((layer) => {
         const depth = Number(layer.dataset.depth || 0.08)
         layer.style.setProperty('--motion-y', `${clamped * depth * -48}px`)
@@ -478,13 +370,11 @@ function bindMiddleMotion() {
   update()
   window.addEventListener('scroll', requestUpdate, { passive: true })
   window.addEventListener('resize', requestUpdate)
-  reduceMotion.addEventListener?.('change', requestUpdate)
 
   return () => {
     if (rafId) cancelAnimationFrame(rafId)
     window.removeEventListener('scroll', requestUpdate)
     window.removeEventListener('resize', requestUpdate)
-    reduceMotion.removeEventListener?.('change', requestUpdate)
   }
 }
 
