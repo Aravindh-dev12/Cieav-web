@@ -55,178 +55,137 @@
       </div>
     </section>
 
-    <section id="product" class="protocol-split motion-section">
-      <div class="protocol-noise" aria-hidden="true"></div>
-      <div class="protocol-shell">
-        <div class="section-code section-code--light reveal">
-          <span>02 / PROTOCOL SPLIT</span>
-          <i></i>
-          <span>INTELLIGENCE ≠ AUTHORITY</span>
+    <section id="product" class="editorial-authority motion-section">
+      <div class="editorial-shell">
+        <div class="editorial-meta reveal">
+          <span>02 / LOCAL AUTHORITY</span>
+          <span>THE CONSEQUENCE BOUNDARY</span>
         </div>
 
-        <div class="protocol-stage">
-          <div class="protocol-side protocol-side--cloud reveal motion-layer" data-depth="0.05">
-            <span class="protocol-label">CLOUD</span>
-            <h2>Interpret<br />anything.</h2>
-            <p>
-              Models can understand intent, reason over context, and propose what should happen next.
-            </p>
-            <div class="protocol-capabilities">
-              <span>REASONING</span>
-              <span>PLANNING</span>
-              <span>INTERPRETATION</span>
-            </div>
-          </div>
-
-          <div class="protocol-axis" aria-hidden="true">
-            <span>LOCAL AUTHORITY BOUNDARY</span>
-            <div class="axis-line"><i></i></div>
-            <div class="axis-core">
-              <b>C</b>
-              <small>GATEWAY</small>
-            </div>
-            <div class="axis-packet">INTENT</div>
-          </div>
-
-          <div class="protocol-side protocol-side--local reveal motion-layer" data-depth="0.09">
-            <span class="protocol-label">LOCAL</span>
-            <h2>Decide what<br />becomes real.</h2>
-            <p>
-              CIEAV owns the consequence boundary: policy, preview, commit, observation, and verified outcome.
-            </p>
-            <div class="protocol-capabilities protocol-capabilities--local">
-              <span>POLICY</span>
-              <span>COMMIT</span>
-              <span>EVIDENCE</span>
-            </div>
-          </div>
+        <div class="editorial-statement reveal motion-layer" data-depth="0.045">
+          <p class="editorial-overline">The point of no return should never be invisible.</p>
+          <h2>
+            Intelligence can<br />
+            <span>suggest.</span>
+            Authority must<br />
+            <em>decide.</em>
+          </h2>
         </div>
 
-        <div class="protocol-status reveal">
-          <div>
-            <span>REQUEST</span>
-            <strong>Send approved proposal</strong>
-          </div>
+        <div class="editorial-divider" aria-hidden="true">
+          <span>LOCAL</span>
           <i></i>
-          <div>
-            <span>POLICY</span>
-            <strong>PASS</strong>
-          </div>
-          <i></i>
-          <div>
-            <span>AUTHORITY</span>
-            <strong>LOCAL ONLY</strong>
-          </div>
-          <i></i>
-          <div>
-            <span>OUTCOME</span>
-            <strong>UNPROVEN</strong>
+          <span>BOUNDARY</span>
+        </div>
+
+        <div class="editorial-lower reveal">
+          <p class="editorial-lede">
+            CIEAV separates interpretation from consequence. Models can reason about what should happen; the local
+            Gateway decides whether it may happen, shows the consequence before commit, and verifies the result afterward.
+          </p>
+
+          <div class="editorial-principles">
+            <article>
+              <span>01</span>
+              <h3>Nothing hidden.</h3>
+              <p>The action becomes concrete before authority is granted.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Nothing assumed.</h3>
+              <p>Dispatch is recorded, but success waits for evidence.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Nothing irreversible by default.</h3>
+              <p>Undo appears only when a real inverse is known.</p>
+            </article>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="workflow" class="signal-rail motion-section">
-      <div class="signal-shell">
-        <div class="signal-heading reveal motion-layer" data-depth="0.05">
-          <div class="section-code">
-            <span>03 / SIGNAL RAIL</span>
-            <i></i>
-            <span>REQUEST → PROOF</span>
+    <section id="workflow" class="kinetic-flow motion-section">
+      <div class="kinetic-shell">
+        <div class="kinetic-head reveal motion-layer" data-depth="0.04">
+          <div>
+            <span>03 / COMMIT FLOW</span>
+            <span>FIVE STATES / ONE CONSEQUENCE</span>
           </div>
-          <h2>One action.<br /><span>Five controlled states.</span></h2>
+          <h2>From intent<br />to proof.</h2>
           <p>
-            Instead of burying execution inside automation, CIEAV turns consequence into a visible sequence.
-            Every transition has a reason, a state, and evidence behind it.
+            Each state is explicit. Hover or focus a step to bring it forward; the others recede so the sequence reads as one controlled path.
           </p>
         </div>
 
-        <div class="rail-layout">
-          <div class="rail-line" aria-hidden="true">
-            <div class="rail-line__active"></div>
-          </div>
-
+        <div class="kinetic-list">
           <article
             v-for="(step, index) in corridorSteps"
             :key="step.title"
-            class="rail-stop reveal"
-            :class="{ 'rail-stop--commit': index === 2 }"
+            class="kinetic-step reveal"
+            :class="{ 'kinetic-step--commit': index === 2 }"
+            tabindex="0"
           >
-            <div class="rail-stop__node">
-              <span>0{{ index + 1 }}</span>
-              <i></i>
-            </div>
-            <div class="rail-stop__title">
+            <div class="kinetic-step__number">0{{ index + 1 }}</div>
+            <div class="kinetic-step__title">
               <span>{{ step.state }}</span>
               <h3>{{ step.title }}</h3>
             </div>
-            <p class="rail-stop__copy">{{ step.copy }}</p>
-            <div class="rail-stop__signal">
+            <p>{{ step.copy }}</p>
+            <div class="kinetic-step__status">
               <span>{{ step.signal }}</span>
-              <b>{{ step.right }}</b>
+              <strong>{{ step.right }}</strong>
             </div>
+            <div class="kinetic-step__arrow" aria-hidden="true">↘</div>
           </article>
         </div>
 
-        <div class="rail-manifest reveal">
-          <div><span>RULE 01</span><strong>Interpretation is not authority.</strong></div>
-          <div><span>RULE 02</span><strong>Dispatch is not success.</strong></div>
-          <div><span>RULE 03</span><strong>Undo requires an observed inverse.</strong></div>
+        <div class="kinetic-caption reveal">
+          <span>INTERPRETATION ≠ AUTHORITY</span>
+          <span>DISPATCH ≠ SUCCESS</span>
+          <span>UNDO = VERIFIED INVERSE</span>
         </div>
       </div>
     </section>
 
-    <section id="developers" class="access-bay motion-section">
-      <div class="access-grid" aria-hidden="true"></div>
-      <div class="access-shell">
-        <div class="access-copy reveal motion-layer" data-depth="0.06">
-          <div class="section-code section-code--light">
-            <span>04 / ACCESS BAY</span>
-            <i></i>
+    <section id="developers" class="minimal-install motion-section">
+      <div class="minimal-install__ghost" aria-hidden="true">LOCAL</div>
+      <div class="minimal-shell">
+        <div class="minimal-copy reveal motion-layer" data-depth="0.05">
+          <div class="minimal-meta">
+            <span>04 / INSTALL</span>
             <span>LOCAL RUNTIME</span>
           </div>
-          <span class="access-kicker">DEPLOY AUTHORITY</span>
-          <h2>Install the<br />boundary.</h2>
+          <h2>Install authority<br />where consequence lives.</h2>
           <p>
-            The Gateway runs locally, verifies its release, enrolls the device, and starts the service that stands
-            between intent and consequence.
+            A small local runtime verifies its release, enrolls the device, starts the Gateway, and keeps the execution boundary close to the user.
           </p>
-          <div class="access-meta">
-            <div><span>01</span><strong>Signed release</strong></div>
-            <div><span>02</span><strong>Device enrollment</strong></div>
-            <div><span>03</span><strong>Always-on gateway</strong></div>
-          </div>
         </div>
 
-        <div class="access-terminal reveal motion-layer" data-depth="0.1">
-          <div class="access-terminal__top">
-            <div><i></i><span>CIEAV / ACCESS</span></div>
-            <b>READY</b>
+        <div class="minimal-command reveal motion-layer" data-depth="0.08">
+          <div class="minimal-command__label">
+            <span>QUICK START</span>
+            <span>READY</span>
           </div>
 
-          <div class="access-terminal__screen">
-            <span class="terminal-label">INSTALL COMMAND</span>
-            <button class="access-command" type="button" @click="copyCommand">
-              <code>{{ installCommand }}</code>
-              <span>{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
-            </button>
+          <button type="button" class="minimal-command__copy" @click="copyCommand">
+            <code>{{ installCommand }}</code>
+            <span>{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
+          </button>
 
-            <div class="access-log" aria-label="Installation sequence">
-              <div><span>[01]</span><p>verify release signature</p><b>PASS</b></div>
-              <div><span>[02]</span><p>enroll local device</p><b>PASS</b></div>
-              <div><span>[03]</span><p>probe safety boundary</p><b>PASS</b></div>
-              <div><span>[04]</span><p>start gateway service</p><b>ACTIVE</b></div>
-            </div>
+          <div class="minimal-steps">
+            <div><span>01</span><p>Verify release</p><b>PASS</b></div>
+            <div><span>02</span><p>Enroll device</p><b>PASS</b></div>
+            <div><span>03</span><p>Start Gateway</p><b>ACTIVE</b></div>
           </div>
 
           <a
-            class="access-terminal__cta magnetic"
+            class="minimal-github magnetic"
             href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
             target="_blank"
             rel="noreferrer"
           >
-            <span>Open source / GitHub</span>
-            <b>↗</b>
+            View CIEAV on GitHub <span>↗</span>
           </a>
         </div>
       </div>
@@ -260,47 +219,37 @@ const corridorSteps = [
   {
     state: 'INPUT / INTENT',
     title: 'INTENT',
-    symbol: 'I',
     signal: 'REQUEST RECEIVED',
-    left: 'CLOUD MAY INTERPRET',
     right: 'LOCAL AUTHORITY BEGINS',
-    copy: 'A digital intention arrives, but understanding the request does not grant execution authority. CIEAV receives the proposed action at the local boundary.',
+    copy: 'A digital intention arrives. Understanding it is useful, but understanding alone never grants execution authority.',
   },
   {
     state: 'BOUNDARY / PREVIEW',
     title: 'PREVIEW',
-    symbol: 'P',
     signal: 'CONSEQUENCE VISIBLE',
-    left: 'DETERMINISTIC POLICY',
     right: 'USER CAN CANCEL',
-    copy: 'The Gateway applies local policy and renders the consequence before anything irreversible happens. The action is legible while cancellation is still possible.',
+    copy: 'Local policy is applied and the exact consequence is shown while the action is still reversible.',
   },
   {
     state: 'AUTHORITY / COMMIT',
     title: 'COMMIT',
-    symbol: 'C',
     signal: 'BOUNDARY CROSSED',
-    left: 'SIGNED ACTION RECEIPT',
     right: 'TRUSTED REPLAY',
-    copy: 'Authorization becomes explicit. CIEAV dispatches the exact approved action and records the commit locally, but does not confuse dispatch with success.',
+    copy: 'Authorization becomes explicit. The approved action is dispatched and recorded locally as a real commit.',
   },
   {
     state: 'EVIDENCE / OBSERVE',
     title: 'OBSERVE',
-    symbol: 'O',
     signal: 'LOCAL EVIDENCE',
-    left: 'SUCCESS / FAILURE / UNKNOWN',
     right: 'NO ASSUMED OUTCOME',
-    copy: 'After dispatch, the Gateway watches the environment for credible evidence. Ambiguity remains UNKNOWN instead of becoming a convenient success state.',
+    copy: 'CIEAV watches for credible local evidence instead of turning an ambiguous result into convenient success.',
   },
   {
     state: 'OUTCOME / VERIFIED',
     title: 'VERIFIED',
-    symbol: 'V',
     signal: 'CONSEQUENCE PROVEN',
-    left: 'SUCCESS REQUIRES EVIDENCE',
     right: 'UNDO REQUIRES AN INVERSE',
-    copy: 'Only observed evidence resolves the consequence. Undo is exposed only when success is verified and a concrete inverse is actually available.',
+    copy: 'Only evidence resolves the outcome. A reversal is offered only after success and a concrete inverse are known.',
   },
 ]
 
