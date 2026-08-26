@@ -56,108 +56,181 @@
     </section>
 
     <section id="product" class="authority-scene motion-section">
-      <div class="authority-glow" aria-hidden="true"></div>
-      <div class="authority-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="authority-shell">
+        <div class="authority-copy reveal motion-layer" data-depth="0.06">
+          <div class="section-code">
+            <span>02 / LOCAL AUTHORITY</span>
+            <i></i>
+            <span>CONTROL PLANE</span>
+          </div>
 
-      <div class="authority-inner reveal motion-layer" data-depth="0.08">
-        <div class="authority-meta">
-          <span>02 / AUTHORITY</span>
-          <span>LOCAL CONTROL PLANE</span>
-        </div>
-
-        <div class="authority-headline">
-          <span class="authority-headline__ghost">CLOUD INTERPRETS.</span>
-          <span>LOCAL DECIDES.</span>
-        </div>
-
-        <div class="authority-lower">
-          <p>
-            CIEAV keeps consequential execution where the user can control it. The Gateway applies local policy,
-            reduces data before cloud interpretation, commits only after an explicit boundary, and records what
-            actually happened on-device.
+          <p class="authority-kicker">Execution should have a boundary.</p>
+          <h2>
+            Cloud interprets.<br />
+            <span>Local decides.</span>
+          </h2>
+          <p class="authority-lede">
+            CIEAV keeps consequential execution on the device. The Gateway applies local policy, reveals the
+            consequence before commit, records what was actually sent, and refuses to call an outcome successful
+            until evidence exists.
           </p>
-          <a class="authority-link magnetic" href="#workflow">
-            Enter the commit corridor <span>↘</span>
-          </a>
-        </div>
-      </div>
 
-      <div class="authority-ticker" aria-hidden="true">
-        <div>
-          <span>INTENT</span><i>—</i><span>POLICY</span><i>—</i><span>PREVIEW</span><i>—</i><span>COMMIT</span><i>—</i><span>EVIDENCE</span><i>—</i><span>VERIFY</span><i>—</i>
-          <span>INTENT</span><i>—</i><span>POLICY</span><i>—</i><span>PREVIEW</span><i>—</i><span>COMMIT</span><i>—</i><span>EVIDENCE</span><i>—</i><span>VERIFY</span><i>—</i>
+          <div class="authority-principles">
+            <div>
+              <span>01</span>
+              <strong>Policy first</strong>
+              <p>Local rules decide whether an action may cross the boundary.</p>
+            </div>
+            <div>
+              <span>02</span>
+              <strong>Preview before commit</strong>
+              <p>The exact consequence is visible while there is still time to cancel.</p>
+            </div>
+            <div>
+              <span>03</span>
+              <strong>Evidence after action</strong>
+              <p>Observed state, not model confidence, determines the result.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="authority-console reveal motion-layer" data-depth="0.1">
+          <div class="authority-console__head">
+            <div class="console-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <span>CIEAV / GATEWAY</span>
+            <span class="console-live"><i></i> LOCAL</span>
+          </div>
+
+          <div class="intent-card">
+            <span>INCOMING INTENT</span>
+            <p>Send the approved proposal to the client.</p>
+            <div><small>CLOUD / INTERPRETED</small><b>→</b><small>LOCAL / AUTHORITY</small></div>
+          </div>
+
+          <div class="authority-stack">
+            <div class="authority-row is-done">
+              <span class="authority-row__index">01</span>
+              <div><strong>Policy checked</strong><small>Recipient + document approved</small></div>
+              <b>PASS</b>
+            </div>
+            <div class="authority-row is-done">
+              <span class="authority-row__index">02</span>
+              <div><strong>Preview generated</strong><small>Consequence visible before submit</small></div>
+              <b>READY</b>
+            </div>
+            <div class="authority-row is-active">
+              <span class="authority-row__index">03</span>
+              <div><strong>Commit boundary</strong><small>User authorization required</small></div>
+              <b>WAIT</b>
+            </div>
+            <div class="authority-row">
+              <span class="authority-row__index">04</span>
+              <div><strong>Outcome evidence</strong><small>Success / failure / unknown</small></div>
+              <b>—</b>
+            </div>
+          </div>
+
+          <div class="authority-console__foot">
+            <span>AUTHORITY STAYS LOCAL</span>
+            <span>NOTHING IS ASSUMED</span>
+          </div>
         </div>
       </div>
     </section>
 
     <section id="workflow" class="commit-corridor motion-section">
-      <div class="commit-pin">
-        <div class="corridor-chrome" aria-hidden="true">
-          <span>03 / COMMIT CORRIDOR</span>
-          <div class="corridor-progress"><i></i></div>
-          <span>SCROLL TO EXECUTE</span>
+      <div class="flow-shell">
+        <div class="flow-heading reveal motion-layer" data-depth="0.05">
+          <div class="section-code section-code--light">
+            <span>03 / COMMIT FLOW</span>
+            <i></i>
+            <span>INTENT → EVIDENCE</span>
+          </div>
+          <div class="flow-heading__grid">
+            <h2>A deliberate path<br />from request to proof.</h2>
+            <p>
+              Every consequential action moves through the same explicit sequence. Each stage makes the next one
+              harder to trigger accidentally and easier to inspect afterward.
+            </p>
+          </div>
         </div>
 
-        <div class="commit-track">
+        <div class="flow-list">
           <article
             v-for="(step, index) in corridorSteps"
             :key="step.title"
-            class="corridor-panel"
-            :class="`corridor-panel--${index + 1}`"
+            class="flow-card reveal"
+            :class="{ 'flow-card--commit': index === 2 }"
           >
-            <div class="panel-grid" aria-hidden="true"></div>
-
-            <div class="panel-number">0{{ index + 1 }}</div>
-
-            <div class="panel-copy">
-              <p class="panel-state">{{ step.state }}</p>
-              <h2>{{ step.title }}</h2>
-              <p class="panel-description">{{ step.copy }}</p>
+            <div class="flow-card__index">0{{ index + 1 }}</div>
+            <div class="flow-card__symbol" aria-hidden="true">{{ step.symbol }}</div>
+            <div class="flow-card__copy">
+              <span>{{ step.state }}</span>
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.copy }}</p>
             </div>
-
-            <div class="panel-signal" aria-hidden="true">
-              <div class="panel-signal__ring"><span>{{ step.symbol }}</span></div>
-              <p>{{ step.signal }}</p>
-            </div>
-
-            <div class="panel-foot" aria-hidden="true">
-              <span>{{ step.left }}</span>
-              <span>{{ step.right }}</span>
+            <div class="flow-card__status">
+              <span>{{ step.signal }}</span>
+              <i></i>
+              <small>{{ step.right }}</small>
             </div>
           </article>
+        </div>
+
+        <div class="flow-rule reveal">
+          <span>01</span><p>Interpretation is not authority.</p>
+          <span>02</span><p>Dispatch is not success.</p>
+          <span>03</span><p>Undo is earned by evidence.</p>
         </div>
       </div>
     </section>
 
     <section id="developers" class="install-stage motion-section">
-      <div class="install-backdrop" aria-hidden="true">LOCAL</div>
+      <div class="install-grid" aria-hidden="true"></div>
       <div class="install-glow" aria-hidden="true"></div>
 
       <div class="install-layout">
-        <div class="install-copy reveal motion-layer" data-depth="0.08">
-          <p class="kicker kicker--light"><span></span> Consumer installation</p>
-          <h2>Run authority<br />where it matters.</h2>
+        <div class="install-copy reveal motion-layer" data-depth="0.06">
+          <div class="section-code section-code--light">
+            <span>04 / INSTALL</span>
+            <i></i>
+            <span>LOCAL RUNTIME</span>
+          </div>
+          <p class="install-kicker">Small runtime. Clear boundary.</p>
+          <h2>Put authority<br />on your device.</h2>
           <p>
-            CIEAV ships as a small local runtime. No Python, npm, or model-weight downloads. Installation verifies
-            the release, enrolls the device, runs a safety probe, and starts the always-on Gateway service.
+            CIEAV ships as a lightweight local runtime. Installation verifies the release, enrolls the device,
+            runs a safety probe, and starts the always-on Gateway service—without model-weight downloads.
           </p>
+
+          <div class="install-badges" aria-label="Installation features">
+            <span>Signed release</span>
+            <span>Local policy</span>
+            <span>Always-on gateway</span>
+          </div>
         </div>
 
-        <div class="install-terminal reveal motion-layer" data-depth="0.13">
+        <div class="install-terminal reveal motion-layer" data-depth="0.1">
           <div class="install-terminal__head">
-            <span>CIEAV / LOCAL</span>
-            <span>READY</span>
+            <div>
+              <span class="terminal-dot"></span>
+              <span>CIEAV / LOCAL</span>
+            </div>
+            <span class="terminal-ready"><i></i> READY</span>
           </div>
 
-          <button class="command install-command" type="button" @click="copyCommand">
-            <code>{{ installCommand }}</code>
-            <span>{{ copied ? 'COPIED' : 'COPY' }}</span>
-          </button>
+          <div class="install-terminal__body">
+            <span class="terminal-label">QUICK START</span>
+            <button class="command install-command" type="button" @click="copyCommand">
+              <code>{{ installCommand }}</code>
+              <span>{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
+            </button>
 
-          <div class="install-steps" aria-hidden="true">
-            <div><span>01</span><p>VERIFY RELEASE</p><b>PASS</b></div>
-            <div><span>02</span><p>ENROLL DEVICE</p><b>PASS</b></div>
-            <div><span>03</span><p>START GATEWAY</p><b>ACTIVE</b></div>
+            <div class="install-steps">
+              <div><span>01</span><p>Verify release signature</p><b>PASS</b></div>
+              <div><span>02</span><p>Enroll this device</p><b>PASS</b></div>
+              <div><span>03</span><p>Start local gateway</p><b>ACTIVE</b></div>
+            </div>
           </div>
 
           <a
@@ -166,7 +239,8 @@
             target="_blank"
             rel="noreferrer"
           >
-            View CIEAV on GitHub <span>↗</span>
+            <span>Explore the project on GitHub</span>
+            <b>↗</b>
           </a>
         </div>
       </div>
@@ -285,9 +359,6 @@ function bindMagnetic() {
 
 function bindMiddleMotion() {
   const sections = Array.from(document.querySelectorAll('.motion-section'))
-  const corridor = document.querySelector('.commit-corridor')
-  const track = document.querySelector('.commit-track')
-  const panels = Array.from(document.querySelectorAll('.corridor-panel'))
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   let rafId = 0
 
@@ -306,31 +377,6 @@ function bindMiddleMotion() {
         const depth = Number(layer.dataset.depth || 0.08)
         layer.style.setProperty('--motion-y', `${clamped * depth * -48}px`)
       })
-    })
-
-    if (!corridor || !track) return
-
-    const horizontal = window.innerWidth > 820 && !reduceMotion.matches
-    if (!horizontal) {
-      track.style.transform = ''
-      corridor.style.setProperty('--corridor-progress', '0')
-      panels.forEach((panel) => panel.style.setProperty('--panel-focus', '1'))
-      return
-    }
-
-    const rect = corridor.getBoundingClientRect()
-    const scrollable = Math.max(1, corridor.offsetHeight - viewport)
-    const progress = Math.max(0, Math.min(1, -rect.top / scrollable))
-    const distance = Math.max(0, track.scrollWidth - window.innerWidth)
-    const position = progress * distance
-
-    track.style.transform = `translate3d(${-position}px, 0, 0)`
-    corridor.style.setProperty('--corridor-progress', progress.toFixed(4))
-
-    const panelProgress = progress * Math.max(1, panels.length - 1)
-    panels.forEach((panel, index) => {
-      const focus = Math.max(0, 1 - Math.abs(index - panelProgress) * 0.72)
-      panel.style.setProperty('--panel-focus', focus.toFixed(3))
     })
   }
 
