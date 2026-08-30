@@ -2,6 +2,7 @@ import { WorldRuntime } from './WorldRuntime.js'
 import { applyPhotorealWorld, disposePhotorealResources } from './three/PhotorealAssets.js'
 import { attachCharacterAsset, loadCharacterTemplate } from './three/CharacterAssetController.js'
 import { addEnvironmentDetailLayer } from './three/EnvironmentDetailLayer.js'
+import { attachHighDetailArchitecture, removeHighDetailArchitecture } from './three/BuildingAssetFactory.js'
 
 export class PhotorealRuntime extends WorldRuntime {
   constructor(host, callbacks = {}) {
@@ -23,6 +24,7 @@ export class PhotorealRuntime extends WorldRuntime {
     const [template] = await Promise.all([
       loadCharacterTemplate().catch(() => null),
       applyPhotorealWorld(this).catch(() => null),
+      attachHighDetailArchitecture(this).catch(() => null),
     ])
 
     if (template) {
@@ -77,6 +79,8 @@ export class PhotorealRuntime extends WorldRuntime {
   destroy() {
     this.realHumanControllers.forEach((controller) => controller?.dispose?.())
     this.realHumanControllers.length = 0
+
+    removeHighDetailArchitecture(this)
 
     if (this.environmentDetailLayer?.parent) {
       this.environmentDetailLayer.parent.remove(this.environmentDetailLayer)
