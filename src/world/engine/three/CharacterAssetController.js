@@ -2,38 +2,37 @@ import * as THREE from 'three/webgpu'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
-// Public, browser-friendly character sources. Keep multiple fallbacks because
-// external CDNs can fail independently of the application.
+// Civilian-only browser-friendly character sources.
+// Do not add combat / tactical sample models here: this world should feel like
+// a normal public/office environment, not a game combat scene.
 const CHARACTER_SOURCES = [
   {
-    id: 'soldier',
-    url: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb',
-    rotationY: Math.PI / 2,
-    height: 2.78,
-  },
-  {
-    id: 'michelle',
+    id: 'michelle-civilian',
     url: 'https://three.ws/avatars/michelle.glb',
     rotationY: Math.PI / 2,
-    height: 2.72,
+    height: 1.72,
   },
   {
-    id: 'quaternius-human',
+    id: 'civilian-fallback',
     url: 'https://raw.githubusercontent.com/UMRAM-Bilkent/supine-human-model/main/assets/human.glb',
     rotationY: Math.PI / 2,
-    height: 2.72,
+    height: 1.74,
   },
 ]
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
 
 function normalizeModel(model, source) {
-  model.rotation.y = source.rotationY ?? Math.PI / 2
+  // Always normalize from the asset's original transform. This prevents
+  // repeated clone-normalization from changing a person's height.
+  model.position.set(0, 0, 0)
+  model.scale.set(1, 1, 1)
+  model.rotation.set(0, source.rotationY ?? Math.PI / 2, 0)
   model.updateMatrixWorld(true)
 
   let box = new THREE.Box3().setFromObject(model)
   const size = box.getSize(new THREE.Vector3())
-  const scale = (source.height ?? 2.72) / Math.max(size.y, 0.001)
+  const scale = (source.height ?? 1.74) / Math.max(size.y, 0.001)
   model.scale.setScalar(scale)
   model.updateMatrixWorld(true)
 
@@ -49,9 +48,9 @@ function normalizeModel(model, source) {
     const materials = Array.isArray(object.material) ? object.material : [object.material]
     materials.forEach((material) => {
       if (!material) return
-      if ('roughness' in material) material.roughness = clamp(material.roughness ?? 0.62, 0.32, 0.78)
-      if ('metalness' in material) material.metalness = clamp(material.metalness ?? 0, 0, 0.18)
-      material.envMapIntensity = 1.18
+      if ('roughness' in material) material.roughness = clamp(material.roughness ?? 0.62, 0.38, 0.82)
+      if ('metalness' in material) material.metalness = clamp(material.metalness ?? 0, 0, 0.12)
+      material.envMapIntensity = 1.08
       material.needsUpdate = true
     })
   })
@@ -64,19 +63,26 @@ function findClip(clips, patterns) {
 function varyMaterial(model, variant = 0) {
   if (!variant) return
   const seen = new Map()
+
   model.traverse((object) => {
     if (!object.isMesh && !object.isSkinnedMesh) return
     const list = Array.isArray(object.material) ? object.material : [object.material]
     const next = list.map((material) => {
       if (!material) return material
       if (seen.has(material)) return seen.get(material)
+
       const clone = material.clone()
       if (clone.color?.isColor) {
         const hsl = {}
         clone.color.getHSL(hsl)
-        const hueShift = ((variant * 0.083) % 0.18) - 0.09
-        const lightShift = ((variant % 3) - 1) * 0.035
-        clone.color.setHSL((hsl.h + hueShift + 1) % 1, clamp(hsl.s * 0.94, 0, 1), clamp(hsl.l + lightShift, 0.08, 0.92))
+        // Muted civilian clothing palette variation rather than bright game colors.
+        const hueShift = ((variant * 0.057) % 0.14) - 0.07
+        const lightShift = ((variant % 4) - 1.5) * 0.022
+        clone.color.setHSL(
+          (hsl.h + hueShift + 1) % 1,
+          clamp(hsl.s * 0.72, 0, 0.62),
+          clamp(hsl.l + lightShift, 0.1, 0.88),
+        )
       }
       clone.needsUpdate = true
       seen.set(material, clone)
@@ -137,7 +143,6 @@ export class CharacterAssetController {
     this.active = null
     this.rig = manualRig(model)
     this.bind = snapshotRig(this.rig)
-    this.lastState = 'idle'
 
     if (this.mixer && this.idle) this.play(this.idle, 0)
   }
@@ -146,6 +151,7 @@ export class CharacterAssetController {
     if (!this.mixer || !clip) return
     const action = this.mixer.clipAction(clip)
     if (action === this.active) return
+
     action.enabled = true
     action.reset().setEffectiveWeight(1).play()
     if (this.active) this.active.crossFadeTo(action, fade, false)
@@ -155,33 +161,36 @@ export class CharacterAssetController {
   update(dt, speed = 0, running = false) {
     const abs = Math.abs(speed)
     const state = abs < 0.06 ? 'idle' : running ? 'run' : 'walk'
-    this.lastState = state
 
     if (this.mixer && (this.walk || this.idle)) {
-      const clip = state === 'idle' ? this.idle || this.walk : state === 'run' ? this.run || this.walk : this.walk || this.idle
+      const clip = state === 'idle'
+        ? this.idle || this.walk
+        : state === 'run'
+          ? this.run || this.walk
+          : this.walk || this.idle
       this.play(clip)
       this.mixer.timeScale = state === 'idle' ? 0.9 : state === 'run' ? 1.12 : clamp(0.72 + abs * 0.11, 0.74, 1.08)
       this.mixer.update(dt)
       return
     }
 
-    // Generic Mixamo-style fallback when the asset has a rig but no locomotion clips.
-    this.phase += dt * (running ? 7.6 : 5.3) * clamp(0.42 + abs / 3.1, 0.42, 1.35)
+    // Generic civilian walk fallback for rigged assets without locomotion clips.
+    this.phase += dt * (running ? 7.2 : 5.0) * clamp(0.42 + abs / 3.1, 0.42, 1.3)
     const swing = abs > 0.06 ? Math.sin(this.phase) : 0
-    const stride = running ? 0.72 : 0.48
+    const stride = running ? 0.64 : 0.42
     const kneeL = Math.max(0, -swing)
     const kneeR = Math.max(0, swing)
 
     easeBone(this.rig.leftUpLeg, this.bind.leftUpLeg, swing * stride)
     easeBone(this.rig.rightUpLeg, this.bind.rightUpLeg, -swing * stride)
-    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.95 : 0.6))
-    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.95 : 0.6))
-    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.6 : 0.43))
-    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.6 : 0.43))
-    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.18 - kneeR * 0.34)
-    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.18 - kneeL * 0.34)
-    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.06 ? -swing * 0.025 : 0)
-    easeBone(this.rig.head, this.bind.head, 0, abs > 0.06 ? swing * 0.022 : Math.sin(this.phase * 0.2) * 0.025, 0)
+    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.82 : 0.52))
+    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.82 : 0.52))
+    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.5 : 0.34))
+    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.5 : 0.34))
+    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.12 - kneeR * 0.22)
+    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.12 - kneeL * 0.22)
+    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.06 ? -swing * 0.018 : 0)
+    easeBone(this.rig.head, this.bind.head, 0, abs > 0.06 ? swing * 0.015 : Math.sin(this.phase * 0.2) * 0.018, 0)
   }
 
   dispose() {
@@ -196,14 +205,14 @@ export async function loadCharacterTemplate() {
   for (const source of CHARACTER_SOURCES) {
     try {
       const gltf = await loader.loadAsync(source.url)
-      normalizeModel(gltf.scene, source)
+      // Keep the template untouched. Each clone is normalized exactly once.
       return { source, scene: gltf.scene, animations: gltf.animations || [] }
     } catch (error) {
       lastError = error
     }
   }
 
-  throw lastError || new Error('No production character asset could be loaded.')
+  throw lastError || new Error('No civilian production character asset could be loaded.')
 }
 
 export function attachCharacterAsset(root, template, { phase = 0, variant = 0 } = {}) {
@@ -213,11 +222,13 @@ export function attachCharacterAsset(root, template, { phase = 0, variant = 0 } 
 
   const proceduralRig = root.userData?.rig?.rig
   if (proceduralRig) proceduralRig.visible = false
-  model.position.set(0, 0, 0)
+
+  model.position.z = 0
   root.add(model)
 
   const controller = new CharacterAssetController(root, model, template.animations, { phase })
   root.userData.realHuman = controller
   root.userData.assetModel = model
+  root.userData.assetSource = template.source.id
   return controller
 }
