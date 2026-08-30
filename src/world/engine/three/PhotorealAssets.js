@@ -1,13 +1,10 @@
 import * as THREE from 'three/webgpu'
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 
 const PH = 'https://dl.polyhaven.org/file/ph-assets'
 
 const ASSETS = {
-  // HDRI is used for lighting/reflections only. It is intentionally NOT shown
-  // as a photographic background because a sharp real photo behind realtime
-  // geometry breaks scale, perspective and depth cues.
-  hdri: `${PH}/HDRIs/hdr/1k/urban_street_01_1k.hdr`,
+  // Surface PBR maps only. No HDR panorama or photographic backplate is loaded.
+  // The world background must remain 100% realtime 3D.
   asphalt: {
     map: `${PH}/Textures/jpg/1k/asphalt_01/asphalt_01_diff_1k.jpg`,
     normalMap: `${PH}/Textures/jpg/1k/asphalt_01/asphalt_01_nor_gl_1k.jpg`,
@@ -68,11 +65,51 @@ function improveGlass(material) {
   material.thickness = Math.max(material.thickness || 0, 0.08)
   material.clearcoat = 0.55
   material.clearcoatRoughness = 0.14
-  material.envMapIntensity = 1.25
+  material.envMapIntensity = 0.35
   material.needsUpdate = true
 }
 
+function removeLegacyPhotoBackdrops(runtime) {
+  const removals = []
+
+  runtime.outdoor?.group?.traverse((object) => {
+    if (!object.isMesh || !object.geometry || !object.material) return
+
+    const materials = Array.isArray(object.material) ? object.material : [object.material]
+    const hasPhotoMap = materials.some((material) => Boolean(material?.map))
+    const hasBackSide = materials.some((material) => material?.side === THREE.BackSide)
+
+    // Previous versions used a huge mapped BackSide sphere as a street photo.
+    // Remove any such backdrop even if a cached/HMR session kept the object alive.
+    const sphere = object.geometry.boundingSphere || (() => {
+      object.geometry.computeBoundingSphere?.()
+      return object.geometry.boundingSphere
+    })()
+    const isHuge = (sphere?.radius || 0) > 25
+
+    if (hasPhotoMap && hasBackSide && isHuge) removals.push(object)
+  })
+
+  removals.forEach((object) => {
+    object.parent?.remove(object)
+    object.geometry?.dispose?.()
+    const list = Array.isArray(object.material) ? object.material : [object.material]
+    list.forEach((material) => {
+      material?.map?.dispose?.()
+      material?.dispose?.()
+    })
+  })
+}
+
 export async function applyPhotorealWorld(runtime) {
+  // Guarantee that no photographic environment can be displayed.
+  removeLegacyPhotoBackdrops(runtime)
+  runtime.scene.environment = null
+  runtime.scene.background = new THREE.Color(0xc7d2ca)
+  if ('backgroundNode' in runtime.scene) runtime.scene.backgroundNode = null
+  runtime.scene.fog.color.set(0xc7d2ca)
+  runtime.renderer.toneMappingExposure = 1.02
+
   const loader = new THREE.TextureLoader()
   const [asphalt, concrete, cladding] = await Promise.all([
     loadSet(loader, ASSETS.asphalt, [5, 3]).catch(() => null),
@@ -113,26 +150,11 @@ export async function applyPhotorealWorld(runtime) {
     })
   })
 
-  try {
-    const hdri = await new RGBELoader().loadAsync(ASSETS.hdri)
-    hdri.mapping = THREE.EquirectangularReflectionMapping
-    runtime.scene.environment = hdri
-    runtime.renderer.toneMappingExposure = 0.92
-    runtime.photorealResources = runtime.photorealResources || []
-    runtime.photorealResources.push(hdri)
-  } catch {
-    // Authored realtime lights remain active if external HDR lighting is unavailable.
-  }
-
-  // Keep a coherent realtime background. Distant 3D architecture and fog now
-  // provide depth instead of a mismatched photographic street panorama.
-  runtime.scene.background = new THREE.Color(0xbfc9c1)
-  runtime.scene.fog.color.set(0xbfc9c1)
-
   return { asphalt, concrete, cladding }
 }
 
 export function disposePhotorealResources(runtime) {
   for (const resource of runtime.photorealResources || []) resource?.dispose?.()
   runtime.photorealResources = []
+  if (runtime?.scene) runtime.scene.environment = null
 }
