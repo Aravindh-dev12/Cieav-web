@@ -133,7 +133,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { WorldRuntime } from './engine/WorldRuntime.js'
+import { PhotorealRuntime } from './engine/PhotorealRuntime.js'
 import { consequenceScenario, worldCopy } from './cieav/journeyDefinition.js'
 
 const emit = defineEmits(['state-change'])
@@ -179,7 +179,7 @@ function stopMove(direction) {
 
 onMounted(async () => {
   try {
-    runtime = new WorldRuntime(host.value, { onState: applyState })
+    runtime = new PhotorealRuntime(host.value, { onState: applyState })
     await runtime.init()
     host.value?.focus({ preventScroll: true })
   } catch (reason) {
