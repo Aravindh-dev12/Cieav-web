@@ -5,6 +5,7 @@ import { createInteriorWorld, createOutdoorWorld, terrainHeightAt } from './thre
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
 const damp = (from, to, lambda, dt) => THREE.MathUtils.lerp(from, to, 1 - Math.exp(-lambda * dt))
+const distance2D = (ax, az, bx, bz) => Math.hypot(ax - bx, az - bz)
 
 export class WorldRuntime {
   constructor(host, callbacks = {}) {
@@ -19,6 +20,7 @@ export class WorldRuntime {
     this.mode = 'outside'
     this.keys = new Set()
     this.velocity = 0
+    this.strafeVelocity = 0
     this.direction = 1
     this.inspectionOpen = false
     this.rendererName = 'THREE / INITIALIZING'
@@ -35,8 +37,8 @@ export class WorldRuntime {
     this.scene.background = new THREE.Color(0xcdd8cf)
     this.scene.fog = new THREE.FogExp2(0xcdd8cf, 0.013)
 
-    this.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 180)
-    this.camera.position.set(6, 4.2, 13.5)
+    this.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 180)
+    this.camera.position.set(-1.6, 4.1, 10.4)
 
     this.renderer = new THREE.WebGPURenderer({
       antialias: true,
@@ -103,7 +105,8 @@ export class WorldRuntime {
   bindInput() {
     this.onKeyDown = (event) => {
       const key = event.key.toLowerCase()
-      if (['arrowleft', 'arrowright', 'a', 'd', 'e', 'escape', 'shift'].includes(key)) event.preventDefault()
+      const movementKeys = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd', 'shift']
+      if ([...movementKeys, 'e', 'escape'].includes(key)) event.preventDefault()
       if (key === 'e') {
         this.interact()
         return
@@ -112,7 +115,7 @@ export class WorldRuntime {
         this.closeInspection()
         return
       }
-      if (['arrowleft', 'arrowright', 'a', 'd', 'shift'].includes(key)) this.keys.add(key)
+      if (movementKeys.includes(key)) this.keys.add(key)
     }
     this.onKeyUp = (event) => this.keys.delete(event.key.toLowerCase())
     window.addEventListener('keydown', this.onKeyDown)
@@ -137,20 +140,22 @@ export class WorldRuntime {
       let object = hit.object
       while (object && !object.userData.interactive) object = object.parent
       const kind = object?.userData?.interactive || hit.object.userData.interactive
-      if (kind === 'door' && Math.abs(this.character.position.x - this.outdoor.doorX) < 3.2) this.enterBuilding()
-      if (kind === 'console' && Math.abs(this.character.position.x - this.interior.terminalX) < 2.3) this.openInspection()
-      if (kind === 'exit' && Math.abs(this.character.position.x - this.interior.exitX) < 2.2) this.exitBuilding()
+      if (kind === 'door' && this.outdoorDoorDistance() < 3.2) this.enterBuilding()
+      if (kind === 'console' && this.interiorTerminalDistance() < 2.3) this.openInspection()
+      if (kind === 'exit' && this.interiorExitDistance() < 2.2) this.exitBuilding()
     }
     this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown)
   }
 
-  startVirtualMove(direction, running = false) {
-    this.keys.add(direction < 0 ? 'arrowleft' : 'arrowright')
+  startVirtualMove(key, running = false) {
+    const normalized = typeof key === 'number' ? (key < 0 ? 'a' : 'd') : String(key).toLowerCase()
+    this.keys.add(normalized)
     if (running) this.keys.add('shift')
   }
 
-  stopVirtualMove(direction) {
-    this.keys.delete(direction < 0 ? 'arrowleft' : 'arrowright')
+  stopVirtualMove(key) {
+    const normalized = typeof key === 'number' ? (key < 0 ? 'a' : 'd') : String(key).toLowerCase()
+    this.keys.delete(normalized)
     this.keys.delete('shift')
   }
 
@@ -168,28 +173,49 @@ export class WorldRuntime {
   }
 
   updateMovement(dt) {
+    const forward = this.keys.has('arrowup') || this.keys.has('w')
+    const backward = this.keys.has('arrowdown') || this.keys.has('s')
     const left = this.keys.has('arrowleft') || this.keys.has('a')
     const right = this.keys.has('arrowright') || this.keys.has('d')
     const running = this.keys.has('shift')
-    const input = left === right ? 0 : left ? -1 : 1
-    if (input) this.direction = input
 
-    const maxSpeed = running ? 5.6 : 3.25
-    const target = input * maxSpeed
-    this.velocity = damp(this.velocity, target, input ? 7.2 : 5.6, dt)
-    if (!input && Math.abs(this.velocity) < 0.025) this.velocity = 0
+    let forwardInput = (forward ? 1 : 0) - (backward ? 1 : 0)
+    let strafeInput = (right ? 1 : 0) - (left ? 1 : 0)
+    if (forwardInput && strafeInput) {
+      forwardInput *= Math.SQRT1_2
+      strafeInput *= Math.SQRT1_2
+    }
+
+    if (forwardInput > 0.05) this.direction = 1
+    if (forwardInput < -0.05) this.direction = -1
+
+    const forwardSpeed = running ? 5.2 : 2.9
+    const lateralSpeed = running ? 3.8 : 2.25
+    this.velocity = damp(this.velocity, forwardInput * forwardSpeed, forwardInput ? 8.2 : 6.4, dt)
+    this.strafeVelocity = damp(this.strafeVelocity, strafeInput * lateralSpeed, strafeInput ? 9.0 : 7.2, dt)
+    if (!forwardInput && Math.abs(this.velocity) < 0.025) this.velocity = 0
+    if (!strafeInput && Math.abs(this.strafeVelocity) < 0.025) this.strafeVelocity = 0
 
     if (this.mode === 'outside') {
       this.character.position.x = clamp(this.character.position.x + this.velocity * dt, 1.5, 69)
+      this.character.position.z = clamp(
+        this.character.position.z + this.strafeVelocity * dt,
+        this.outdoor.pathZ - 2.2,
+        this.outdoor.pathZ + 2.2,
+      )
       this.character.position.y = terrainHeightAt(this.character.position.x)
-      this.character.position.z = this.outdoor.pathZ
     } else if (this.mode === 'inside') {
       this.character.position.x = clamp(this.character.position.x + this.velocity * dt, 2.1, 21.2)
+      this.character.position.z = clamp(
+        this.character.position.z + this.strafeVelocity * dt,
+        this.interior.pathZ - 1.65,
+        this.interior.pathZ + 1.65,
+      )
       this.character.position.y = 0
-      this.character.position.z = this.interior.pathZ
     }
 
-    poseHuman(this.character, dt, this.velocity, running, this.direction)
+    const movementSpeed = Math.hypot(this.velocity, this.strafeVelocity)
+    poseHuman(this.character, dt, movementSpeed, running, this.direction)
     this.updatePrompt()
   }
 
@@ -217,17 +243,50 @@ export class WorldRuntime {
   updateCamera(dt) {
     if (this.transitioning) return
     const inside = this.mode === 'inside'
-    const targetX = this.character.position.x + this.direction * (inside ? 1.4 : 1.8)
-    const targetY = this.character.position.y + (inside ? 3.15 : 3.85)
-    const targetZ = inside ? 11.2 : 13.8
-    this.camera.position.x = damp(this.camera.position.x, targetX, 3.6, dt)
-    this.camera.position.y = damp(this.camera.position.y, targetY, 3.2, dt)
-    this.camera.position.z = damp(this.camera.position.z, targetZ, 3.5, dt)
-    const lookZ = inside ? 0.2 : 0.4
+    const backDistance = inside ? 5.25 : 7.25
+    const sideOffset = inside ? 3.6 : 5.15
+    const heightOffset = inside ? 2.75 : 3.15
+    const lookAhead = inside ? 3.1 : 4.2
+
+    const targetX = this.character.position.x - this.direction * backDistance
+    const targetY = this.character.position.y + heightOffset
+    const targetZ = this.character.position.z + sideOffset
+
+    this.camera.position.x = damp(this.camera.position.x, targetX, 4.2, dt)
+    this.camera.position.y = damp(this.camera.position.y, targetY, 3.7, dt)
+    this.camera.position.z = damp(this.camera.position.z, targetZ, 4.0, dt)
+
     this.camera.lookAt(
-      this.character.position.x + this.direction * (inside ? 1.9 : 2.4),
-      this.character.position.y + 1.4,
-      lookZ,
+      this.character.position.x + this.direction * lookAhead,
+      this.character.position.y + 1.35,
+      this.character.position.z - 0.2,
+    )
+  }
+
+  outdoorDoorDistance() {
+    return distance2D(
+      this.character.position.x,
+      this.character.position.z,
+      this.outdoor.doorX,
+      this.outdoor.doorZ,
+    )
+  }
+
+  interiorTerminalDistance() {
+    return distance2D(
+      this.character.position.x,
+      this.character.position.z,
+      this.interior.terminalX,
+      this.interior.pathZ,
+    )
+  }
+
+  interiorExitDistance() {
+    return distance2D(
+      this.character.position.x,
+      this.character.position.z,
+      this.interior.exitX,
+      this.interior.pathZ,
     )
   }
 
@@ -236,14 +295,14 @@ export class WorldRuntime {
     let location = this.mode
 
     if (this.mode === 'outside') {
-      const distance = Math.abs(this.character.position.x - this.outdoor.doorX)
+      const distance = this.outdoorDoorDistance()
       if (distance < 3.0) prompt = { key: 'E', label: 'OPEN CONSEQUENCE BUILDING', type: 'door' }
       location = distance < 6.5 ? 'boundary' : 'outside'
     }
 
     if (this.mode === 'inside') {
-      const terminalDistance = Math.abs(this.character.position.x - this.interior.terminalX)
-      const exitDistance = Math.abs(this.character.position.x - this.interior.exitX)
+      const terminalDistance = this.interiorTerminalDistance()
+      const exitDistance = this.interiorExitDistance()
       if (terminalDistance < 2.2) prompt = { key: 'E', label: 'INSPECT CONSEQUENCE', type: 'console' }
       else if (exitDistance < 1.8) prompt = { key: 'E', label: 'EXIT BUILDING', type: 'exit' }
       location = terminalDistance < 4.3 ? 'compiler' : 'inside'
@@ -263,17 +322,17 @@ export class WorldRuntime {
       return
     }
 
-    if (this.mode === 'outside' && Math.abs(this.character.position.x - this.outdoor.doorX) < 3.2) {
+    if (this.mode === 'outside' && this.outdoorDoorDistance() < 3.2) {
       this.enterBuilding()
       return
     }
 
     if (this.mode === 'inside') {
-      if (Math.abs(this.character.position.x - this.interior.terminalX) < 2.3) {
+      if (this.interiorTerminalDistance() < 2.3) {
         this.openInspection()
         return
       }
-      if (Math.abs(this.character.position.x - this.interior.exitX) < 2.0) this.exitBuilding()
+      if (this.interiorExitDistance() < 2.0) this.exitBuilding()
     }
   }
 
@@ -282,6 +341,7 @@ export class WorldRuntime {
     this.transitioning = true
     this.mode = 'transition'
     this.velocity = 0
+    this.strafeVelocity = 0
     this.keys.clear()
     this.emitState({ location: 'boundary', prompt: null, transition: 'entering' })
 
@@ -291,10 +351,19 @@ export class WorldRuntime {
     this.direction = 1
 
     gsap.timeline({ defaults: { ease: 'power2.inOut' } })
-      .to(this.character.position, { x: targetX, duration: this.reducedMotion ? 0.01 : 0.62 })
+      .to(this.character.position, {
+        x: targetX,
+        z: this.outdoor.doorZ + 0.9,
+        duration: this.reducedMotion ? 0.01 : 0.68,
+      })
       .to(doorPivot.rotation, { y: -1.32, duration: this.reducedMotion ? 0.01 : 0.85, ease: 'power3.inOut' }, '-=0.12')
       .to(securityLight.material, { emissiveIntensity: 2.7, duration: 0.35 }, '<')
-      .to(this.camera.position, { z: 11.1, x: this.outdoor.doorX - 1.4, duration: this.reducedMotion ? 0.01 : 0.65 }, '<0.1')
+      .to(this.camera.position, {
+        x: this.outdoor.doorX - 5.2,
+        y: 4.65,
+        z: this.outdoor.doorZ + 5.6,
+        duration: this.reducedMotion ? 0.01 : 0.65,
+      }, '<0.1')
       .to(this.character.position, {
         z: this.outdoor.doorZ - 0.65,
         y: 1.35,
@@ -302,7 +371,7 @@ export class WorldRuntime {
         ease: 'power1.inOut',
       })
       .call(() => this.swapToInterior())
-      .to(this.camera.position, { x: 5.6, y: 3.25, z: 11.2, duration: this.reducedMotion ? 0.01 : 0.42 })
+      .to(this.camera.position, { x: -0.4, y: 3.0, z: 8.4, duration: this.reducedMotion ? 0.01 : 0.42 })
       .call(() => {
         this.transitioning = false
         this.mode = 'inside'
@@ -316,6 +385,7 @@ export class WorldRuntime {
     this.interior.group.visible = true
     this.interior.group.add(this.character)
     this.character.position.set(4.6, 0, this.interior.pathZ)
+    this.direction = 1
     this.scene.background.set(0x1f2925)
     this.scene.fog.color.set(0x1f2925)
     this.scene.fog.density = 0.018
@@ -326,22 +396,33 @@ export class WorldRuntime {
     this.transitioning = true
     this.mode = 'transition'
     this.velocity = 0
+    this.strafeVelocity = 0
     this.keys.clear()
     this.emitState({ location: 'inside', prompt: null, transition: 'exiting' })
     this.direction = -1
 
     gsap.timeline({ defaults: { ease: 'power2.inOut' } })
-      .to(this.character.position, { x: this.interior.exitX, duration: this.reducedMotion ? 0.01 : 0.5 })
+      .to(this.character.position, {
+        x: this.interior.exitX,
+        z: this.interior.pathZ,
+        duration: this.reducedMotion ? 0.01 : 0.5,
+      })
       .to(this.interior.exitPivot.rotation, { y: 1.24, duration: this.reducedMotion ? 0.01 : 0.72, ease: 'power3.inOut' }, '-=0.1')
       .to(this.character.position, { z: 5.2, duration: this.reducedMotion ? 0.01 : 0.68 })
       .call(() => this.swapToOutdoor())
-      .to(this.camera.position, { x: this.outdoor.doorX - 2.4, y: 5.1, z: 13.8, duration: this.reducedMotion ? 0.01 : 0.48 })
+      .to(this.camera.position, {
+        x: this.outdoor.doorX - 7.0,
+        y: 4.8,
+        z: this.outdoor.doorZ + 5.2,
+        duration: this.reducedMotion ? 0.01 : 0.48,
+      })
       .to(this.outdoor.building.userData.doorPivot.rotation, { y: 0, duration: this.reducedMotion ? 0.01 : 0.65 }, '<')
       .to(this.outdoor.building.userData.securityLight.material, { emissiveIntensity: 1.2, duration: 0.35 }, '<')
       .call(() => {
         this.interior.exitPivot.rotation.y = 0
         this.transitioning = false
         this.mode = 'outside'
+        this.direction = 1
         this.emitState({ location: 'boundary', prompt: { key: 'E', label: 'OPEN CONSEQUENCE BUILDING', type: 'door' }, transition: null })
       })
   }
@@ -351,7 +432,11 @@ export class WorldRuntime {
     this.interior.group.visible = false
     this.outdoor.group.visible = true
     this.outdoor.group.add(this.character)
-    this.character.position.set(this.outdoor.doorX - 1.8, terrainHeightAt(this.outdoor.doorX - 1.8), this.outdoor.pathZ)
+    this.character.position.set(
+      this.outdoor.doorX - 1.8,
+      terrainHeightAt(this.outdoor.doorX - 1.8),
+      this.outdoor.doorZ + 0.8,
+    )
     this.scene.background.set(0xcdd8cf)
     this.scene.fog.color.set(0xcdd8cf)
     this.scene.fog.density = 0.013
@@ -361,6 +446,7 @@ export class WorldRuntime {
     if (this.inspectionOpen || this.mode !== 'inside') return
     this.inspectionOpen = true
     this.velocity = 0
+    this.strafeVelocity = 0
     this.keys.clear()
     this.direction = 1
     const indicator = this.interior.terminal.userData.indicator
