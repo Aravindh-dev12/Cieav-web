@@ -8,6 +8,7 @@ import {
 import { addEnvironmentDetailLayer } from './three/EnvironmentDetailLayer.js'
 import { attachHighDetailArchitecture, removeHighDetailArchitecture } from './three/BuildingAssetFactory.js'
 import { addDistantCityLayer, removeDistantCityLayer } from './three/DistantCityLayer.js'
+import { attachStreetAssets, removeStreetAssets } from './three/StreetAssetFactory.js'
 
 export class PhotorealRuntime extends WorldRuntime {
   constructor(host, callbacks = {}) {
@@ -31,6 +32,7 @@ export class PhotorealRuntime extends WorldRuntime {
       loadCharacterCatalog().catch(() => []),
       applyPhotorealWorld(this).catch(() => null),
       attachHighDetailArchitecture(this).catch(() => null),
+      attachStreetAssets(this).catch(() => null),
     ])
 
     if (catalog.length) {
@@ -94,6 +96,7 @@ export class PhotorealRuntime extends WorldRuntime {
     this.realHumanControllers.forEach((controller) => controller?.dispose?.())
     this.realHumanControllers.length = 0
 
+    removeStreetAssets(this)
     removeHighDetailArchitecture(this)
     removeDistantCityLayer(this)
 
