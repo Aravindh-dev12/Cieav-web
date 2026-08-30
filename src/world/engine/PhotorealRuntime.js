@@ -23,8 +23,6 @@ export class PhotorealRuntime extends WorldRuntime {
   async init() {
     await super.init()
 
-    // Immediate local detail keeps first interaction fast while high-detail assets
-    // and civilian bodies stream in progressively.
     addEnvironmentDetailLayer(this)
     addDistantCityLayer(this)
 
@@ -36,15 +34,34 @@ export class PhotorealRuntime extends WorldRuntime {
     ])
 
     if (catalog.length) {
+      const usedOutdoorSources = new Set()
       const traveler = pickCharacterTemplate(catalog, 'traveler', 0)
       const travelerController = attachCharacterAsset(this.character, traveler, {
         phase: 0.35,
         variant: 0,
       })
-      if (travelerController) this.realHumanControllers.push(travelerController)
+      if (travelerController) {
+        this.realHumanControllers.push(travelerController)
+        if (traveler?.source?.id) usedOutdoorSources.add(traveler.source.id)
+      }
 
       this.outdoor.npcs.forEach((npc, index) => {
-        const template = pickCharacterTemplate(catalog, 'pedestrian', index)
+        const unused = catalog.filter((template) => !usedOutdoorSources.has(template.source.id))
+        const pool = unused.length ? unused : catalog
+        const template = pickCharacterTemplate(pool, 'pedestrian', index)
+
+        // A repeated close-up clone is more distracting than a quieter campus.
+        // Keep the foreground cast distinct and leave duplicates out of frame.
+        if (!template || (index >= 2 && usedOutdoorSources.has(template.source.id))) {
+          npc.visible = false
+          return
+        }
+
+        usedOutdoorSources.add(template.source.id)
+        if (npc.userData?.npc) {
+          npc.userData.npc.speed *= index === 0 ? 0.82 : 0.74
+        }
+
         const controller = attachCharacterAsset(npc, template, {
           phase: 1.15 + index * 1.73,
           variant: index + 1,
@@ -75,10 +92,12 @@ export class PhotorealRuntime extends WorldRuntime {
 
     if (this.realismReady) {
       const running = this.keys.has('shift')
-      this.character?.userData?.realHuman?.update(dt, this.velocity, running)
+      const travelerSpeed = Math.hypot(this.velocity || 0, this.strafeVelocity || 0)
+      this.character?.userData?.realHuman?.update(dt, travelerSpeed, running)
 
       if (this.outdoor?.group?.visible) {
         for (const npc of this.outdoor.npcs || []) {
+          if (!npc.visible) continue
           const state = npc.userData.npc
           npc.userData.realHuman?.update(dt, state?.speed || 0, false)
         }
