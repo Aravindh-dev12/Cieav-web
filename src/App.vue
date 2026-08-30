@@ -55,151 +55,182 @@
       </div>
     </section>
 
-    <section id="product" class="ui-section ui-authority motion-section">
-      <div class="ui-shell">
-        <div class="ui-section-heading reveal">
-          <div class="ui-eyebrow">
-            <span class="ui-badge">02 / LOCAL AUTHORITY</span>
-            <span class="ui-muted-label">THE CONSEQUENCE BOUNDARY</span>
-          </div>
-
-          <div class="ui-heading-grid">
-            <h2>Make the point of no return visible.</h2>
+    <section id="product" class="quiet-section quiet-product motion-section">
+      <div class="quiet-shell">
+        <div class="quiet-heading reveal">
+          <span class="section-label">02 / FOR PEOPLE</span>
+          <div>
+            <h2>Invisible until<br />it matters.</h2>
             <p>
-              Agent intelligence can propose a change. CIEAV keeps execution authority local, exposes the exact consequence before commit,
-              and refuses to call an ambiguous dispatch a success.
+              CIEAV should not feel like another tool you have to operate. Your assistant works normally.
+              CIEAV steps in only when an action crosses into real consequence.
             </p>
           </div>
         </div>
 
-        <div class="authority-layout">
-          <article class="agent-surface reveal motion-layer" data-depth="0.055">
-            <div class="surface-toolbar">
-              <div>
-                <span class="surface-kicker">LIVE AUTHORITY TRACE</span>
-                <strong>Gateway / local</strong>
-              </div>
-              <span class="status-pill status-pill--active"><i></i> ENFORCING</span>
-            </div>
-
-            <div class="trace-list">
-              <div v-for="(event, index) in authorityTrace" :key="event.title" class="trace-row">
-                <span class="trace-index">0{{ index + 1 }}</span>
+        <div class="assistant-demo reveal motion-layer" data-depth="0.04">
+          <div class="demo-window">
+            <div class="demo-topbar">
+              <div class="demo-app">
+                <span class="demo-avatar">A</span>
                 <div>
-                  <span>{{ event.label }}</span>
-                  <strong>{{ event.title }}</strong>
-                  <p>{{ event.copy }}</p>
+                  <strong>Assistant</strong>
+                  <span>Ready</span>
                 </div>
-                <span class="trace-state" :class="`trace-state--${event.tone}`">{{ event.state }}</span>
+              </div>
+              <span class="quiet-status"><i></i> protected locally</span>
+            </div>
+
+            <div class="conversation">
+              <div class="message message--assistant">
+                <span class="message-avatar">A</span>
+                <p>I found the renewal. It is ₹4,990 for another year.</p>
+              </div>
+              <div class="message message--user">
+                <p>Go ahead and renew it.</p>
+              </div>
+
+              <div class="commit-inline" :class="`commit-inline--${demoStatus}`">
+                <template v-if="demoStatus === 'ready'">
+                  <div class="commit-icon">→</div>
+                  <div class="commit-copy">
+                    <span>Before this happens</span>
+                    <strong>Renew Pro plan for ₹4,990</strong>
+                    <p>Annual subscription · charged to card ending 1842</p>
+                  </div>
+                  <div class="commit-actions">
+                    <button type="button" class="soft-button" @click="cancelDemo">Cancel</button>
+                    <button type="button" class="solid-button" @click="approveDemo">Approve</button>
+                  </div>
+                </template>
+
+                <template v-else-if="demoStatus === 'verifying'">
+                  <span class="spinner" aria-hidden="true"></span>
+                  <div class="commit-copy">
+                    <span>Action sent</span>
+                    <strong>Verifying the result…</strong>
+                    <p>CIEAV is waiting for evidence before calling this successful.</p>
+                  </div>
+                </template>
+
+                <template v-else-if="demoStatus === 'verified'">
+                  <div class="verified-icon">✓</div>
+                  <div class="commit-copy">
+                    <span>Verified</span>
+                    <strong>Pro plan renewed</strong>
+                    <p>₹4,990 charged · renewal confirmed locally</p>
+                  </div>
+                  <button type="button" class="soft-button" @click="undoDemo">Undo</button>
+                </template>
+
+                <template v-else-if="demoStatus === 'cancelled'">
+                  <div class="commit-icon">×</div>
+                  <div class="commit-copy">
+                    <span>Cancelled</span>
+                    <strong>Nothing changed.</strong>
+                    <p>The assistant can keep helping without the renewal being committed.</p>
+                  </div>
+                  <button type="button" class="soft-button" @click="resetDemo">Try again</button>
+                </template>
+
+                <template v-else>
+                  <div class="verified-icon">↶</div>
+                  <div class="commit-copy">
+                    <span>Reversed</span>
+                    <strong>Renewal undone</strong>
+                    <p>The verified inverse completed successfully.</p>
+                  </div>
+                  <button type="button" class="soft-button" @click="resetDemo">Replay</button>
+                </template>
               </div>
             </div>
 
-            <div class="surface-footer">
-              <span>POLICY</span>
-              <strong>deny by default</strong>
-              <span class="surface-footer__divider"></span>
-              <span>SUCCESS</span>
-              <strong>requires evidence</strong>
-            </div>
-          </article>
-
-          <div class="principle-grid">
-            <article v-for="principle in principles" :key="principle.title" class="ui-card principle-card reveal">
-              <div class="principle-card__top">
-                <span class="ui-icon-box">{{ principle.icon }}</span>
-                <span class="ui-chip">{{ principle.meta }}</span>
+            <details class="activity-disclosure">
+              <summary>
+                <span>What happened underneath</span>
+                <span class="summary-hint">AG-UI activity</span>
+              </summary>
+              <div class="activity-content">
+                <p>
+                  The interface only shows what the person needs. Underneath, agent and local authority stay synchronized through typed events,
+                  state changes, tool activity, and an explicit human interrupt at the commit boundary.
+                </p>
+                <div class="event-row">
+                  <span v-for="event in aguiEvents" :key="event">{{ event }}</span>
+                </div>
               </div>
-              <h3>{{ principle.title }}</h3>
-              <p>{{ principle.copy }}</p>
-              <div class="principle-card__rule">
-                <span>{{ principle.ruleLabel }}</span>
-                <strong>{{ principle.rule }}</strong>
-              </div>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="workflow" class="ui-section ui-workflow motion-section">
-      <div class="ui-shell">
-        <div class="ui-section-heading ui-section-heading--inverse reveal">
-          <div class="ui-eyebrow">
-            <span class="ui-badge ui-badge--inverse">03 / COMMIT FLOW</span>
-            <span class="ui-muted-label">FIVE STATES / ONE CONSEQUENCE</span>
+            </details>
           </div>
 
-          <div class="ui-heading-grid">
-            <h2>From intent to proof, every state is explicit.</h2>
+          <div class="demo-note">
+            <span>THE IDEA</span>
             <p>
-              The flow is designed like an agent execution trace: proposal, preview, authority, observation, verified outcome.
-              No hidden transition is allowed to become a real-world consequence.
+              No permanent CIEAV dashboard. No stream of internal tools. Just a small, trustworthy intervention when the user needs control.
             </p>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="flow-grid">
-          <article
-            v-for="(step, index) in corridorSteps"
-            :key="step.title"
-            class="flow-card reveal"
-            :class="{ 'flow-card--commit': index === 2 }"
-            tabindex="0"
-          >
-            <div class="flow-card__header">
-              <span class="flow-number">0{{ index + 1 }}</span>
-              <span class="flow-state">{{ step.state }}</span>
-            </div>
+    <section id="workflow" class="quiet-section quiet-workflow motion-section">
+      <div class="quiet-shell">
+        <div class="quiet-heading quiet-heading--compact reveal">
+          <span class="section-label">03 / BEHAVIOR</span>
+          <div>
+            <h2>Helpful by default.<br />Visible by exception.</h2>
+            <p>CIEAV follows the consequence, not the conversation. Low-risk work stays uninterrupted; meaningful actions get just enough UI.</p>
+          </div>
+        </div>
 
-            <div class="flow-card__body">
-              <span class="flow-marker" aria-hidden="true">{{ index === 2 ? '◆' : '○' }}</span>
-              <h3>{{ step.title }}</h3>
-              <p>{{ step.copy }}</p>
+        <div class="behavior-list reveal">
+          <article v-for="item in behaviorItems" :key="item.title" class="behavior-row">
+            <span class="behavior-index">{{ item.index }}</span>
+            <div class="behavior-copy">
+              <span>{{ item.when }}</span>
+              <h3>{{ item.title }}</h3>
             </div>
-
-            <div class="flow-card__footer">
-              <span class="ui-chip ui-chip--dark">{{ step.signal }}</span>
-              <strong>{{ step.right }}</strong>
-            </div>
+            <p>{{ item.copy }}</p>
+            <span class="behavior-result" :class="`behavior-result--${item.tone}`">{{ item.result }}</span>
           </article>
         </div>
 
-        <div class="proof-strip reveal">
-          <div v-for="proof in proofPoints" :key="proof.label" class="proof-item">
-            <span>{{ proof.label }}</span>
-            <strong>{{ proof.value }}</strong>
+        <div class="protocol-note reveal">
+          <div>
+            <span>AG-UI underneath</span>
+            <strong>Messages · tools · state · interrupts</strong>
           </div>
+          <p>
+            AG-UI is the connection layer, not another screen. CIEAV can consume the same user/agent interaction stream and surface only the moments that require authority.
+          </p>
         </div>
       </div>
     </section>
 
-    <section id="developers" class="ui-section ui-install motion-section">
-      <div class="ui-shell install-layout">
-        <div class="install-copy reveal motion-layer" data-depth="0.05">
-          <div class="ui-eyebrow">
-            <span class="ui-badge">04 / INSTALL</span>
-            <span class="ui-muted-label">LOCAL RUNTIME</span>
-          </div>
-          <h2>Put authority where consequence lives.</h2>
+    <section id="developers" class="quiet-section quiet-install motion-section">
+      <div class="quiet-shell install-simple">
+        <div class="install-simple__copy reveal motion-layer" data-depth="0.04">
+          <span class="section-label">04 / INSTALL</span>
+          <h2>Install it once.<br />Then forget it.</h2>
           <p>
-            Install the local Gateway, enroll the device, and keep the execution boundary close to the user.
-            The cloud can keep reasoning; the machine that will actually act keeps the final say.
+            The Gateway runs locally in the background. Apps and agents keep their own interfaces while CIEAV supplies a common commit boundary when consequence needs local authority.
           </p>
-
-          <div class="install-guarantees">
-            <div><span>01</span><p>Release integrity checked locally.</p></div>
-            <div><span>02</span><p>Device enrollment is explicit.</p></div>
-            <div><span>03</span><p>Gateway reports observed state.</p></div>
-          </div>
+          <a
+            class="text-link magnetic"
+            href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View the project on GitHub <span>↗</span>
+          </a>
         </div>
 
-        <article class="install-card reveal motion-layer" data-depth="0.08">
-          <div class="install-card__header">
+        <article class="install-simple__card reveal motion-layer" data-depth="0.07">
+          <div class="install-card-top">
             <div>
-              <span class="surface-kicker">QUICK START</span>
-              <strong>Install CIEAV</strong>
+              <span>LOCAL GATEWAY</span>
+              <strong>Quick install</strong>
             </div>
-            <span class="status-pill status-pill--active"><i></i> READY</span>
+            <span class="quiet-status"><i></i> ready</span>
           </div>
 
           <div class="platform-switcher" aria-label="Choose operating system">
@@ -214,57 +245,31 @@
             </button>
           </div>
 
-          <button type="button" class="command-surface" @click="copyCommand">
-            <span class="command-prompt">$</span>
+          <button type="button" class="command-line" @click="copyCommand">
             <code>{{ installCommand }}</code>
-            <span class="command-copy">{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
+            <span>{{ copied ? 'Copied ✓' : 'Copy' }}</span>
           </button>
 
-          <div class="install-steps">
-            <div v-for="(step, index) in installSteps" :key="step.label">
-              <span>0{{ index + 1 }}</span>
-              <div>
-                <strong>{{ step.label }}</strong>
-                <p>{{ step.copy }}</p>
-              </div>
-              <b>{{ step.status }}</b>
-            </div>
-          </div>
-
-          <div class="install-card__actions">
-            <a
-              class="ui-button ui-button--primary magnetic"
-              href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
-              target="_blank"
-              rel="noreferrer"
-            >
-              View on GitHub <span>↗</span>
-            </a>
-            <a class="ui-button ui-button--ghost magnetic" href="#workflow">Review commit flow</a>
+          <div class="install-after">
+            <span>After install</span>
+            <p>Runs quietly · verifies locally · appears only at consequence boundaries</p>
           </div>
         </article>
       </div>
     </section>
 
-    <footer class="ui-footer">
-      <div class="ui-footer__brand">
-        <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
-          <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
-          <span>CIEAV</span>
-        </a>
-        <p>Local authority for agentic consequence.</p>
-      </div>
-
-      <div class="ui-footer__nav">
-        <a href="#product">Gateway</a>
-        <a href="#workflow">Commit Flow</a>
+    <footer class="quiet-footer">
+      <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
+        <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
+        <span>CIEAV</span>
+      </a>
+      <p>The commit layer for the internet.</p>
+      <div class="quiet-footer__links">
+        <a href="#product">Experience</a>
+        <a href="#workflow">Behavior</a>
         <a href="#developers">Install</a>
       </div>
-
-      <div class="ui-footer__meta">
-        <span class="status-pill"><i></i> LOCAL-FIRST</span>
-        <span>© 2026 Cieav</span>
-      </div>
+      <span>© 2026 Cieav</span>
     </footer>
   </main>
 </template>
@@ -276,6 +281,8 @@ import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
 const activePlatform = ref('unix')
+const demoStatus = ref('ready')
+let demoTimer
 
 const platforms = [
   {
@@ -292,113 +299,63 @@ const platforms = [
 
 const installCommand = computed(() => platforms.find((platform) => platform.id === activePlatform.value)?.command || platforms[0].command)
 
-const authorityTrace = [
+const aguiEvents = [
+  'RUN_STARTED',
+  'TOOL_CALL_START',
+  'STATE_DELTA',
+  'TOOL_CALL_RESULT',
+  'RUN_FINISHED',
+]
+
+const behaviorItems = [
   {
-    label: 'AGENT',
-    title: 'Proposal received',
-    copy: 'The model describes the requested action without receiving execution authority.',
-    state: 'INTERPRET',
-    tone: 'neutral',
+    index: '01',
+    when: 'READ / THINK / DRAFT',
+    title: 'Stay out of the way.',
+    copy: 'Searching, reasoning, summarizing, and drafting can feel like the assistant the user already chose.',
+    result: 'NO INTERRUPTION',
+    tone: 'quiet',
   },
   {
-    label: 'GATEWAY',
-    title: 'Consequence previewed',
-    copy: 'Local policy resolves the exact change and keeps the action cancellable.',
-    state: 'PREVIEW',
+    index: '02',
+    when: 'SEND / BUY / CHANGE',
+    title: 'Show the consequence.',
+    copy: 'When intent becomes an external action, show a compact preview with the real target, amount, scope, or change.',
+    result: 'ASK ONCE',
     tone: 'review',
   },
   {
-    label: 'USER / POLICY',
-    title: 'Authority granted',
-    copy: 'Only an explicit local decision crosses the commit boundary.',
-    state: 'COMMIT',
-    tone: 'commit',
-  },
-  {
-    label: 'GATEWAY',
-    title: 'Outcome observed',
-    copy: 'Evidence, not assumption, decides whether the consequence succeeded.',
-    state: 'VERIFY',
+    index: '03',
+    when: 'AFTER COMMIT',
+    title: 'Verify, then disappear.',
+    copy: 'Confirm the observed outcome. Offer Undo only when a concrete inverse is known, then return control to the original app.',
+    result: 'PROVE + RECOVER',
     tone: 'success',
   },
 ]
 
-const principles = [
-  {
-    icon: '⌁',
-    meta: 'PREVIEW',
-    title: 'Nothing hidden.',
-    copy: 'Turn an agent proposal into a concrete local consequence before any authority is granted.',
-    ruleLabel: 'Boundary rule',
-    rule: 'show before commit',
-  },
-  {
-    icon: '◎',
-    meta: 'EVIDENCE',
-    title: 'Nothing assumed.',
-    copy: 'Dispatch is recorded as an attempt. Success remains unresolved until credible evidence appears.',
-    ruleLabel: 'Outcome rule',
-    rule: 'proof over optimism',
-  },
-  {
-    icon: '↶',
-    meta: 'INVERSE',
-    title: 'Undo is earned.',
-    copy: 'A reversal appears only after success is proven and a concrete inverse can be executed safely.',
-    ruleLabel: 'Recovery rule',
-    rule: 'verified inverse only',
-  },
-]
+function approveDemo() {
+  window.clearTimeout(demoTimer)
+  demoStatus.value = 'verifying'
+  demoTimer = window.setTimeout(() => {
+    demoStatus.value = 'verified'
+  }, 1100)
+}
 
-const corridorSteps = [
-  {
-    state: 'INPUT / INTENT',
-    title: 'INTENT',
-    signal: 'REQUEST RECEIVED',
-    right: 'LOCAL AUTHORITY BEGINS',
-    copy: 'A digital intention arrives. Understanding it is useful, but understanding alone never grants execution authority.',
-  },
-  {
-    state: 'BOUNDARY / PREVIEW',
-    title: 'PREVIEW',
-    signal: 'CONSEQUENCE VISIBLE',
-    right: 'USER CAN CANCEL',
-    copy: 'Local policy is applied and the exact consequence is shown while the action is still reversible.',
-  },
-  {
-    state: 'AUTHORITY / COMMIT',
-    title: 'COMMIT',
-    signal: 'BOUNDARY CROSSED',
-    right: 'TRUSTED REPLAY',
-    copy: 'Authorization becomes explicit. The approved action is dispatched and recorded locally as a real commit.',
-  },
-  {
-    state: 'EVIDENCE / OBSERVE',
-    title: 'OBSERVE',
-    signal: 'LOCAL EVIDENCE',
-    right: 'NO ASSUMED OUTCOME',
-    copy: 'CIEAV watches for credible local evidence instead of turning an ambiguous result into convenient success.',
-  },
-  {
-    state: 'OUTCOME / VERIFIED',
-    title: 'VERIFIED',
-    signal: 'CONSEQUENCE PROVEN',
-    right: 'UNDO REQUIRES AN INVERSE',
-    copy: 'Only evidence resolves the outcome. A reversal is offered only after success and a concrete inverse are known.',
-  },
-]
+function cancelDemo() {
+  window.clearTimeout(demoTimer)
+  demoStatus.value = 'cancelled'
+}
 
-const proofPoints = [
-  { label: 'INTERPRETATION', value: '≠ AUTHORITY' },
-  { label: 'DISPATCH', value: '≠ SUCCESS' },
-  { label: 'UNDO', value: '= VERIFIED INVERSE' },
-]
+function undoDemo() {
+  window.clearTimeout(demoTimer)
+  demoStatus.value = 'undone'
+}
 
-const installSteps = [
-  { label: 'Verify release', copy: 'Check the signed runtime before execution.', status: 'PASS' },
-  { label: 'Enroll device', copy: 'Bind this machine to its local authority context.', status: 'PASS' },
-  { label: 'Start Gateway', copy: 'Expose the local commit boundary to trusted clients.', status: 'ACTIVE' },
-]
+function resetDemo() {
+  window.clearTimeout(demoTimer)
+  demoStatus.value = 'ready'
+}
 
 function trackPointer(event) {
   const x = event.clientX / window.innerWidth - 0.5
@@ -491,6 +448,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  window.clearTimeout(demoTimer)
   observer?.disconnect()
   unbindMagnetic?.()
   unbindMiddleMotion?.()
