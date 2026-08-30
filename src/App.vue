@@ -14,6 +14,8 @@
       <div class="app-header__help">
         <span>WALK</span>
         <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+        <span>CAMERA DRAG</span>
+        <span>ZOOM SCROLL</span>
         <span>INTERACT</span>
         <kbd>E</kbd>
       </div>
