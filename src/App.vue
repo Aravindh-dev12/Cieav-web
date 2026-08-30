@@ -55,165 +55,300 @@
       </div>
     </section>
 
-    <section id="product" class="editorial-authority motion-section">
-      <div class="editorial-shell">
-        <div class="editorial-meta reveal">
-          <span>02 / LOCAL AUTHORITY</span>
-          <span>THE CONSEQUENCE BOUNDARY</span>
+    <section id="product" class="ui-section ui-authority motion-section">
+      <div class="ui-shell">
+        <div class="ui-section-heading reveal">
+          <div class="ui-eyebrow">
+            <span class="ui-badge">02 / LOCAL AUTHORITY</span>
+            <span class="ui-muted-label">THE CONSEQUENCE BOUNDARY</span>
+          </div>
+
+          <div class="ui-heading-grid">
+            <h2>Make the point of no return visible.</h2>
+            <p>
+              Agent intelligence can propose a change. CIEAV keeps execution authority local, exposes the exact consequence before commit,
+              and refuses to call an ambiguous dispatch a success.
+            </p>
+          </div>
         </div>
 
-        <div class="editorial-statement reveal motion-layer" data-depth="0.045">
-          <p class="editorial-overline">The point of no return should never be invisible.</p>
-          <h2>
-            Intelligence can<br />
-            <span>suggest.</span>
-            Authority must<br />
-            <em>decide.</em>
-          </h2>
-        </div>
+        <div class="authority-layout">
+          <article class="agent-surface reveal motion-layer" data-depth="0.055">
+            <div class="surface-toolbar">
+              <div>
+                <span class="surface-kicker">LIVE AUTHORITY TRACE</span>
+                <strong>Gateway / local</strong>
+              </div>
+              <span class="status-pill status-pill--active"><i></i> ENFORCING</span>
+            </div>
 
-        <div class="editorial-divider" aria-hidden="true">
-          <span>LOCAL</span>
-          <i></i>
-          <span>BOUNDARY</span>
-        </div>
+            <div class="trace-list">
+              <div v-for="(event, index) in authorityTrace" :key="event.title" class="trace-row">
+                <span class="trace-index">0{{ index + 1 }}</span>
+                <div>
+                  <span>{{ event.label }}</span>
+                  <strong>{{ event.title }}</strong>
+                  <p>{{ event.copy }}</p>
+                </div>
+                <span class="trace-state" :class="`trace-state--${event.tone}`">{{ event.state }}</span>
+              </div>
+            </div>
 
-        <div class="editorial-lower reveal">
-          <p class="editorial-lede">
-            CIEAV separates interpretation from consequence. Models can reason about what should happen; the local
-            Gateway decides whether it may happen, shows the consequence before commit, and verifies the result afterward.
-          </p>
+            <div class="surface-footer">
+              <span>POLICY</span>
+              <strong>deny by default</strong>
+              <span class="surface-footer__divider"></span>
+              <span>SUCCESS</span>
+              <strong>requires evidence</strong>
+            </div>
+          </article>
 
-          <div class="editorial-principles">
-            <article>
-              <span>01</span>
-              <h3>Nothing hidden.</h3>
-              <p>The action becomes concrete before authority is granted.</p>
-            </article>
-            <article>
-              <span>02</span>
-              <h3>Nothing assumed.</h3>
-              <p>Dispatch is recorded, but success waits for evidence.</p>
-            </article>
-            <article>
-              <span>03</span>
-              <h3>Nothing irreversible by default.</h3>
-              <p>Undo appears only when a real inverse is known.</p>
+          <div class="principle-grid">
+            <article v-for="principle in principles" :key="principle.title" class="ui-card principle-card reveal">
+              <div class="principle-card__top">
+                <span class="ui-icon-box">{{ principle.icon }}</span>
+                <span class="ui-chip">{{ principle.meta }}</span>
+              </div>
+              <h3>{{ principle.title }}</h3>
+              <p>{{ principle.copy }}</p>
+              <div class="principle-card__rule">
+                <span>{{ principle.ruleLabel }}</span>
+                <strong>{{ principle.rule }}</strong>
+              </div>
             </article>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="workflow" class="kinetic-flow motion-section">
-      <div class="kinetic-shell">
-        <div class="kinetic-head reveal motion-layer" data-depth="0.04">
-          <div>
-            <span>03 / COMMIT FLOW</span>
-            <span>FIVE STATES / ONE CONSEQUENCE</span>
+    <section id="workflow" class="ui-section ui-workflow motion-section">
+      <div class="ui-shell">
+        <div class="ui-section-heading ui-section-heading--inverse reveal">
+          <div class="ui-eyebrow">
+            <span class="ui-badge ui-badge--inverse">03 / COMMIT FLOW</span>
+            <span class="ui-muted-label">FIVE STATES / ONE CONSEQUENCE</span>
           </div>
-          <h2>From intent<br />to proof.</h2>
-          <p>
-            Each state is explicit. Hover or focus a step to bring it forward; the others recede so the sequence reads as one controlled path.
-          </p>
+
+          <div class="ui-heading-grid">
+            <h2>From intent to proof, every state is explicit.</h2>
+            <p>
+              The flow is designed like an agent execution trace: proposal, preview, authority, observation, verified outcome.
+              No hidden transition is allowed to become a real-world consequence.
+            </p>
+          </div>
         </div>
 
-        <div class="kinetic-list">
+        <div class="flow-grid">
           <article
             v-for="(step, index) in corridorSteps"
             :key="step.title"
-            class="kinetic-step reveal"
-            :class="{ 'kinetic-step--commit': index === 2 }"
+            class="flow-card reveal"
+            :class="{ 'flow-card--commit': index === 2 }"
             tabindex="0"
           >
-            <div class="kinetic-step__number">0{{ index + 1 }}</div>
-            <div class="kinetic-step__title">
-              <span>{{ step.state }}</span>
-              <h3>{{ step.title }}</h3>
+            <div class="flow-card__header">
+              <span class="flow-number">0{{ index + 1 }}</span>
+              <span class="flow-state">{{ step.state }}</span>
             </div>
-            <p>{{ step.copy }}</p>
-            <div class="kinetic-step__status">
-              <span>{{ step.signal }}</span>
+
+            <div class="flow-card__body">
+              <span class="flow-marker" aria-hidden="true">{{ index === 2 ? '◆' : '○' }}</span>
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.copy }}</p>
+            </div>
+
+            <div class="flow-card__footer">
+              <span class="ui-chip ui-chip--dark">{{ step.signal }}</span>
               <strong>{{ step.right }}</strong>
             </div>
-            <div class="kinetic-step__arrow" aria-hidden="true">↘</div>
           </article>
         </div>
 
-        <div class="kinetic-caption reveal">
-          <span>INTERPRETATION ≠ AUTHORITY</span>
-          <span>DISPATCH ≠ SUCCESS</span>
-          <span>UNDO = VERIFIED INVERSE</span>
+        <div class="proof-strip reveal">
+          <div v-for="proof in proofPoints" :key="proof.label" class="proof-item">
+            <span>{{ proof.label }}</span>
+            <strong>{{ proof.value }}</strong>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="developers" class="minimal-install motion-section">
-      <div class="minimal-install__ghost" aria-hidden="true">LOCAL</div>
-      <div class="minimal-shell">
-        <div class="minimal-copy reveal motion-layer" data-depth="0.05">
-          <div class="minimal-meta">
-            <span>04 / INSTALL</span>
-            <span>LOCAL RUNTIME</span>
+    <section id="developers" class="ui-section ui-install motion-section">
+      <div class="ui-shell install-layout">
+        <div class="install-copy reveal motion-layer" data-depth="0.05">
+          <div class="ui-eyebrow">
+            <span class="ui-badge">04 / INSTALL</span>
+            <span class="ui-muted-label">LOCAL RUNTIME</span>
           </div>
-          <h2>Install authority<br />where consequence lives.</h2>
+          <h2>Put authority where consequence lives.</h2>
           <p>
-            A small local runtime verifies its release, enrolls the device, starts the Gateway, and keeps the execution boundary close to the user.
+            Install the local Gateway, enroll the device, and keep the execution boundary close to the user.
+            The cloud can keep reasoning; the machine that will actually act keeps the final say.
           </p>
+
+          <div class="install-guarantees">
+            <div><span>01</span><p>Release integrity checked locally.</p></div>
+            <div><span>02</span><p>Device enrollment is explicit.</p></div>
+            <div><span>03</span><p>Gateway reports observed state.</p></div>
+          </div>
         </div>
 
-        <div class="minimal-command reveal motion-layer" data-depth="0.08">
-          <div class="minimal-command__label">
-            <span>QUICK START</span>
-            <span>READY</span>
+        <article class="install-card reveal motion-layer" data-depth="0.08">
+          <div class="install-card__header">
+            <div>
+              <span class="surface-kicker">QUICK START</span>
+              <strong>Install CIEAV</strong>
+            </div>
+            <span class="status-pill status-pill--active"><i></i> READY</span>
           </div>
 
-          <button type="button" class="minimal-command__copy" @click="copyCommand">
+          <div class="platform-switcher" aria-label="Choose operating system">
+            <button
+              v-for="platform in platforms"
+              :key="platform.id"
+              type="button"
+              :class="{ 'is-active': activePlatform === platform.id }"
+              @click="activePlatform = platform.id"
+            >
+              {{ platform.label }}
+            </button>
+          </div>
+
+          <button type="button" class="command-surface" @click="copyCommand">
+            <span class="command-prompt">$</span>
             <code>{{ installCommand }}</code>
-            <span>{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
+            <span class="command-copy">{{ copied ? 'COPIED ✓' : 'COPY' }}</span>
           </button>
 
-          <div class="minimal-steps">
-            <div><span>01</span><p>Verify release</p><b>PASS</b></div>
-            <div><span>02</span><p>Enroll device</p><b>PASS</b></div>
-            <div><span>03</span><p>Start Gateway</p><b>ACTIVE</b></div>
+          <div class="install-steps">
+            <div v-for="(step, index) in installSteps" :key="step.label">
+              <span>0{{ index + 1 }}</span>
+              <div>
+                <strong>{{ step.label }}</strong>
+                <p>{{ step.copy }}</p>
+              </div>
+              <b>{{ step.status }}</b>
+            </div>
           </div>
 
-          <a
-            class="minimal-github magnetic"
-            href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
-            target="_blank"
-            rel="noreferrer"
-          >
-            View CIEAV on GitHub <span>↗</span>
-          </a>
-        </div>
+          <div class="install-card__actions">
+            <a
+              class="ui-button ui-button--primary magnetic"
+              href="https://github.com/Aravindh-dev12/Cieav-the-Commit-Layer-for-the-Internet"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View on GitHub <span>↗</span>
+            </a>
+            <a class="ui-button ui-button--ghost magnetic" href="#workflow">Review commit flow</a>
+          </div>
+        </article>
       </div>
     </section>
 
-    <footer class="footer">
-      <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
-        <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
-        <span>CIEAV</span>
-      </a>
-      <p>The commit layer for the internet.</p>
-      <div class="footer-nav">
+    <footer class="ui-footer">
+      <div class="ui-footer__brand">
+        <a class="wordmark footer-mark" href="#top" aria-label="Cieav home">
+          <img :src="logoMark" alt="" class="wordmark-logo wordmark-logo--footer" />
+          <span>CIEAV</span>
+        </a>
+        <p>Local authority for agentic consequence.</p>
+      </div>
+
+      <div class="ui-footer__nav">
         <a href="#product">Gateway</a>
         <a href="#workflow">Commit Flow</a>
         <a href="#developers">Install</a>
       </div>
-      <span>© 2026 Cieav</span>
+
+      <div class="ui-footer__meta">
+        <span class="status-pill"><i></i> LOCAL-FIRST</span>
+        <span>© 2026 Cieav</span>
+      </div>
     </footer>
   </main>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import logoMark from './public/logo.png'
 import formulaStairs from './formula-stairs.png'
 
 const copied = ref(false)
-const installCommand = 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh'
+const activePlatform = ref('unix')
+
+const platforms = [
+  {
+    id: 'unix',
+    label: 'macOS / Linux',
+    command: 'curl -fsSL https://<CIEAV-DOWNLOAD-DOMAIN>/install.sh | sh',
+  },
+  {
+    id: 'windows',
+    label: 'Windows',
+    command: 'irm https://<CIEAV-DOWNLOAD-DOMAIN>/install.ps1 | iex',
+  },
+]
+
+const installCommand = computed(() => platforms.find((platform) => platform.id === activePlatform.value)?.command || platforms[0].command)
+
+const authorityTrace = [
+  {
+    label: 'AGENT',
+    title: 'Proposal received',
+    copy: 'The model describes the requested action without receiving execution authority.',
+    state: 'INTERPRET',
+    tone: 'neutral',
+  },
+  {
+    label: 'GATEWAY',
+    title: 'Consequence previewed',
+    copy: 'Local policy resolves the exact change and keeps the action cancellable.',
+    state: 'PREVIEW',
+    tone: 'review',
+  },
+  {
+    label: 'USER / POLICY',
+    title: 'Authority granted',
+    copy: 'Only an explicit local decision crosses the commit boundary.',
+    state: 'COMMIT',
+    tone: 'commit',
+  },
+  {
+    label: 'GATEWAY',
+    title: 'Outcome observed',
+    copy: 'Evidence, not assumption, decides whether the consequence succeeded.',
+    state: 'VERIFY',
+    tone: 'success',
+  },
+]
+
+const principles = [
+  {
+    icon: '⌁',
+    meta: 'PREVIEW',
+    title: 'Nothing hidden.',
+    copy: 'Turn an agent proposal into a concrete local consequence before any authority is granted.',
+    ruleLabel: 'Boundary rule',
+    rule: 'show before commit',
+  },
+  {
+    icon: '◎',
+    meta: 'EVIDENCE',
+    title: 'Nothing assumed.',
+    copy: 'Dispatch is recorded as an attempt. Success remains unresolved until credible evidence appears.',
+    ruleLabel: 'Outcome rule',
+    rule: 'proof over optimism',
+  },
+  {
+    icon: '↶',
+    meta: 'INVERSE',
+    title: 'Undo is earned.',
+    copy: 'A reversal appears only after success is proven and a concrete inverse can be executed safely.',
+    ruleLabel: 'Recovery rule',
+    rule: 'verified inverse only',
+  },
+]
 
 const corridorSteps = [
   {
@@ -253,6 +388,18 @@ const corridorSteps = [
   },
 ]
 
+const proofPoints = [
+  { label: 'INTERPRETATION', value: '≠ AUTHORITY' },
+  { label: 'DISPATCH', value: '≠ SUCCESS' },
+  { label: 'UNDO', value: '= VERIFIED INVERSE' },
+]
+
+const installSteps = [
+  { label: 'Verify release', copy: 'Check the signed runtime before execution.', status: 'PASS' },
+  { label: 'Enroll device', copy: 'Bind this machine to its local authority context.', status: 'PASS' },
+  { label: 'Start Gateway', copy: 'Expose the local commit boundary to trusted clients.', status: 'ACTIVE' },
+]
+
 function trackPointer(event) {
   const x = event.clientX / window.innerWidth - 0.5
   const y = event.clientY / window.innerHeight - 0.5
@@ -264,7 +411,7 @@ function trackPointer(event) {
 
 async function copyCommand() {
   try {
-    await navigator.clipboard.writeText(installCommand)
+    await navigator.clipboard.writeText(installCommand.value)
     copied.value = true
     window.setTimeout(() => { copied.value = false }, 1600)
   } catch {
