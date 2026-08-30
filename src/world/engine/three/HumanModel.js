@@ -1,6 +1,7 @@
 import * as THREE from 'three/webgpu'
 
-const matte = (color, roughness = 0.72, metalness = 0.02) => new THREE.MeshStandardMaterial({ color, roughness, metalness })
+const matte = (color, roughness = 0.72, metalness = 0.02) =>
+  new THREE.MeshStandardMaterial({ color, roughness, metalness })
 
 function mesh(geometry, material, { x = 0, y = 0, z = 0, cast = true, receive = true } = {}) {
   const value = new THREE.Mesh(geometry, material)
@@ -66,7 +67,8 @@ export function createHumanModel(options = {}) {
 
   const root = new THREE.Group()
   root.name = options.name ?? 'human'
-  root.scale.setScalar(options.scale ?? 1)
+  const baseScale = Math.abs(options.scale ?? 1)
+  root.scale.setScalar(baseScale)
 
   const shadow = mesh(
     new THREE.CircleGeometry(0.48, 28),
@@ -115,7 +117,11 @@ export function createHumanModel(options = {}) {
   head.scale.set(0.9, 1.08, 0.86)
   headPivot.add(head)
 
-  const hairCap = mesh(new THREE.SphereGeometry(0.302, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.58), palette.hair, { y: 0.27 })
+  const hairCap = mesh(
+    new THREE.SphereGeometry(0.302, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.58),
+    palette.hair,
+    { y: 0.27 },
+  )
   hairCap.scale.set(0.92, 0.78, 0.88)
   headPivot.add(hairCap)
 
@@ -125,6 +131,7 @@ export function createHumanModel(options = {}) {
 
   const eye = mesh(new THREE.SphereGeometry(0.027, 10, 8), palette.eye, { x: 0.275, y: 0.24, z: 0.13 })
   headPivot.add(eye)
+
   const brow = mesh(new THREE.BoxGeometry(0.08, 0.018, 0.024), palette.hair, { x: 0.29, y: 0.29, z: 0.13 })
   brow.rotation.z = -0.12
   headPivot.add(brow)
@@ -161,10 +168,26 @@ export function createHumanModel(options = {}) {
   }
   root.userData.phase = options.phase ?? 0
   root.userData.direction = options.direction ?? 1
-  root.userData.speed = options.speed ?? 0
-  root.userData.baseScale = options.scale ?? 1
+  root.userData.facingDirection = null
+  root.userData.baseScale = baseScale
   root.userData.palette = palette
   return root
+}
+
+function applyFacing(human, direction) {
+  const facing = direction < 0 ? -1 : 1
+  const baseScale = Math.abs(human.userData.baseScale ?? 1)
+
+  // Never mirror skinned characters. Negative scale reverses normals, swaps
+  // handedness, and makes a forward walk cycle read like moonwalking.
+  human.scale.setScalar(baseScale)
+
+  // Only update yaw when direction changes. This lets interaction animations
+  // temporarily rotate the root without being overwritten every frame.
+  if (human.userData.facingDirection !== facing) {
+    human.userData.facingDirection = facing
+    human.rotation.y = facing < 0 ? Math.PI : 0
+  }
 }
 
 export function poseHuman(human, dt, speed, running = false, direction = 1) {
@@ -172,19 +195,20 @@ export function poseHuman(human, dt, speed, running = false, direction = 1) {
   if (!rig) return
 
   human.userData.direction = direction || human.userData.direction || 1
+  applyFacing(human, human.userData.direction)
+
   const absSpeed = Math.abs(speed)
-  human.userData.phase += dt * (running ? 7.6 : 5.1) * Math.min(1.4, 0.4 + absSpeed / 3.8)
+  human.userData.phase += dt * (running ? 7.2 : 4.9) * Math.min(1.32, 0.4 + absSpeed / 3.8)
   const phase = human.userData.phase
   const moving = absSpeed > 0.04
-  human.scale.x = Math.abs(human.userData.baseScale) * human.userData.direction
 
   if (!moving) {
-    const breath = Math.sin(phase * 0.38) * 0.012
+    const breath = Math.sin(phase * 0.38) * 0.01
     rig.hips.position.y = breath
     rig.torso.rotation.z *= 0.86
-    rig.headPivot.rotation.z = Math.sin(phase * 0.22) * 0.018
-    rig.leftArm.rotation.z += (-0.07 - rig.leftArm.rotation.z) * 0.12
-    rig.rightArm.rotation.z += (0.07 - rig.rightArm.rotation.z) * 0.12
+    rig.headPivot.rotation.z = Math.sin(phase * 0.22) * 0.014
+    rig.leftArm.rotation.z += (-0.055 - rig.leftArm.rotation.z) * 0.12
+    rig.rightArm.rotation.z += (0.055 - rig.rightArm.rotation.z) * 0.12
     rig.leftLeg.rotation.z *= 0.84
     rig.rightLeg.rotation.z *= 0.84
     rig.leftKnee.rotation.z *= 0.8
@@ -193,37 +217,37 @@ export function poseHuman(human, dt, speed, running = false, direction = 1) {
     return
   }
 
-  const strideAmp = running ? 0.78 : 0.52
-  const armAmp = running ? 0.72 : 0.56
+  const strideAmp = running ? 0.68 : 0.46
+  const armAmp = running ? 0.58 : 0.42
   const leftStride = Math.sin(phase)
   const rightStride = Math.sin(phase + Math.PI)
   const bounce = Math.abs(Math.sin(phase * 2))
 
-  rig.hips.position.y = bounce * (running ? 0.075 : 0.038)
-  rig.hips.rotation.z = Math.sin(phase) * (running ? 0.045 : 0.024)
-  rig.torso.rotation.z = -Math.sin(phase) * (running ? 0.055 : 0.03)
-  rig.headPivot.rotation.z = Math.sin(phase) * 0.02
+  rig.hips.position.y = bounce * (running ? 0.06 : 0.03)
+  rig.hips.rotation.z = Math.sin(phase) * (running ? 0.035 : 0.018)
+  rig.torso.rotation.z = -Math.sin(phase) * (running ? 0.042 : 0.022)
+  rig.headPivot.rotation.z = Math.sin(phase) * 0.014
 
   rig.leftLeg.rotation.z = leftStride * strideAmp
   rig.rightLeg.rotation.z = rightStride * strideAmp
-  rig.leftKnee.rotation.z = Math.max(0, -leftStride) * (running ? 0.95 : 0.62)
-  rig.rightKnee.rotation.z = Math.max(0, -rightStride) * (running ? 0.95 : 0.62)
-  rig.leftAnkle.rotation.z = -rig.leftKnee.rotation.z * 0.34
-  rig.rightAnkle.rotation.z = -rig.rightKnee.rotation.z * 0.34
+  rig.leftKnee.rotation.z = Math.max(0, -leftStride) * (running ? 0.82 : 0.54)
+  rig.rightKnee.rotation.z = Math.max(0, -rightStride) * (running ? 0.82 : 0.54)
+  rig.leftAnkle.rotation.z = -rig.leftKnee.rotation.z * 0.3
+  rig.rightAnkle.rotation.z = -rig.rightKnee.rotation.z * 0.3
 
-  rig.leftArm.rotation.z = -leftStride * armAmp - 0.06
-  rig.rightArm.rotation.z = -rightStride * armAmp + 0.06
-  rig.leftElbow.rotation.z = -0.2 - Math.max(0, leftStride) * 0.42
-  rig.rightElbow.rotation.z = 0.2 + Math.max(0, rightStride) * 0.42
+  rig.leftArm.rotation.z = -leftStride * armAmp - 0.05
+  rig.rightArm.rotation.z = -rightStride * armAmp + 0.05
+  rig.leftElbow.rotation.z = -0.15 - Math.max(0, leftStride) * 0.3
+  rig.rightElbow.rotation.z = 0.15 + Math.max(0, rightStride) * 0.3
 
-  rig.shadow.scale.x = 1 - bounce * 0.14
-  rig.shadow.material.opacity = 0.18 - bounce * 0.04
+  rig.shadow.scale.x = 1 - bounce * 0.12
+  rig.shadow.material.opacity = 0.18 - bounce * 0.035
 }
 
 export function disposeHuman(human) {
   const materials = new Set()
   human.traverse((object) => {
-    if (object.geometry) object.geometry.dispose?.()
+    object.geometry?.dispose?.()
     if (object.material) {
       const list = Array.isArray(object.material) ? object.material : [object.material]
       list.forEach((material) => materials.add(material))
