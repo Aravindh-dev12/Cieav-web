@@ -1,28 +1,19 @@
 <template>
   <section class="world-experience" aria-label="Interactive CIEAV consequence world">
-    <div ref="host" class="world-canvas-host" tabindex="0" aria-label="Walk with A and D or the arrow keys. Press E near interactive objects."></div>
+    <div
+      ref="host"
+      class="world-canvas-host"
+      tabindex="0"
+      aria-label="Walk directly through the world with W A S D or the arrow keys. Press E near interactive objects."
+    ></div>
 
     <div class="world-vignette" aria-hidden="true"></div>
 
-    <aside class="glass-panel scene-glass" aria-live="polite">
-      <div class="glass-kicker">
-        <span>{{ activeCopy.eyebrow }}</span>
-        <i></i>
-        <small>{{ state.renderer }}</small>
-      </div>
-      <h1>{{ activeCopy.title }}</h1>
-      <p>{{ activeCopy.copy }}</p>
-      <div class="scene-rule">
-        <span>AUTHORITY</span>
-        <strong>0</strong>
-      </div>
-    </aside>
-
     <div class="glass-chip control-hint">
       <span>MOVE</span>
-      <kbd>A</kbd><kbd>D</kbd>
+      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
       <span>OR</span>
-      <kbd>←</kbd><kbd>→</kbd>
+      <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd>
       <span>RUN</span>
       <kbd>SHIFT</kbd>
     </div>
@@ -38,22 +29,38 @@
       <i aria-hidden="true">↗</i>
     </button>
 
-    <div class="touch-controls" aria-label="Walking controls">
+    <div class="touch-controls" aria-label="Direct walking controls">
       <button
         type="button"
-        aria-label="Walk left"
-        @pointerdown.prevent="startMove(-1)"
-        @pointerup="stopMove(-1)"
-        @pointercancel="stopMove(-1)"
-        @pointerleave="stopMove(-1)"
+        aria-label="Walk forward"
+        @pointerdown.prevent="startMove('w')"
+        @pointerup="stopMove('w')"
+        @pointercancel="stopMove('w')"
+        @pointerleave="stopMove('w')"
+      >↑</button>
+      <button
+        type="button"
+        aria-label="Move left"
+        @pointerdown.prevent="startMove('a')"
+        @pointerup="stopMove('a')"
+        @pointercancel="stopMove('a')"
+        @pointerleave="stopMove('a')"
       >←</button>
       <button
         type="button"
-        aria-label="Walk right"
-        @pointerdown.prevent="startMove(1)"
-        @pointerup="stopMove(1)"
-        @pointercancel="stopMove(1)"
-        @pointerleave="stopMove(1)"
+        aria-label="Walk backward"
+        @pointerdown.prevent="startMove('s')"
+        @pointerup="stopMove('s')"
+        @pointercancel="stopMove('s')"
+        @pointerleave="stopMove('s')"
+      >↓</button>
+      <button
+        type="button"
+        aria-label="Move right"
+        @pointerdown.prevent="startMove('d')"
+        @pointerup="stopMove('d')"
+        @pointercancel="stopMove('d')"
+        @pointerleave="stopMove('d')"
       >→</button>
     </div>
 
@@ -132,9 +139,9 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { PhotorealRuntime } from './engine/PhotorealRuntime.js'
-import { consequenceScenario, worldCopy } from './cieav/journeyDefinition.js'
+import { consequenceScenario } from './cieav/journeyDefinition.js'
 
 const emit = defineEmits(['state-change'])
 const host = ref(null)
@@ -150,12 +157,6 @@ const state = reactive({
   transition: null,
 })
 
-const activeCopy = computed(() => {
-  if (state.location === 'boundary') return worldCopy.door
-  if (state.location === 'inside' || state.location === 'compiler') return worldCopy.inside
-  return worldCopy.outside
-})
-
 function applyState(next) {
   Object.assign(state, next)
   emit('state-change', { ...state })
@@ -169,12 +170,12 @@ function closeInspection() {
   runtime?.closeInspection()
 }
 
-function startMove(direction) {
-  runtime?.startVirtualMove(direction)
+function startMove(key) {
+  runtime?.startVirtualMove(key)
 }
 
-function stopMove(direction) {
-  runtime?.stopVirtualMove(direction)
+function stopMove(key) {
+  runtime?.stopVirtualMove(key)
 }
 
 onMounted(async () => {
