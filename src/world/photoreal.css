@@ -1,11 +1,17 @@
 .cieav-world-canvas {
-  filter: contrast(1.035) saturate(.94) brightness(.985);
+  cursor: grab;
+  touch-action: none;
+  filter: contrast(1.045) saturate(.92) brightness(.97);
+}
+
+.cieav-world-canvas.is-camera-dragging {
+  cursor: grabbing;
 }
 
 .world-vignette {
   background:
-    linear-gradient(180deg, rgba(9,14,12,.06), transparent 21%, transparent 72%, rgba(8,12,10,.17)),
-    radial-gradient(circle at 50% 44%, transparent 43%, rgba(13,18,15,.13) 100%);
+    linear-gradient(180deg, rgba(9,14,12,.055), transparent 22%, transparent 74%, rgba(8,12,10,.14)),
+    radial-gradient(circle at 50% 44%, transparent 47%, rgba(13,18,15,.105) 100%);
 }
 
 .world-vignette::before,
@@ -17,7 +23,7 @@
 }
 
 .world-vignette::before {
-  opacity: .075;
+  opacity: .055;
   mix-blend-mode: soft-light;
   background-image:
     radial-gradient(circle at 14% 19%, rgba(255,255,255,.65) 0 .6px, transparent .75px),
@@ -28,8 +34,8 @@
 
 .world-vignette::after {
   background:
-    linear-gradient(90deg, rgba(255,240,214,.025), transparent 26%, transparent 70%, rgba(175,205,190,.025)),
-    linear-gradient(180deg, rgba(255,255,255,.018), transparent 38%);
+    linear-gradient(90deg, rgba(255,240,214,.022), transparent 27%, transparent 71%, rgba(175,205,190,.02)),
+    linear-gradient(180deg, rgba(255,255,255,.014), transparent 40%);
 }
 
 .scene-glass,
