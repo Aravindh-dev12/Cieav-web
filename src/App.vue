@@ -57,12 +57,20 @@
       </div>
 
       <div ref="viewport" class="walk-viewport">
-        <div class="walk-sky" aria-hidden="true"></div>
+        <div class="walk-atmosphere" aria-hidden="true"></div>
+        <div class="walk-sun" aria-hidden="true"></div>
+
+        <div class="parallax-layer parallax-layer--far" :style="farStyle" aria-hidden="true">
+          <i v-for="n in 14" :key="`far-${n}`"></i>
+        </div>
+        <div class="parallax-layer parallax-layer--mid" :style="midStyle" aria-hidden="true">
+          <i v-for="n in 18" :key="`mid-${n}`"></i>
+        </div>
 
         <div class="walk-world" :style="worldStyle" aria-hidden="true">
-          <div class="world-line"></div>
-          <div class="world-dots world-dots--one"></div>
-          <div class="world-dots world-dots--two"></div>
+          <div class="world-ground world-ground--back"></div>
+          <div class="world-ground world-ground--front"></div>
+          <div class="world-path"></div>
 
           <article
             v-for="area in areas"
@@ -98,14 +106,42 @@
           aria-hidden="true"
         >
           <div class="walk-shadow"></div>
-          <div class="walk-person">
-            <span class="walk-head-shape"></span>
-            <span class="walk-body"></span>
-            <span class="walk-arm walk-arm--front"></span>
-            <span class="walk-arm walk-arm--back"></span>
-            <span class="walk-leg walk-leg--front"></span>
-            <span class="walk-leg walk-leg--back"></span>
-          </div>
+          <svg class="walk-person" viewBox="0 0 72 138" role="presentation">
+            <g class="person-body">
+              <g class="person-head-group">
+                <ellipse class="person-head" cx="38" cy="18" rx="10.5" ry="12" />
+                <path class="person-hair" d="M27 17c0-9 5-15 12-15 7 0 12 5 12 13-5-2-9-5-12-9-2 4-6 8-12 11Z" />
+                <path class="person-neck" d="M34 29h8v10h-8z" />
+              </g>
+
+              <path class="person-torso" d="M27 39c3-4 8-6 12-6 5 0 10 2 13 6l-2 37H29l-2-37Z" />
+              <path class="person-hip" d="M29 72h21l-2 12H31z" />
+
+              <g class="person-arm person-arm--back">
+                <path class="person-sleeve" d="M29 42c-5 2-9 6-11 13l5 3c3-5 6-8 10-9Z" />
+                <path class="person-limb" d="M22 56 13 77" />
+                <circle class="person-hand" cx="12" cy="80" r="3" />
+              </g>
+
+              <g class="person-arm person-arm--front">
+                <path class="person-sleeve" d="M49 42c5 2 9 6 11 13l-5 3c-3-5-6-8-10-9Z" />
+                <path class="person-limb" d="M56 56 65 77" />
+                <circle class="person-hand" cx="66" cy="80" r="3" />
+              </g>
+
+              <g class="person-leg person-leg--back">
+                <path class="person-trouser" d="M34 81 30 108" />
+                <path class="person-limb person-calf" d="M30 107 25 129" />
+                <path class="person-shoe" d="M23 127h10c1 0 2 2 1 3l-13 2c-2 0-2-3 2-5Z" />
+              </g>
+
+              <g class="person-leg person-leg--front">
+                <path class="person-trouser" d="M45 81 49 108" />
+                <path class="person-limb person-calf" d="M49 107 55 129" />
+                <path class="person-shoe" d="M53 127h11c2 1 2 3 0 4l-13 1c-2 0-2-3 2-5Z" />
+              </g>
+            </g>
+          </svg>
         </div>
 
         <div class="walk-area-card" aria-live="polite">
@@ -251,9 +287,22 @@ const currentArea = computed(() => {
   }, areas[0])
 })
 
+const travelDistance = computed(() => {
+  const viewportWidth = viewport.value?.clientWidth || window.innerWidth
+  return Math.max(0, worldWidth.value - viewportWidth)
+})
+
 const worldStyle = computed(() => ({
   width: `${worldWidth.value}px`,
-  transform: `translate3d(${-progress.value * Math.max(0, worldWidth.value - (viewport.value?.clientWidth || window.innerWidth))}px, 0, 0)`,
+  transform: `translate3d(${-progress.value * travelDistance.value}px, 0, 0)`,
+}))
+
+const farStyle = computed(() => ({
+  transform: `translate3d(${-progress.value * travelDistance.value * 0.14}px, 0, 0)`,
+}))
+
+const midStyle = computed(() => ({
+  transform: `translate3d(${-progress.value * travelDistance.value * 0.36}px, 0, 0)`,
 }))
 
 const travelerStyle = computed(() => ({
@@ -262,7 +311,7 @@ const travelerStyle = computed(() => ({
 
 function updateWorldWidth() {
   const width = viewport.value?.clientWidth || window.innerWidth
-  worldWidth.value = Math.max(3200, width * 4.6)
+  worldWidth.value = Math.max(3400, width * 4.8)
 }
 
 function walkFrame(time) {
@@ -271,7 +320,7 @@ function walkFrame(time) {
   previousTime = time
 
   if (isWalking.value) {
-    const speed = 0.00018 * delta
+    const speed = 0.00015 * delta
     progress.value = Math.max(0, Math.min(1, progress.value + direction.value * speed))
     if (progress.value <= 0 || progress.value >= 1) stopWalking()
   }
