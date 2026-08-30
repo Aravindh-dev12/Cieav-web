@@ -1,10 +1,7 @@
 import { WorldRuntime } from './WorldRuntime.js'
-import {
-  applyPhotorealWorld,
-  attachRealHuman,
-  createRealHumanTemplate,
-  disposePhotorealResources,
-} from './three/PhotorealAssets.js'
+import { applyPhotorealWorld, disposePhotorealResources } from './three/PhotorealAssets.js'
+import { attachCharacterAsset, loadCharacterTemplate } from './three/CharacterAssetController.js'
+import { addEnvironmentDetailLayer } from './three/EnvironmentDetailLayer.js'
 
 export class PhotorealRuntime extends WorldRuntime {
   constructor(host, callbacks = {}) {
@@ -19,25 +16,38 @@ export class PhotorealRuntime extends WorldRuntime {
   async init() {
     await super.init()
 
+    // Geometry detail is local and immediate; network assets progressively replace
+    // the procedural visual layer without blocking movement or interaction.
+    addEnvironmentDetailLayer(this)
+
     const [template] = await Promise.all([
-      createRealHumanTemplate().catch(() => null),
+      loadCharacterTemplate().catch(() => null),
       applyPhotorealWorld(this).catch(() => null),
     ])
 
     if (template) {
-      this.realHumanControllers.push(attachRealHuman(this.character, template, 0.4))
+      this.realHumanControllers.push(attachCharacterAsset(this.character, template, { phase: 0.4, variant: 0 }))
+
       this.outdoor.npcs.forEach((npc, index) => {
-        this.realHumanControllers.push(attachRealHuman(npc, template, 1.3 + index * 1.8))
+        this.realHumanControllers.push(
+          attachCharacterAsset(npc, template, {
+            phase: 1.3 + index * 1.8,
+            variant: index + 1,
+          }),
+        )
       })
+
       if (this.interior?.operator) {
-        this.realHumanControllers.push(attachRealHuman(this.interior.operator, template, 2.7))
+        this.realHumanControllers.push(
+          attachCharacterAsset(this.interior.operator, template, { phase: 2.7, variant: 4 }),
+        )
       }
     }
 
     this.realismReady = true
     this.rendererName = this.rendererName.includes('WEBGPU')
-      ? 'WEBGPU / HDR + PBR'
-      : 'WEBGL2 / HDR + PBR'
+      ? 'WEBGPU / PRODUCTION ASSETS'
+      : 'WEBGL2 / PRODUCTION ASSETS'
     this.emitState({ renderer: this.rendererName })
   }
 
@@ -65,8 +75,14 @@ export class PhotorealRuntime extends WorldRuntime {
   }
 
   destroy() {
-    disposePhotorealResources(this)
+    this.realHumanControllers.forEach((controller) => controller?.dispose?.())
     this.realHumanControllers.length = 0
+
+    if (this.environmentDetailLayer?.parent) {
+      this.environmentDetailLayer.parent.remove(this.environmentDetailLayer)
+    }
+
+    disposePhotorealResources(this)
     super.destroy()
   }
 }
