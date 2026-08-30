@@ -76,11 +76,8 @@ async function loadFirst(loader, candidates) {
   throw lastError || new Error('Street asset unavailable.')
 }
 
-function hideProceduralStreetFurniture(runtime) {
+function hideProceduralLamps(runtime) {
   const hidden = []
-
-  // Old street lamps each contain their own point light. Hide those groups only
-  // after the real lamp asset is ready, so there is never an empty scene.
   runtime.outdoor.group.traverse((object) => {
     if (!object.isPointLight || !object.parent || object.parent === runtime.outdoor.group) return
     const parent = object.parent
@@ -90,14 +87,6 @@ function hideProceduralStreetFurniture(runtime) {
       hidden.push(parent)
     }
   })
-
-  runtime.environmentDetailLayer?.traverse((object) => {
-    if (object.name === 'procedural-bench') {
-      object.visible = false
-      hidden.push(object)
-    }
-  })
-
   return hidden
 }
 
@@ -116,7 +105,7 @@ export async function attachStreetAssets(runtime) {
   root.userData.realStreetAsset = true
   runtime.outdoor.group.add(root)
 
-  const hidden = hideProceduralStreetFurniture(runtime)
+  const hidden = lampResult.status === 'fulfilled' ? hideProceduralLamps(runtime) : []
 
   if (lampResult.status === 'fulfilled') {
     const template = lampResult.value
@@ -152,9 +141,11 @@ export async function attachStreetAssets(runtime) {
     tuneModel(template)
     normalizeWidth(template, 2.15)
 
+    // Additional seating is placed away from the instant fallback benches so the
+    // richer asset adds density instead of z-fighting with the local geometry.
     const placements = [
-      [18.0, 0.0, 6.28, 0],
-      [57.0, 1.18, 6.28, Math.PI],
+      [38.0, 1.18, 6.32, 0],
+      [65.0, 1.18, 6.32, Math.PI],
     ]
 
     placements.forEach(([x, y, z, rotation], index) => {
