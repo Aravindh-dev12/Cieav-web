@@ -1,73 +1,168 @@
 <template>
-  <main class="stairs-site">
-    <header class="stairs-header">
-      <a class="stairs-brand" href="#stairs" aria-label="CIEAV home">
-        <img :src="logoMark" alt="" />
-        <span>CIEAV</span>
+  <main class="site" @pointermove="trackPointer">
+    <div class="cursor-cross" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="wordmark" href="#top" aria-label="Cieav home">
+        <img :src="logoMark" alt="" class="wordmark-logo" />
+        <span>Cieav</span>
       </a>
 
-      <div class="stairs-header__meta">
-        <span>{{ activeMilestone.number }}</span>
-        <strong>{{ activeMilestone.label }}</strong>
-      </div>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#walk">Walk</a>
+      </nav>
 
-      <span class="stairs-header__hint">SCROLL TO WALK ↓</span>
+      <a class="primary-button topbar-cta magnetic" href="#walk">Enter World</a>
     </header>
 
-    <section id="stairs" ref="journey" class="stairs-journey" aria-label="Walk the CIEAV consequence path">
-      <div class="stairs-stage" :style="stageStyle">
-        <div class="stairs-stage__image" aria-hidden="true"></div>
-        <div class="stairs-stage__veil" aria-hidden="true"></div>
-        <div class="stairs-stage__grain" aria-hidden="true"></div>
+    <section
+      id="top"
+      class="hero"
+      :style="{ backgroundImage: `url(${formulaStairs})` }"
+    >
+      <div class="hero-grid" aria-hidden="true"></div>
 
-        <div class="stairs-intro" :style="introStyle">
-          <p>THE COMMIT LAYER FOR THE INTERNET</p>
-          <h1>Walk the path<br />to consequence.</h1>
-          <span>A local authority journey.</span>
+      <div class="hero-copy reveal-on-load">
+        <p class="kicker"><span></span> The commit layer for the internet</p>
+        <h1>Local Authority.<br />Verified Consequence.</h1>
+        <p class="hero-lede">
+          CIEAV is an always-on local control plane between digital intent and digital consequence.
+          Cloud interprets. The local Gateway decides, commits, verifies, and exposes Undo only when success
+          and a concrete inverse are observed.
+        </p>
+
+        <div class="hero-actions">
+          <a class="primary-button primary-button--large magnetic" href="#walk">Walk the path</a>
+          <a class="outline-button magnetic" href="#walk">Use ← / →</a>
         </div>
+      </div>
 
-        <div class="stairs-route" aria-hidden="true">
-          <i
-            v-for="milestone in milestones"
-            :key="milestone.label"
-            :class="{
-              'is-active': milestone.index === activeIndex,
-              'is-passed': progress >= milestone.at,
-            }"
-            :style="milestone.style"
-          ></i>
+      <div class="hero-index hero-index--left" aria-hidden="true">
+        <span>01</span>
+        <span>LOCAL / AUTHORITY</span>
+      </div>
+      <div class="hero-index hero-index--right" aria-hidden="true">
+        <span>2026</span>
+        <span>CLOUD / INTERPRETATION</span>
+      </div>
+    </section>
+
+    <section id="walk" ref="walkSection" class="walk-section" aria-label="Walk the CIEAV world">
+      <div class="walk-head">
+        <div>
+          <span>ACT I / WALKABLE CIEAV</span>
+          <strong>{{ currentArea.eyebrow }}</strong>
         </div>
+        <p>Hold A / D or the arrow keys to walk.</p>
+      </div>
 
-        <div class="stairs-traveler" :style="travelerStyle" aria-hidden="true">
-          <div class="traveler-shadow"></div>
-          <div class="traveler-figure">
-            <span class="traveler-head"></span>
-            <span class="traveler-body"></span>
-            <span class="traveler-arm traveler-arm--one"></span>
-            <span class="traveler-arm traveler-arm--two"></span>
-            <span class="traveler-leg traveler-leg--one"></span>
-            <span class="traveler-leg traveler-leg--two"></span>
+      <div ref="viewport" class="walk-viewport">
+        <div class="walk-sky" aria-hidden="true"></div>
+
+        <div class="walk-world" :style="worldStyle" aria-hidden="true">
+          <div class="world-line"></div>
+          <div class="world-dots world-dots--one"></div>
+          <div class="world-dots world-dots--two"></div>
+
+          <article
+            v-for="area in areas"
+            :key="area.title"
+            class="world-area"
+            :class="`world-area--${area.slug}`"
+            :style="{ left: `${area.at * 100}%`, '--area-color': area.color }"
+          >
+            <div class="world-area__landmark">
+              <i v-for="n in area.landmarks" :key="n"></i>
+            </div>
+            <span>{{ area.number }}</span>
+            <h2>{{ area.title }}</h2>
+            <p>{{ area.copy }}</p>
+          </article>
+
+          <div class="world-gate world-gate--start">
+            <span>STAIRS / ENTRANCE</span>
+          </div>
+
+          <div class="world-gate world-gate--end">
+            <span>VERIFIED / EXIT</span>
           </div>
         </div>
 
-        <div class="stairs-status">
-          <span>LOCAL AUTHORITY / {{ activeMilestone.number }}</span>
-          <strong>{{ activeMilestone.title }}</strong>
-          <p>{{ activeMilestone.copy }}</p>
+        <div
+          class="walk-traveler"
+          :class="{
+            'is-walking': isWalking,
+            'is-left': direction < 0,
+          }"
+          :style="travelerStyle"
+          aria-hidden="true"
+        >
+          <div class="walk-shadow"></div>
+          <div class="walk-person">
+            <span class="walk-head-shape"></span>
+            <span class="walk-body"></span>
+            <span class="walk-arm walk-arm--front"></span>
+            <span class="walk-arm walk-arm--back"></span>
+            <span class="walk-leg walk-leg--front"></span>
+            <span class="walk-leg walk-leg--back"></span>
+          </div>
         </div>
 
-        <div class="stairs-progress" aria-hidden="true">
-          <span>START</span>
-          <div><i :style="{ transform: `scaleX(${progress})` }"></i></div>
-          <span>VERIFIED</span>
+        <div class="walk-area-card" aria-live="polite">
+          <span>{{ currentArea.number }} / {{ currentArea.eyebrow }}</span>
+          <strong>{{ currentArea.title }}</strong>
+          <p>{{ currentArea.copy }}</p>
         </div>
 
-        <div class="stairs-end" :class="{ 'is-visible': progress > 0.9 }">
-          <span>CONSEQUENCE / VERIFIED</span>
-          <strong>Authority stayed local.</strong>
-          <p>Nothing else on the page. Just the path.</p>
+        <div class="walk-map" aria-label="Journey map">
+          <span>JOURNEY</span>
+          <button
+            v-for="area in areas"
+            :key="area.slug"
+            type="button"
+            :class="{ 'is-active': currentArea.slug === area.slug, 'is-passed': progress >= area.at }"
+            :style="{ '--map-color': area.color }"
+            :aria-label="`Go to ${area.title}`"
+            @click="goToArea(area.at)"
+          ></button>
+          <strong>{{ Math.round(progress * 100) }}%</strong>
         </div>
       </div>
+
+      <div class="walk-controls">
+        <button
+          type="button"
+          :disabled="progress <= 0"
+          @pointerdown.prevent="startWalking(-1)"
+          @pointerup="stopWalking"
+          @pointercancel="stopWalking"
+          @pointerleave="stopWalking"
+        >
+          <kbd>←</kbd>
+          <span>BACK</span>
+          <small>A</small>
+        </button>
+
+        <div class="walk-controls__center">
+          <span>{{ isWalking ? 'WALKING' : 'READY' }}</span>
+          <strong>{{ currentArea.title }}</strong>
+        </div>
+
+        <button
+          type="button"
+          :disabled="progress >= 1"
+          @pointerdown.prevent="startWalking(1)"
+          @pointerup="stopWalking"
+          @pointercancel="stopWalking"
+          @pointerleave="stopWalking"
+        >
+          <small>D</small>
+          <span>FORWARD</span>
+          <kbd>→</kbd>
+        </button>
+      </div>
+
+      <p class="walk-mobile-note">On touch devices, hold the left or right control to walk.</p>
     </section>
   </main>
 </template>
@@ -77,135 +172,188 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import logoMark from './public/logo.png'
 import formulaStairs from './formula-stairs.png'
 
-const journey = ref(null)
+const walkSection = ref(null)
+const viewport = ref(null)
 const progress = ref(0)
+const direction = ref(1)
+const isWalking = ref(false)
+const worldWidth = ref(3600)
+let rafId = 0
+let previousTime = 0
+const heldKeys = new Set()
 
-const milestones = [
+const areas = [
   {
-    index: 0,
-    at: 0,
+    number: '00',
+    slug: 'entrance',
+    eyebrow: 'ENTRANCE',
+    title: 'Arrival',
+    copy: 'Leave the stairs and enter the consequence path.',
+    color: '#6f7a73',
+    at: 0.03,
+    landmarks: 4,
+  },
+  {
     number: '01',
-    label: 'INTENT',
-    title: 'An idea arrives.',
+    slug: 'intent',
+    eyebrow: 'INPUT / INTENT',
+    title: 'Intent',
     copy: 'Understanding begins. Authority does not.',
-    style: { left: '72%', top: '20%' },
+    color: '#71867c',
+    at: 0.22,
+    landmarks: 7,
   },
   {
-    index: 1,
-    at: 0.24,
     number: '02',
-    label: 'PREVIEW',
-    title: 'Consequence becomes visible.',
-    copy: 'The real target and change are resolved before action.',
-    style: { left: '63%', top: '34%' },
+    slug: 'preview',
+    eyebrow: 'BOUNDARY / PREVIEW',
+    title: 'Preview',
+    copy: 'The real consequence becomes visible before anything changes.',
+    color: '#b58b46',
+    at: 0.43,
+    landmarks: 5,
   },
   {
-    index: 2,
-    at: 0.48,
     number: '03',
-    label: 'COMMIT',
-    title: 'The boundary is crossed once.',
-    copy: 'Explicit local authority turns intent into action.',
-    style: { left: '52%', top: '49%' },
+    slug: 'commit',
+    eyebrow: 'AUTHORITY / COMMIT',
+    title: 'Commit',
+    copy: 'Explicit local authority crosses the boundary once.',
+    color: '#a81515',
+    at: 0.62,
+    landmarks: 8,
   },
   {
-    index: 3,
-    at: 0.71,
     number: '04',
-    label: 'OBSERVE',
-    title: 'Dispatch is not success.',
-    copy: 'CIEAV waits for evidence instead of assuming an outcome.',
-    style: { left: '39%', top: '65%' },
+    slug: 'observe',
+    eyebrow: 'EVIDENCE / OBSERVE',
+    title: 'Observe',
+    copy: 'Dispatch is not success. The result must be observed.',
+    color: '#627c92',
+    at: 0.8,
+    landmarks: 6,
   },
   {
-    index: 4,
-    at: 0.91,
     number: '05',
-    label: 'VERIFIED',
-    title: 'Proof resolves the outcome.',
-    copy: 'Recovery appears only when a real inverse is known.',
-    style: { left: '25%', top: '81%' },
+    slug: 'verified',
+    eyebrow: 'OUTCOME / VERIFIED',
+    title: 'Verified',
+    copy: 'Evidence resolves the outcome and earns recovery.',
+    color: '#47745d',
+    at: 0.97,
+    landmarks: 4,
   },
 ]
 
-const path = [
-  { p: 0, x: 74, y: 16, r: -7 },
-  { p: 0.12, x: 70, y: 24, r: -5 },
-  { p: 0.24, x: 64, y: 33, r: -3 },
-  { p: 0.36, x: 59, y: 40, r: 2 },
-  { p: 0.48, x: 52, y: 49, r: -2 },
-  { p: 0.6, x: 46, y: 57, r: 3 },
-  { p: 0.72, x: 39, y: 65, r: -2 },
-  { p: 0.82, x: 32, y: 73, r: 2 },
-  { p: 0.92, x: 25, y: 81, r: -3 },
-  { p: 1, x: 20, y: 87, r: 0 },
-]
-
-const activeIndex = computed(() => {
-  let current = 0
-  milestones.forEach((milestone, index) => {
-    if (progress.value >= milestone.at) current = index
-  })
-  return current
+const currentArea = computed(() => {
+  return areas.reduce((nearest, area) => {
+    return Math.abs(progress.value - area.at) < Math.abs(progress.value - nearest.at) ? area : nearest
+  }, areas[0])
 })
 
-const activeMilestone = computed(() => milestones[activeIndex.value])
-
-const introStyle = computed(() => ({
-  opacity: Math.max(0, 1 - progress.value * 4.2),
-  transform: `translateY(${-progress.value * 44}px)`,
+const worldStyle = computed(() => ({
+  width: `${worldWidth.value}px`,
+  transform: `translate3d(${-progress.value * Math.max(0, worldWidth.value - (viewport.value?.clientWidth || window.innerWidth))}px, 0, 0)`,
 }))
 
-const stageStyle = computed(() => ({
-  '--stairs-image': `url(${formulaStairs})`,
-  '--journey-progress': progress.value,
-  '--image-x': `${50 - progress.value * 4}%`,
-  '--image-y': `${50 + progress.value * 4}%`,
+const travelerStyle = computed(() => ({
+  '--traveler-color': currentArea.value.color,
 }))
 
-const travelerStyle = computed(() => {
-  const point = samplePath(progress.value)
-  return {
-    left: `${point.x}%`,
-    top: `${point.y}%`,
-    transform: `translate(-50%, -88%) rotate(${point.r}deg)`,
-    '--walk-speed': `${Math.max(0.34, 0.64 - progress.value * 0.12)}s`,
+function updateWorldWidth() {
+  const width = viewport.value?.clientWidth || window.innerWidth
+  worldWidth.value = Math.max(3200, width * 4.6)
+}
+
+function walkFrame(time) {
+  if (!previousTime) previousTime = time
+  const delta = Math.min(32, time - previousTime)
+  previousTime = time
+
+  if (isWalking.value) {
+    const speed = 0.00018 * delta
+    progress.value = Math.max(0, Math.min(1, progress.value + direction.value * speed))
+    if (progress.value <= 0 || progress.value >= 1) stopWalking()
   }
-})
 
-function samplePath(value) {
-  const p = Math.max(0, Math.min(1, value))
-  for (let index = 0; index < path.length - 1; index += 1) {
-    const start = path[index]
-    const end = path[index + 1]
-    if (p >= start.p && p <= end.p) {
-      const amount = (p - start.p) / Math.max(0.0001, end.p - start.p)
-      return {
-        x: start.x + (end.x - start.x) * amount,
-        y: start.y + (end.y - start.y) * amount,
-        r: start.r + (end.r - start.r) * amount,
-      }
+  rafId = requestAnimationFrame(walkFrame)
+}
+
+function startWalking(nextDirection) {
+  direction.value = nextDirection
+  isWalking.value = true
+}
+
+function stopWalking() {
+  isWalking.value = false
+}
+
+function goToArea(at) {
+  progress.value = Math.max(0, Math.min(1, at))
+}
+
+function handleKeyDown(event) {
+  const key = event.key.toLowerCase()
+  if (!['arrowleft', 'arrowright', 'a', 'd'].includes(key)) return
+  if (!walkSection.value) return
+
+  const rect = walkSection.value.getBoundingClientRect()
+  const inWalk = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5
+  if (!inWalk) return
+
+  event.preventDefault()
+  heldKeys.add(key)
+  if (key === 'arrowleft' || key === 'a') startWalking(-1)
+  if (key === 'arrowright' || key === 'd') startWalking(1)
+}
+
+function handleKeyUp(event) {
+  const key = event.key.toLowerCase()
+  heldKeys.delete(key)
+  if (!heldKeys.size) stopWalking()
+}
+
+function trackPointer(event) {
+  document.documentElement.style.setProperty('--mx', `${event.clientX}px`)
+  document.documentElement.style.setProperty('--my', `${event.clientY}px`)
+}
+
+function bindMagnetic() {
+  const cleanups = []
+  document.querySelectorAll('.magnetic').forEach((element) => {
+    const move = (event) => {
+      const rect = element.getBoundingClientRect()
+      const x = event.clientX - rect.left - rect.width / 2
+      const y = event.clientY - rect.top - rect.height / 2
+      element.style.transform = `translate(${x * 0.075}px, ${y * 0.075}px)`
     }
-  }
-  return path[path.length - 1]
+    const leave = () => { element.style.transform = '' }
+    element.addEventListener('pointermove', move)
+    element.addEventListener('pointerleave', leave)
+    cleanups.push(() => {
+      element.removeEventListener('pointermove', move)
+      element.removeEventListener('pointerleave', leave)
+    })
+  })
+  return () => cleanups.forEach((cleanup) => cleanup())
 }
 
-function updateProgress() {
-  const section = journey.value
-  if (!section) return
-  const travel = Math.max(1, section.offsetHeight - window.innerHeight)
-  const distance = window.scrollY - section.offsetTop
-  progress.value = Math.max(0, Math.min(1, distance / travel))
-}
+let unbindMagnetic
 
 onMounted(() => {
-  updateProgress()
-  window.addEventListener('scroll', updateProgress, { passive: true })
-  window.addEventListener('resize', updateProgress)
+  updateWorldWidth()
+  window.addEventListener('resize', updateWorldWidth)
+  window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('keyup', handleKeyUp)
+  unbindMagnetic = bindMagnetic()
+  rafId = requestAnimationFrame(walkFrame)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updateProgress)
-  window.removeEventListener('resize', updateProgress)
+  cancelAnimationFrame(rafId)
+  window.removeEventListener('resize', updateWorldWidth)
+  window.removeEventListener('keydown', handleKeyDown)
+  window.removeEventListener('keyup', handleKeyUp)
+  unbindMagnetic?.()
 })
 </script>
