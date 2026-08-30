@@ -3,6 +3,7 @@ import { applyPhotorealWorld, disposePhotorealResources } from './three/Photorea
 import { attachCharacterAsset, loadCharacterTemplate } from './three/CharacterAssetController.js'
 import { addEnvironmentDetailLayer } from './three/EnvironmentDetailLayer.js'
 import { attachHighDetailArchitecture, removeHighDetailArchitecture } from './three/BuildingAssetFactory.js'
+import { addDistantCityLayer, removeDistantCityLayer } from './three/DistantCityLayer.js'
 
 export class PhotorealRuntime extends WorldRuntime {
   constructor(host, callbacks = {}) {
@@ -17,9 +18,10 @@ export class PhotorealRuntime extends WorldRuntime {
   async init() {
     await super.init()
 
-    // Geometry detail is local and immediate; network assets progressively replace
-    // the procedural visual layer without blocking movement or interaction.
+    // Local geometry is immediate. The skyline is fully 3D so the scene keeps
+    // coherent perspective instead of mixing realtime geometry with a street photo.
     addEnvironmentDetailLayer(this)
+    addDistantCityLayer(this)
 
     const [template] = await Promise.all([
       loadCharacterTemplate().catch(() => null),
@@ -28,7 +30,9 @@ export class PhotorealRuntime extends WorldRuntime {
     ])
 
     if (template) {
-      this.realHumanControllers.push(attachCharacterAsset(this.character, template, { phase: 0.4, variant: 0 }))
+      this.realHumanControllers.push(
+        attachCharacterAsset(this.character, template, { phase: 0.4, variant: 0 }),
+      )
 
       this.outdoor.npcs.forEach((npc, index) => {
         this.realHumanControllers.push(
@@ -48,8 +52,8 @@ export class PhotorealRuntime extends WorldRuntime {
 
     this.realismReady = true
     this.rendererName = this.rendererName.includes('WEBGPU')
-      ? 'WEBGPU / PRODUCTION ASSETS'
-      : 'WEBGL2 / PRODUCTION ASSETS'
+      ? 'WEBGPU / CIVILIAN PBR WORLD'
+      : 'WEBGL2 / CIVILIAN PBR WORLD'
     this.emitState({ renderer: this.rendererName })
   }
 
@@ -81,6 +85,7 @@ export class PhotorealRuntime extends WorldRuntime {
     this.realHumanControllers.length = 0
 
     removeHighDetailArchitecture(this)
+    removeDistantCityLayer(this)
 
     if (this.environmentDetailLayer?.parent) {
       this.environmentDetailLayer.parent.remove(this.environmentDetailLayer)
