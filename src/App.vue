@@ -13,7 +13,7 @@
 
       <div class="app-header__help">
         <span>WALK</span>
-        <kbd>A</kbd><kbd>D</kbd>
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
         <span>INTERACT</span>
         <kbd>E</kbd>
       </div>
