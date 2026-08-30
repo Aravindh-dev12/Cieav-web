@@ -2,23 +2,14 @@ import * as THREE from 'three/webgpu'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
-// Primary cast: CC0 MakeHuman/MPFB bodies with authored skin textures and
-// walk/run/idle clips. These face +X natively, which matches CIEAV's path axis
-// and avoids the mirrored/moonwalking look that sample avatars produced.
+// Dressed-only production cast. Do not put bare/painted-body MakeHuman bases
+// in this list: if a source is used here it must read as a clothed civilian.
 const PRIMARY_CHARACTER_SOURCES = [
   {
-    id: 'makehuman-man',
-    url: 'https://raw.githubusercontent.com/kunalkushwaha/vsim/main/packages/assets/library/man.glb',
-    rotationY: 0,
-    height: 1.79,
-    role: 'civilian',
-    tintClothing: false,
-  },
-  {
-    id: 'makehuman-woman',
-    url: 'https://raw.githubusercontent.com/kunalkushwaha/vsim/main/packages/assets/library/human.glb',
-    rotationY: 0,
-    height: 1.69,
+    id: 'rpm-campus-male',
+    url: 'https://readyplayerme.github.io/visage/male.glb',
+    rotationY: Math.PI / 2,
+    height: 1.78,
     role: 'civilian',
     tintClothing: false,
   },
@@ -27,35 +18,27 @@ const PRIMARY_CHARACTER_SOURCES = [
     url: 'https://raw.githubusercontent.com/kunalkushwaha/vsim/main/packages/assets/library/suited.glb',
     rotationY: 0,
     height: 1.80,
-    role: 'operator',
+    role: 'civilian',
     tintClothing: false,
+  },
+  {
+    id: 'michelle-civilian',
+    url: 'https://three.ws/avatars/michelle.glb',
+    rotationY: Math.PI / 2,
+    height: 1.69,
+    role: 'civilian',
+    tintClothing: true,
   },
 ]
 
-// Known browser-friendly fallbacks. They are deliberately second tier and are
-// only fetched when the production MakeHuman cast cannot provide enough rigs.
+// Dressed browser-friendly fallbacks only. The previous realistic-male/female
+// body bases were intentionally removed because they could render like mannequins.
 const FALLBACK_CHARACTER_SOURCES = [
   {
-    id: 'realistic-male-fallback',
-    url: 'https://three.ws/avatars/realistic-male.glb',
+    id: 'default-civilian',
+    url: 'https://three.ws/avatars/default.glb',
     rotationY: Math.PI / 2,
-    height: 1.78,
-    role: 'fallback',
-    tintClothing: false,
-  },
-  {
-    id: 'realistic-female-fallback',
-    url: 'https://three.ws/avatars/realistic-female.glb',
-    rotationY: Math.PI / 2,
-    height: 1.68,
-    role: 'fallback',
-    tintClothing: false,
-  },
-  {
-    id: 'michelle-fallback',
-    url: 'https://three.ws/avatars/michelle.glb',
-    rotationY: Math.PI / 2,
-    height: 1.70,
+    height: 1.74,
     role: 'fallback',
     tintClothing: true,
   },
@@ -102,18 +85,18 @@ function tuneMaterial(object, material) {
   const eyeLike = eyePattern.test(name)
   const clothingLike = clothingPattern.test(name)
 
-  // Preserve authored color/normal/roughness textures. Only constrain implausible
-  // response values that read as plastic under the HDR environment.
+  // Preserve authored texture maps. Restrict only physically implausible values
+  // that make skin look like wax or clothing look like hard plastic.
   if ('metalness' in material && !/metal|zip|button|buckle/i.test(name)) material.metalness = 0
   if ('roughness' in material) {
-    if (skinLike) material.roughness = clamp(material.roughness ?? 0.56, 0.48, 0.68)
+    if (skinLike) material.roughness = clamp(material.roughness ?? 0.56, 0.5, 0.68)
     else if (hairLike) material.roughness = clamp(material.roughness ?? 0.7, 0.58, 0.84)
     else if (eyeLike) material.roughness = clamp(material.roughness ?? 0.22, 0.14, 0.34)
-    else if (clothingLike) material.roughness = clamp(material.roughness ?? 0.8, 0.62, 0.95)
-    else material.roughness = clamp(material.roughness ?? 0.7, 0.46, 0.94)
+    else if (clothingLike) material.roughness = clamp(material.roughness ?? 0.8, 0.66, 0.95)
+    else material.roughness = clamp(material.roughness ?? 0.7, 0.48, 0.94)
   }
-  if ('envMapIntensity' in material) material.envMapIntensity = skinLike ? 0.54 : eyeLike ? 1.08 : 0.82
-  if ('clearcoat' in material && skinLike) material.clearcoat = Math.min(material.clearcoat ?? 0, 0.08)
+  if ('envMapIntensity' in material) material.envMapIntensity = skinLike ? 0.46 : eyeLike ? 1.02 : 0.76
+  if ('clearcoat' in material && skinLike) material.clearcoat = Math.min(material.clearcoat ?? 0, 0.05)
   material.needsUpdate = true
 }
 
@@ -164,8 +147,8 @@ function varyClothing(model, variant = 0, source = {}) {
         const hueShift = ((variant * 0.043) % 0.11) - 0.055
         clone.color.setHSL(
           (hsl.h + hueShift + 1) % 1,
-          clamp(hsl.s * 0.7, 0.04, 0.48),
-          clamp(hsl.l + ((variant % 3) - 1) * 0.018, 0.08, 0.9),
+          clamp(hsl.s * 0.68, 0.04, 0.46),
+          clamp(hsl.l + ((variant % 3) - 1) * 0.016, 0.08, 0.9),
         )
       }
       tuneMaterial(object, clone)
@@ -236,7 +219,7 @@ export class CharacterAssetController {
     if (this.mixer && this.idle) this.play(this.idle, 0)
   }
 
-  play(clip, fade = 0.32) {
+  play(clip, fade = 0.36) {
     if (!this.mixer || !clip) return
     const action = this.mixer.clipAction(clip)
     if (action === this.active) return
@@ -258,32 +241,33 @@ export class CharacterAssetController {
           : this.walk || this.idle
       this.play(clip)
       this.mixer.timeScale = state === 'idle'
-        ? 0.86
+        ? 0.8
         : state === 'run'
-          ? 0.96
-          : clamp(0.7 + abs * 0.08, 0.72, 0.98)
+          ? 0.94
+          : clamp(0.68 + abs * 0.075, 0.7, 0.94)
       this.mixer.update(dt)
       return
     }
 
     if (!this.hasManualLegs) return
 
-    this.phase += dt * (running ? 6.3 : 4.2) * clamp(0.44 + abs / 3.25, 0.44, 1.16)
+    // Restrained pedestrian fallback with relaxed shoulders and small stride.
+    this.phase += dt * (running ? 6.0 : 3.95) * clamp(0.44 + abs / 3.25, 0.44, 1.12)
     const swing = abs > 0.055 ? Math.sin(this.phase) : 0
-    const stride = running ? 0.5 : 0.31
+    const stride = running ? 0.47 : 0.28
     const kneeL = Math.max(0, -swing)
     const kneeR = Math.max(0, swing)
 
     easeBone(this.rig.leftUpLeg, this.bind.leftUpLeg, swing * stride)
     easeBone(this.rig.rightUpLeg, this.bind.rightUpLeg, -swing * stride)
-    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.62 : 0.36))
-    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.62 : 0.36))
-    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.34 : 0.2))
-    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.34 : 0.2))
-    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.08 - kneeR * 0.12)
-    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.08 - kneeL * 0.12)
-    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.055 ? -swing * 0.01 : 0)
-    easeBone(this.rig.head, this.bind.head, 0, abs > 0.055 ? swing * 0.008 : Math.sin(this.phase * 0.18) * 0.01, 0)
+    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.58 : 0.33))
+    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.58 : 0.33))
+    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.3 : 0.17), 0, 0.06)
+    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.3 : 0.17), 0, -0.06)
+    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.12 - kneeR * 0.1)
+    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.12 - kneeL * 0.1)
+    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.055 ? -swing * 0.008 : 0)
+    easeBone(this.rig.head, this.bind.head, 0, abs > 0.055 ? swing * 0.006 : Math.sin(this.phase * 0.16) * 0.009, 0)
   }
 
   dispose() {
@@ -310,32 +294,26 @@ async function loadSources(loader, sources) {
 export async function loadCharacterCatalog() {
   const loader = new GLTFLoader()
   const primary = await loadSources(loader, PRIMARY_CHARACTER_SOURCES)
-  const motionReady = primary.filter((template) => template.motionCapable)
-
-  if (primary.length >= 2 && motionReady.length >= 2) return primary
-
-  const fallback = await loadSources(loader, FALLBACK_CHARACTER_SOURCES)
+  const fallback = primary.length >= 3 ? [] : await loadSources(loader, FALLBACK_CHARACTER_SOURCES)
   const catalog = [...primary, ...fallback]
-  if (!catalog.length) throw new Error('No civilian production character asset could be loaded.')
+  if (!catalog.length) throw new Error('No dressed civilian character asset could be loaded.')
   return catalog
 }
 
 export function pickCharacterTemplate(catalog, role = 'traveler', index = 0) {
   const needsMotion = role !== 'operator'
-  const available = needsMotion
-    ? catalog.filter((template) => template.motionCapable)
-    : catalog
-  const pool = available.length ? available : catalog
+  const motionReady = catalog.filter((template) => template.motionCapable)
+  const pool = needsMotion && motionReady.length ? motionReady : catalog
 
   const preferences = role === 'traveler'
-    ? ['makehuman-man', 'makehuman-suited', 'makehuman-woman', 'realistic-male-fallback', 'michelle-fallback']
+    ? ['rpm-campus-male', 'makehuman-suited', 'michelle-civilian', 'default-civilian']
     : role === 'operator'
-      ? ['makehuman-suited', 'makehuman-woman', 'makehuman-man', 'realistic-female-fallback']
+      ? ['makehuman-suited', 'rpm-campus-male', 'michelle-civilian', 'default-civilian']
       : index % 3 === 0
-        ? ['makehuman-woman', 'makehuman-man', 'makehuman-suited', 'realistic-female-fallback']
+        ? ['michelle-civilian', 'makehuman-suited', 'rpm-campus-male', 'default-civilian']
         : index % 3 === 1
-          ? ['makehuman-man', 'makehuman-woman', 'makehuman-suited', 'realistic-male-fallback']
-          : ['makehuman-suited', 'makehuman-woman', 'makehuman-man', 'michelle-fallback']
+          ? ['makehuman-suited', 'rpm-campus-male', 'michelle-civilian', 'default-civilian']
+          : ['rpm-campus-male', 'michelle-civilian', 'makehuman-suited', 'default-civilian']
 
   const ordered = preferences
     .map((id) => pool.find((template) => template.source.id === id))
