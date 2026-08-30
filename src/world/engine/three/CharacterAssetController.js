@@ -2,29 +2,93 @@ import * as THREE from 'three/webgpu'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
-// Civilian-only browser-friendly character sources.
-// Do not add combat / tactical sample models here: this world should feel like
-// a normal public/office environment, not a game combat scene.
+// High-fidelity civilian bodies first; the lighter known-rigged model is only a
+// fallback for motion if a richer body cannot animate on the current browser.
 const CHARACTER_SOURCES = [
+  {
+    id: 'realistic-male',
+    url: 'https://three.ws/avatars/realistic-male.glb',
+    rotationY: Math.PI / 2,
+    height: 1.78,
+    role: 'civilian',
+  },
+  {
+    id: 'realistic-female',
+    url: 'https://three.ws/avatars/realistic-female.glb',
+    rotationY: Math.PI / 2,
+    height: 1.68,
+    role: 'civilian',
+  },
   {
     id: 'michelle-civilian',
     url: 'https://three.ws/avatars/michelle.glb',
     rotationY: Math.PI / 2,
-    height: 1.72,
+    height: 1.70,
+    role: 'fallback',
   },
   {
-    id: 'civilian-fallback',
-    url: 'https://raw.githubusercontent.com/UMRAM-Bilkent/supine-human-model/main/assets/human.glb',
+    id: 'default-civilian',
+    url: 'https://three.ws/avatars/default.glb',
     rotationY: Math.PI / 2,
-    height: 1.74,
+    height: 1.75,
+    role: 'fallback',
   },
 ]
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
+const cleanName = (value = '') => value.toLowerCase().replace(/[^a-z0-9]/g, '')
+const tacticalPattern = /(weapon|gun|rifle|pistol|ammo|holster|grenade|knife|helmet|tactical|armor|armour|shield|combat)/i
+const skinPattern = /(skin|face|head|body|hand|arm|leg|neck)/i
+const hairPattern = /(hair|brow|lash)/i
+const eyePattern = /(eye|iris|cornea|teeth|mouth|lip)/i
+const clothingPattern = /(cloth|shirt|top|jacket|coat|dress|skirt|trouser|pant|jean|shoe|boot|sneaker|suit|blazer|hood|sock|sweater)/i
+
+function inspectTemplate(scene, animations = []) {
+  let boneCount = 0
+  let skinnedMeshes = 0
+  scene.traverse((object) => {
+    if (object.isBone) boneCount += 1
+    if (object.isSkinnedMesh) skinnedMeshes += 1
+  })
+
+  const locomotionClips = animations.filter((clip) => /walk|run|idle|locomotion/i.test(clip.name)).length
+  return {
+    boneCount,
+    skinnedMeshes,
+    motionCapable: locomotionClips > 0 || (skinnedMeshes > 0 && boneCount >= 14),
+  }
+}
+
+function sanitizeCivilianModel(model) {
+  model.traverse((object) => {
+    const name = `${object.name || ''} ${object.material?.name || ''}`
+    if (tacticalPattern.test(name)) object.visible = false
+  })
+}
+
+function tuneMaterial(object, material) {
+  if (!material) return
+  const name = `${object.name || ''} ${material.name || ''}`
+  const skinLike = skinPattern.test(name)
+  const hairLike = hairPattern.test(name)
+  const eyeLike = eyePattern.test(name)
+  const clothingLike = clothingPattern.test(name)
+
+  // Keep authored textures and colors intact. Only correct physically implausible
+  // response ranges that make people look like plastic/game assets.
+  if ('metalness' in material && !/metal|zip|button|buckle/i.test(name)) material.metalness = 0
+  if ('roughness' in material) {
+    if (skinLike) material.roughness = clamp(material.roughness ?? 0.52, 0.42, 0.62)
+    else if (hairLike) material.roughness = clamp(material.roughness ?? 0.68, 0.56, 0.82)
+    else if (eyeLike) material.roughness = clamp(material.roughness ?? 0.24, 0.16, 0.36)
+    else if (clothingLike) material.roughness = clamp(material.roughness ?? 0.78, 0.62, 0.94)
+    else material.roughness = clamp(material.roughness ?? 0.68, 0.42, 0.92)
+  }
+  if ('envMapIntensity' in material) material.envMapIntensity = skinLike ? 0.62 : 0.88
+  material.needsUpdate = true
+}
 
 function normalizeModel(model, source) {
-  // Always normalize from the asset's original transform. This prevents
-  // repeated clone-normalization from changing a person's height.
   model.position.set(0, 0, 0)
   model.scale.set(1, 1, 1)
   model.rotation.set(0, source.rotationY ?? Math.PI / 2, 0)
@@ -32,59 +96,50 @@ function normalizeModel(model, source) {
 
   let box = new THREE.Box3().setFromObject(model)
   const size = box.getSize(new THREE.Vector3())
-  const scale = (source.height ?? 1.74) / Math.max(size.y, 0.001)
+  const scale = (source.height ?? 1.73) / Math.max(size.y, 0.001)
   model.scale.setScalar(scale)
   model.updateMatrixWorld(true)
 
   box = new THREE.Box3().setFromObject(model)
   model.position.y -= box.min.y
 
+  sanitizeCivilianModel(model)
   model.traverse((object) => {
     if (!object.isMesh && !object.isSkinnedMesh) return
     object.castShadow = true
     object.receiveShadow = true
     object.frustumCulled = true
-
     const materials = Array.isArray(object.material) ? object.material : [object.material]
-    materials.forEach((material) => {
-      if (!material) return
-      if ('roughness' in material) material.roughness = clamp(material.roughness ?? 0.62, 0.38, 0.82)
-      if ('metalness' in material) material.metalness = clamp(material.metalness ?? 0, 0, 0.12)
-      material.envMapIntensity = 1.08
-      material.needsUpdate = true
-    })
+    materials.forEach((material) => tuneMaterial(object, material))
   })
 }
 
-function findClip(clips, patterns) {
-  return clips.find((clip) => patterns.some((pattern) => pattern.test(clip.name))) || null
-}
-
-function varyMaterial(model, variant = 0) {
+function varyClothing(model, variant = 0) {
   if (!variant) return
   const seen = new Map()
 
   model.traverse((object) => {
     if (!object.isMesh && !object.isSkinnedMesh) return
+    const materialName = `${object.name || ''} ${Array.isArray(object.material) ? '' : object.material?.name || ''}`
+    if (!clothingPattern.test(materialName) || skinPattern.test(materialName) || hairPattern.test(materialName)) return
+
     const list = Array.isArray(object.material) ? object.material : [object.material]
     const next = list.map((material) => {
       if (!material) return material
       if (seen.has(material)) return seen.get(material)
-
       const clone = material.clone()
-      if (clone.color?.isColor) {
+      const name = `${object.name || ''} ${clone.name || ''}`
+      if (clothingPattern.test(name) && clone.color?.isColor && !clone.map) {
         const hsl = {}
         clone.color.getHSL(hsl)
-        // Muted civilian clothing palette variation rather than bright game colors.
-        const hueShift = ((variant * 0.057) % 0.14) - 0.07
-        const lightShift = ((variant % 4) - 1.5) * 0.022
+        const hueShift = ((variant * 0.043) % 0.11) - 0.055
         clone.color.setHSL(
           (hsl.h + hueShift + 1) % 1,
-          clamp(hsl.s * 0.72, 0, 0.62),
-          clamp(hsl.l + lightShift, 0.1, 0.88),
+          clamp(hsl.s * 0.72, 0.04, 0.5),
+          clamp(hsl.l + ((variant % 3) - 1) * 0.018, 0.08, 0.9),
         )
       }
-      clone.needsUpdate = true
+      tuneMaterial(object, clone)
       seen.set(material, clone)
       return clone
     })
@@ -92,11 +147,15 @@ function varyMaterial(model, variant = 0) {
   })
 }
 
+function findClip(clips, patterns) {
+  return clips.find((clip) => patterns.some((pattern) => pattern.test(clip.name))) || null
+}
+
 function findBone(model, candidates) {
   let found = null
   model.traverse((object) => {
     if (found || !object.isBone) return
-    const name = object.name.toLowerCase().replace(/[^a-z0-9]/g, '')
+    const name = cleanName(object.name)
     if (candidates.some((candidate) => name.includes(candidate))) found = object
   })
   return found
@@ -124,7 +183,7 @@ function snapshotRig(rig) {
   )
 }
 
-function easeBone(bone, bind, x = 0, y = 0, z = 0, amount = 0.16) {
+function easeBone(bone, bind, x = 0, y = 0, z = 0, amount = 0.15) {
   if (!bone || !bind) return
   bone.rotation.x = THREE.MathUtils.lerp(bone.rotation.x, bind.x + x, amount)
   bone.rotation.y = THREE.MathUtils.lerp(bone.rotation.y, bind.y + y, amount)
@@ -137,21 +196,21 @@ export class CharacterAssetController {
     this.model = model
     this.phase = phase
     this.mixer = clips.length ? new THREE.AnimationMixer(model) : null
-    this.idle = findClip(clips, [/^idle$/i, /idle/i, /tpose/i])
-    this.walk = findClip(clips, [/^walk$/i, /walk/i])
-    this.run = findClip(clips, [/^run$/i, /run/i])
+    this.idle = findClip(clips, [/^idle$/i, /idle/i, /breath/i])
+    this.walk = findClip(clips, [/^walk$/i, /walk/i, /locomotion/i])
+    this.run = findClip(clips, [/^run$/i, /run/i, /jog/i])
     this.active = null
     this.rig = manualRig(model)
     this.bind = snapshotRig(this.rig)
+    this.hasManualLegs = Boolean(this.rig.leftUpLeg && this.rig.rightUpLeg)
 
     if (this.mixer && this.idle) this.play(this.idle, 0)
   }
 
-  play(clip, fade = 0.24) {
+  play(clip, fade = 0.28) {
     if (!this.mixer || !clip) return
     const action = this.mixer.clipAction(clip)
     if (action === this.active) return
-
     action.enabled = true
     action.reset().setEffectiveWeight(1).play()
     if (this.active) this.active.crossFadeTo(action, fade, false)
@@ -160,7 +219,7 @@ export class CharacterAssetController {
 
   update(dt, speed = 0, running = false) {
     const abs = Math.abs(speed)
-    const state = abs < 0.06 ? 'idle' : running ? 'run' : 'walk'
+    const state = abs < 0.055 ? 'idle' : running ? 'run' : 'walk'
 
     if (this.mixer && (this.walk || this.idle)) {
       const clip = state === 'idle'
@@ -169,28 +228,35 @@ export class CharacterAssetController {
           ? this.run || this.walk
           : this.walk || this.idle
       this.play(clip)
-      this.mixer.timeScale = state === 'idle' ? 0.9 : state === 'run' ? 1.12 : clamp(0.72 + abs * 0.11, 0.74, 1.08)
+      this.mixer.timeScale = state === 'idle'
+        ? 0.82
+        : state === 'run'
+          ? 1.04
+          : clamp(0.7 + abs * 0.09, 0.74, 1.02)
       this.mixer.update(dt)
       return
     }
 
-    // Generic civilian walk fallback for rigged assets without locomotion clips.
-    this.phase += dt * (running ? 7.2 : 5.0) * clamp(0.42 + abs / 3.1, 0.42, 1.3)
-    const swing = abs > 0.06 ? Math.sin(this.phase) : 0
-    const stride = running ? 0.64 : 0.42
+    if (!this.hasManualLegs) return
+
+    // Restrained pedestrian fallback: smaller stride and shoulder motion than a
+    // game/combat cycle, with just enough torso/head counter-motion to feel alive.
+    this.phase += dt * (running ? 6.55 : 4.45) * clamp(0.44 + abs / 3.25, 0.44, 1.2)
+    const swing = abs > 0.055 ? Math.sin(this.phase) : 0
+    const stride = running ? 0.54 : 0.34
     const kneeL = Math.max(0, -swing)
     const kneeR = Math.max(0, swing)
 
     easeBone(this.rig.leftUpLeg, this.bind.leftUpLeg, swing * stride)
     easeBone(this.rig.rightUpLeg, this.bind.rightUpLeg, -swing * stride)
-    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.82 : 0.52))
-    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.82 : 0.52))
-    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.5 : 0.34))
-    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.5 : 0.34))
-    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.12 - kneeR * 0.22)
-    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.12 - kneeL * 0.22)
-    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.06 ? -swing * 0.018 : 0)
-    easeBone(this.rig.head, this.bind.head, 0, abs > 0.06 ? swing * 0.015 : Math.sin(this.phase * 0.2) * 0.018, 0)
+    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.68 : 0.4))
+    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.68 : 0.4))
+    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.38 : 0.23))
+    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.38 : 0.23))
+    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.08 - kneeR * 0.14)
+    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.08 - kneeL * 0.14)
+    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.055 ? -swing * 0.012 : 0)
+    easeBone(this.rig.head, this.bind.head, 0, abs > 0.055 ? swing * 0.009 : Math.sin(this.phase * 0.18) * 0.012, 0)
   }
 
   dispose() {
@@ -198,27 +264,52 @@ export class CharacterAssetController {
   }
 }
 
-export async function loadCharacterTemplate() {
-  const loader = new GLTFLoader()
-  let lastError = null
-
-  for (const source of CHARACTER_SOURCES) {
-    try {
-      const gltf = await loader.loadAsync(source.url)
-      // Keep the template untouched. Each clone is normalized exactly once.
-      return { source, scene: gltf.scene, animations: gltf.animations || [] }
-    } catch (error) {
-      lastError = error
-    }
+async function loadSource(loader, source) {
+  const gltf = await loader.loadAsync(source.url)
+  const analysis = inspectTemplate(gltf.scene, gltf.animations || [])
+  return {
+    source,
+    scene: gltf.scene,
+    animations: gltf.animations || [],
+    ...analysis,
   }
+}
 
-  throw lastError || new Error('No civilian production character asset could be loaded.')
+export async function loadCharacterCatalog() {
+  const loader = new GLTFLoader()
+  const results = await Promise.allSettled(CHARACTER_SOURCES.map((source) => loadSource(loader, source)))
+  const catalog = results.filter((result) => result.status === 'fulfilled').map((result) => result.value)
+  if (!catalog.length) throw new Error('No civilian production character asset could be loaded.')
+  return catalog
+}
+
+export function pickCharacterTemplate(catalog, role = 'traveler', index = 0) {
+  const needsMotion = role !== 'operator'
+  const available = needsMotion
+    ? catalog.filter((template) => template.motionCapable)
+    : catalog
+  const pool = available.length ? available : catalog
+
+  const preferences = role === 'traveler'
+    ? ['realistic-male', 'realistic-female', 'default-civilian', 'michelle-civilian']
+    : role === 'operator'
+      ? ['realistic-female', 'realistic-male', 'default-civilian', 'michelle-civilian']
+      : index % 2 === 0
+        ? ['realistic-female', 'realistic-male', 'default-civilian', 'michelle-civilian']
+        : ['realistic-male', 'realistic-female', 'michelle-civilian', 'default-civilian']
+
+  const ordered = preferences
+    .map((id) => pool.find((template) => template.source.id === id))
+    .filter(Boolean)
+
+  return ordered[index % Math.max(1, ordered.length)] || pool[index % pool.length]
 }
 
 export function attachCharacterAsset(root, template, { phase = 0, variant = 0 } = {}) {
+  if (!template) return null
   const model = SkeletonUtils.clone(template.scene)
   normalizeModel(model, template.source)
-  varyMaterial(model, variant)
+  varyClothing(model, variant)
 
   const proceduralRig = root.userData?.rig?.rig
   if (proceduralRig) proceduralRig.visible = false
