@@ -30,6 +30,17 @@ export class WorldRuntime {
     this.raycaster = new THREE.Raycaster()
     this.pointer = new THREE.Vector2()
     this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+
+    this.cameraYaw = 1.39
+    this.cameraPitch = 0.34
+    this.cameraDistance = 10.2
+    this.cameraDrag = {
+      active: false,
+      pointerId: null,
+      x: 0,
+      y: 0,
+      moved: false,
+    }
   }
 
   async init() {
@@ -37,8 +48,8 @@ export class WorldRuntime {
     this.scene.background = new THREE.Color(0xcdd8cf)
     this.scene.fog = new THREE.FogExp2(0xcdd8cf, 0.013)
 
-    this.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 180)
-    this.camera.position.set(-1.6, 4.1, 10.4)
+    this.camera = new THREE.PerspectiveCamera(40, 1, 0.1, 180)
+    this.camera.position.set(7.2, 4.1, 13.7)
 
     this.renderer = new THREE.WebGPURenderer({
       antialias: true,
@@ -48,7 +59,7 @@ export class WorldRuntime {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     this.renderer.setSize(this.host.clientWidth, this.host.clientHeight)
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-    this.renderer.toneMappingExposure = 1.02
+    this.renderer.toneMappingExposure = 0.96
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     await this.renderer.init()
     this.renderer.shadowMap.enabled = true
@@ -123,28 +134,84 @@ export class WorldRuntime {
   }
 
   bindPointer() {
+    const canvas = this.renderer.domElement
+
     this.onPointerDown = (event) => {
-      if (!this.renderer || this.transitioning || this.inspectionOpen) return
-      const rect = this.renderer.domElement.getBoundingClientRect()
-      this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-      this.raycaster.setFromCamera(this.pointer, this.camera)
-      const targets = []
-      if (this.mode === 'outside') targets.push(this.outdoor.building.userData.doorPanel)
-      if (this.mode === 'inside') {
-        targets.push(...this.interior.terminal.children.filter((child) => child.isMesh))
-        targets.push(...this.interior.exitPivot.children.filter((child) => child.isMesh))
-      }
-      const hit = this.raycaster.intersectObjects(targets, true)[0]
-      if (!hit) return
-      let object = hit.object
-      while (object && !object.userData.interactive) object = object.parent
-      const kind = object?.userData?.interactive || hit.object.userData.interactive
-      if (kind === 'door' && this.outdoorDoorDistance() < 3.2) this.enterBuilding()
-      if (kind === 'console' && this.interiorTerminalDistance() < 2.3) this.openInspection()
-      if (kind === 'exit' && this.interiorExitDistance() < 2.2) this.exitBuilding()
+      if (this.transitioning || this.inspectionOpen || event.button !== 0) return
+      this.cameraDrag.active = true
+      this.cameraDrag.pointerId = event.pointerId
+      this.cameraDrag.x = event.clientX
+      this.cameraDrag.y = event.clientY
+      this.cameraDrag.moved = false
+      canvas.setPointerCapture?.(event.pointerId)
+      canvas.classList.add('is-camera-dragging')
     }
-    this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown)
+
+    this.onPointerMove = (event) => {
+      if (!this.cameraDrag.active || this.cameraDrag.pointerId !== event.pointerId) return
+      const dx = event.clientX - this.cameraDrag.x
+      const dy = event.clientY - this.cameraDrag.y
+      if (Math.abs(dx) + Math.abs(dy) > 2) this.cameraDrag.moved = true
+
+      this.cameraYaw -= dx * 0.0044
+      this.cameraPitch = clamp(this.cameraPitch + dy * 0.0031, 0.14, 0.62)
+      this.cameraDrag.x = event.clientX
+      this.cameraDrag.y = event.clientY
+    }
+
+    this.onPointerUp = (event) => {
+      if (!this.cameraDrag.active || this.cameraDrag.pointerId !== event.pointerId) return
+      const shouldPick = !this.cameraDrag.moved
+      this.cameraDrag.active = false
+      this.cameraDrag.pointerId = null
+      canvas.releasePointerCapture?.(event.pointerId)
+      canvas.classList.remove('is-camera-dragging')
+      if (shouldPick) this.pickInteraction(event)
+    }
+
+    this.onPointerCancel = (event) => {
+      if (this.cameraDrag.pointerId !== event.pointerId) return
+      this.cameraDrag.active = false
+      this.cameraDrag.pointerId = null
+      canvas.classList.remove('is-camera-dragging')
+    }
+
+    this.onWheel = (event) => {
+      if (this.transitioning || this.inspectionOpen) return
+      event.preventDefault()
+      const next = this.cameraDistance + event.deltaY * 0.008
+      this.cameraDistance = clamp(next, this.mode === 'inside' ? 5.8 : 7.2, this.mode === 'inside' ? 9.2 : 13.2)
+    }
+
+    canvas.addEventListener('pointerdown', this.onPointerDown)
+    canvas.addEventListener('pointermove', this.onPointerMove)
+    canvas.addEventListener('pointerup', this.onPointerUp)
+    canvas.addEventListener('pointercancel', this.onPointerCancel)
+    canvas.addEventListener('wheel', this.onWheel, { passive: false })
+  }
+
+  pickInteraction(event) {
+    if (!this.renderer || this.transitioning || this.inspectionOpen) return
+    const rect = this.renderer.domElement.getBoundingClientRect()
+    this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+    this.raycaster.setFromCamera(this.pointer, this.camera)
+
+    const targets = []
+    if (this.mode === 'outside') targets.push(this.outdoor.building.userData.doorPanel)
+    if (this.mode === 'inside') {
+      targets.push(...this.interior.terminal.children.filter((child) => child.isMesh))
+      targets.push(...this.interior.exitPivot.children.filter((child) => child.isMesh))
+    }
+
+    const hit = this.raycaster.intersectObjects(targets, true)[0]
+    if (!hit) return
+    let object = hit.object
+    while (object && !object.userData.interactive) object = object.parent
+    const kind = object?.userData?.interactive || hit.object.userData.interactive
+    if (kind === 'door' && this.outdoorDoorDistance() < 3.2) this.enterBuilding()
+    if (kind === 'console' && this.interiorTerminalDistance() < 2.3) this.openInspection()
+    if (kind === 'exit' && this.interiorExitDistance() < 2.2) this.exitBuilding()
   }
 
   startVirtualMove(key, running = false) {
@@ -243,24 +310,23 @@ export class WorldRuntime {
   updateCamera(dt) {
     if (this.transitioning) return
     const inside = this.mode === 'inside'
-    const backDistance = inside ? 5.25 : 7.25
-    const sideOffset = inside ? 3.6 : 5.15
-    const heightOffset = inside ? 2.75 : 3.15
-    const lookAhead = inside ? 3.1 : 4.2
+    const distance = inside ? clamp(this.cameraDistance, 5.8, 9.2) : this.cameraDistance
+    const pitch = inside ? clamp(this.cameraPitch, 0.18, 0.52) : this.cameraPitch
+    const horizontalDistance = Math.cos(pitch) * distance
+    const verticalDistance = Math.sin(pitch) * distance
 
-    const targetX = this.character.position.x - this.direction * backDistance
-    const targetY = this.character.position.y + heightOffset
-    const targetZ = this.character.position.z + sideOffset
+    const focusX = this.character.position.x + this.direction * (inside ? 1.45 : 2.15)
+    const focusY = this.character.position.y + (inside ? 1.32 : 1.45)
+    const focusZ = this.character.position.z
 
-    this.camera.position.x = damp(this.camera.position.x, targetX, 4.2, dt)
-    this.camera.position.y = damp(this.camera.position.y, targetY, 3.7, dt)
+    const targetX = focusX + Math.cos(this.cameraYaw) * horizontalDistance
+    const targetY = focusY + verticalDistance
+    const targetZ = focusZ + Math.sin(this.cameraYaw) * horizontalDistance
+
+    this.camera.position.x = damp(this.camera.position.x, targetX, 4.0, dt)
+    this.camera.position.y = damp(this.camera.position.y, targetY, 3.6, dt)
     this.camera.position.z = damp(this.camera.position.z, targetZ, 4.0, dt)
-
-    this.camera.lookAt(
-      this.character.position.x + this.direction * lookAhead,
-      this.character.position.y + 1.35,
-      this.character.position.z - 0.2,
-    )
+    this.camera.lookAt(focusX, focusY, focusZ)
   }
 
   outdoorDoorDistance() {
@@ -375,6 +441,7 @@ export class WorldRuntime {
       .call(() => {
         this.transitioning = false
         this.mode = 'inside'
+        this.cameraDistance = Math.min(this.cameraDistance, 8.2)
         this.emitState({ location: 'inside', prompt: null, transition: null })
       })
   }
@@ -423,6 +490,7 @@ export class WorldRuntime {
         this.transitioning = false
         this.mode = 'outside'
         this.direction = 1
+        this.cameraDistance = Math.max(this.cameraDistance, 9.6)
         this.emitState({ location: 'boundary', prompt: { key: 'E', label: 'OPEN CONSEQUENCE BUILDING', type: 'door' }, transition: null })
       })
   }
@@ -480,7 +548,12 @@ export class WorldRuntime {
     window.removeEventListener('keydown', this.onKeyDown)
     window.removeEventListener('keyup', this.onKeyUp)
     window.removeEventListener('resize', this.onResize)
-    this.renderer?.domElement?.removeEventListener('pointerdown', this.onPointerDown)
+    const canvas = this.renderer?.domElement
+    canvas?.removeEventListener('pointerdown', this.onPointerDown)
+    canvas?.removeEventListener('pointermove', this.onPointerMove)
+    canvas?.removeEventListener('pointerup', this.onPointerUp)
+    canvas?.removeEventListener('pointercancel', this.onPointerCancel)
+    canvas?.removeEventListener('wheel', this.onWheel)
     this.renderer?.setAnimationLoop(null)
 
     const materials = new Set()
