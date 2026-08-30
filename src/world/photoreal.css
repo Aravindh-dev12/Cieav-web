@@ -1,0 +1,51 @@
+.cieav-world-canvas {
+  filter: contrast(1.035) saturate(.94) brightness(.985);
+}
+
+.world-vignette {
+  background:
+    linear-gradient(180deg, rgba(9,14,12,.06), transparent 21%, transparent 72%, rgba(8,12,10,.17)),
+    radial-gradient(circle at 50% 44%, transparent 43%, rgba(13,18,15,.13) 100%);
+}
+
+.world-vignette::before,
+.world-vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.world-vignette::before {
+  opacity: .075;
+  mix-blend-mode: soft-light;
+  background-image:
+    radial-gradient(circle at 14% 19%, rgba(255,255,255,.65) 0 .6px, transparent .75px),
+    radial-gradient(circle at 73% 61%, rgba(0,0,0,.7) 0 .55px, transparent .75px),
+    radial-gradient(circle at 42% 83%, rgba(255,255,255,.45) 0 .5px, transparent .7px);
+  background-size: 11px 13px, 17px 19px, 23px 29px;
+}
+
+.world-vignette::after {
+  background:
+    linear-gradient(90deg, rgba(255,240,214,.025), transparent 26%, transparent 70%, rgba(175,205,190,.025)),
+    linear-gradient(180deg, rgba(255,255,255,.018), transparent 38%);
+}
+
+.scene-glass,
+.consequence-panel,
+.interact-prompt,
+.control-hint,
+.touch-controls button {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    0 18px 52px rgba(18,27,22,.13),
+    0 2px 8px rgba(18,27,22,.055);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene-glass,
+  .control-hint {
+    transition: backdrop-filter .4s ease, background .4s ease;
+  }
+}
