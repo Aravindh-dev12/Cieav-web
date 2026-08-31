@@ -214,7 +214,7 @@ export class PhotorealRuntime extends WorldRuntime {
         const pool = unused.length ? unused : catalog
         const template = pickCharacterTemplate(pool, 'pedestrian', index)
 
-        if (!template || (index >= 2 && usedOutdoorSources.has(template.source.id))) {
+        if (!template) {
           npc.visible = false
           return
         }
@@ -255,18 +255,23 @@ export class PhotorealRuntime extends WorldRuntime {
     if (this.realismReady) {
       const running = this.keys.has('shift')
       const travelerSpeed = Math.hypot(this.velocity || 0, this.strafeVelocity || 0)
-      this.character?.userData?.realHuman?.update(dt, travelerSpeed, running)
+      this.character?.userData?.realHuman?.update(dt, travelerSpeed, running, this.direction)
 
       if (this.outdoor?.group?.visible) {
         for (const npc of this.outdoor.npcs || []) {
           if (!npc.visible) continue
           const state = npc.userData.npc
-          npc.userData.realHuman?.update(dt, state?.currentSpeed ?? state?.speed ?? 0, false)
+          npc.userData.realHuman?.update(
+            dt,
+            state?.currentSpeed ?? state?.speed ?? 0,
+            false,
+            state?.direction ?? 1,
+          )
         }
       }
 
       if (this.interior?.group?.visible && this.interior.operator) {
-        this.interior.operator.userData.realHuman?.update(dt, 0, false)
+        this.interior.operator.userData.realHuman?.update(dt, 0, false, 1)
       }
     }
 

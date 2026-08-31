@@ -41,7 +41,7 @@ const FALLBACK_CHARACTER_SOURCES = [
     rotationY: 0,
     height: 1.8,
     role: 'fallback',
-    tintClothing: false,
+    tintClothing: true,
   },
   {
     id: 'michelle-civilian',
@@ -49,7 +49,7 @@ const FALLBACK_CHARACTER_SOURCES = [
     rotationY: Math.PI / 2,
     height: 1.69,
     role: 'fallback',
-    tintClothing: false,
+    tintClothing: true,
   },
 ]
 
@@ -60,6 +60,7 @@ const skinPattern = /(skin|face|head|body|hand|arm|leg|neck)/i
 const hairPattern = /(hair|brow|lash)/i
 const eyePattern = /(eye|iris|cornea|teeth|mouth|lip)/i
 const clothingPattern = /(cloth|shirt|top|jacket|coat|dress|skirt|trouser|pant|jean|shoe|boot|sneaker|suit|blazer|hood|sock|sweater)/i
+const clothingTints = [0x52615b, 0x63564f, 0x46586b, 0x69604f, 0x4e5f53]
 
 function inspectTemplate(scene, animations = []) {
   let boneCount = 0
@@ -150,15 +151,21 @@ function varyClothing(model, variant = 0, source = {}) {
       if (seen.has(material)) return seen.get(material)
       const clone = material.clone()
       const name = `${object.name || ''} ${clone.name || ''}`
-      if (clothingPattern.test(name) && clone.color?.isColor && !clone.map) {
-        const hsl = {}
-        clone.color.getHSL(hsl)
-        const hueShift = ((variant * 0.043) % 0.11) - 0.055
-        clone.color.setHSL(
-          (hsl.h + hueShift + 1) % 1,
-          clamp(hsl.s * 0.68, 0.04, 0.46),
-          clamp(hsl.l + ((variant % 3) - 1) * 0.016, 0.08, 0.9),
-        )
+      if (clothingPattern.test(name) && clone.color?.isColor) {
+        const tint = new THREE.Color(clothingTints[(variant - 1) % clothingTints.length])
+        if (clone.map) {
+          clone.color.lerp(tint, 0.16)
+        } else {
+          const hsl = {}
+          clone.color.getHSL(hsl)
+          const hueShift = ((variant * 0.043) % 0.11) - 0.055
+          clone.color.setHSL(
+            (hsl.h + hueShift + 1) % 1,
+            clamp(hsl.s * 0.68, 0.04, 0.46),
+            clamp(hsl.l + ((variant % 3) - 1) * 0.016, 0.08, 0.9),
+          )
+          clone.color.lerp(tint, 0.12)
+        }
       }
       tuneMaterial(object, clone)
       seen.set(material, clone)
@@ -224,6 +231,11 @@ export class CharacterAssetController {
     this.rig = manualRig(model)
     this.bind = snapshotRig(this.rig)
     this.hasManualLegs = Boolean(this.rig.leftUpLeg && this.rig.rightUpLeg)
+    this.baseYaw = model.rotation.y
+    this.turnYaw = 0
+    this.facingDirection = 1
+    this.gaitRate = 0.94 + ((phase * 0.137) % 0.12)
+    this.swayAmount = 0.004 + ((phase * 0.019) % 0.004)
 
     if (this.mixer && this.idle) this.play(this.idle, 0)
   }
@@ -238,9 +250,17 @@ export class CharacterAssetController {
     this.active = action
   }
 
-  update(dt, speed = 0, running = false) {
+  update(dt, speed = 0, running = false, direction = 1) {
     const abs = Math.abs(speed)
     const state = abs < 0.055 ? 'idle' : running ? 'run' : 'walk'
+    const facing = direction < 0 ? -1 : 1
+    const targetYaw = facing < 0 ? Math.PI : 0
+    let delta = targetYaw - this.turnYaw
+    if (delta > Math.PI) delta -= Math.PI * 2
+    if (delta < -Math.PI) delta += Math.PI * 2
+    this.turnYaw += delta * (1 - Math.exp(-10 * dt))
+    this.facingDirection = facing
+    this.model.rotation.y = this.baseYaw + this.turnYaw
 
     if (this.mixer && (this.walk || this.idle)) {
       const clip = state === 'idle'
@@ -250,11 +270,16 @@ export class CharacterAssetController {
           : this.walk || this.idle
       this.play(clip)
       this.mixer.timeScale = state === 'idle'
-        ? 0.78
+        ? 0.78 * this.gaitRate
         : state === 'run'
-          ? 0.92
-          : clamp(0.66 + abs * 0.072, 0.68, 0.92)
+          ? 0.92 * this.gaitRate
+          : clamp((0.66 + abs * 0.072) * this.gaitRate, 0.66, 0.96)
       this.mixer.update(dt)
+      this.model.rotation.z = THREE.MathUtils.lerp(
+        this.model.rotation.z,
+        state === 'idle' ? Math.sin(this.mixer.time * 0.55 + this.phase) * this.swayAmount : 0,
+        1 - Math.exp(-5 * dt),
+      )
       return
     }
 
@@ -303,8 +328,10 @@ async function loadSources(loader, sources) {
 
 export async function loadCharacterCatalog() {
   const loader = new GLTFLoader()
-  const primary = await loadSources(loader, PRIMARY_CHARACTER_SOURCES)
-  const fallback = primary.length >= 3 ? [] : await loadSources(loader, FALLBACK_CHARACTER_SOURCES)
+  const [primary, fallback] = await Promise.all([
+    loadSources(loader, PRIMARY_CHARACTER_SOURCES),
+    loadSources(loader, FALLBACK_CHARACTER_SOURCES),
+  ])
   const catalog = [...primary, ...fallback]
   if (!catalog.length) throw new Error('No finished civilian character asset could be loaded.')
   return catalog

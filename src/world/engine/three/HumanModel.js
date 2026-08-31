@@ -22,9 +22,12 @@ function createArm(side, palette) {
   const upper = limbSegment(0.115, 0.1, 0.64, palette.jacket)
   const elbow = new THREE.Group()
   elbow.position.y = -0.61
-  const lower = limbSegment(0.095, 0.075, 0.58, palette.skin)
-  const hand = mesh(new THREE.SphereGeometry(0.105, 14, 10), palette.skin, { y: -0.59 })
-  elbow.add(lower, hand)
+  const lower = limbSegment(0.095, 0.072, 0.48, palette.jacketDark)
+  const cuff = limbSegment(0.078, 0.074, 0.08, palette.shirt)
+  cuff.position.y = -0.46
+  const hand = mesh(new THREE.CapsuleGeometry(0.075, 0.12, 4, 10), palette.skin, { y: -0.58 })
+  hand.scale.set(0.78, 1, 0.72)
+  elbow.add(lower, cuff, hand)
   shoulder.add(upper, elbow)
   shoulder.position.set(0, 0.9, side * 0.43)
   shoulder.rotation.z = side * 0.08
@@ -40,8 +43,9 @@ function createLeg(side, palette) {
   const shin = limbSegment(0.12, 0.095, 0.76, palette.trousersDark)
   const ankle = new THREE.Group()
   ankle.position.y = -0.72
-  const foot = mesh(new THREE.BoxGeometry(0.48, 0.16, 0.22), palette.shoes, { x: 0.11, y: -0.07 })
-  foot.geometry.translate(0.08, 0, 0)
+  const foot = mesh(new THREE.CapsuleGeometry(0.1, 0.3, 4, 12), palette.shoes, { x: 0.1, y: -0.08 })
+  foot.rotation.z = Math.PI / 2
+  foot.scale.set(0.92, 1, 0.82)
   ankle.add(foot)
   knee.add(shin, ankle)
   hip.add(thigh, knee)
@@ -105,6 +109,11 @@ export function createHumanModel(options = {}) {
   torsoMesh.scale.set(bodyWidth, 1 + coatLength * 0.08, 0.76 * shoulderWidth)
   torso.add(torsoMesh)
 
+  const shoulderLine = mesh(new THREE.CapsuleGeometry(0.16, 0.48, 4, 12), palette.jacket, { y: 0.84 })
+  shoulderLine.rotation.x = Math.PI / 2
+  shoulderLine.scale.set(0.9, shoulderWidth, bodyWidth)
+  torso.add(shoulderLine)
+
   if (coatLength > 0.04) {
     const coat = mesh(new THREE.BoxGeometry(0.54 * bodyWidth, 0.42 + coatLength, 0.34 * shoulderWidth), palette.jacketDark, { x: 0.02, y: 0.18 - coatLength * 0.12, z: 0 })
     coat.rotation.z = 0.03
@@ -119,6 +128,10 @@ export function createHumanModel(options = {}) {
   lapelTop.rotation.z = -0.18
   torso.add(lapelTop)
 
+  const button = mesh(new THREE.SphereGeometry(0.018, 8, 6), palette.jacketDark, { x: 0.365, y: 0.42, z: 0.02 })
+  button.scale.x = 0.45
+  torso.add(button)
+
   const neck = mesh(new THREE.CylinderGeometry(0.13, 0.14, 0.24, 14), palette.skin, { y: 1.08 })
   torso.add(neck)
 
@@ -129,6 +142,10 @@ export function createHumanModel(options = {}) {
   const head = mesh(new THREE.SphereGeometry(0.29, 24, 18), palette.skin, { y: 0.18 })
   head.scale.set(0.9 * headScale, 1.08 * headScale, 0.86 * headScale)
   headPivot.add(head)
+
+  const jaw = mesh(new THREE.SphereGeometry(0.215, 20, 14), palette.skin, { x: 0.035, y: 0.03 })
+  jaw.scale.set(0.94 * headScale, 0.74 * headScale, 0.9 * headScale)
+  headPivot.add(jaw)
 
   const hairCap = mesh(
     new THREE.SphereGeometry(0.302, 24, 14, 0, Math.PI * 2, 0, Math.PI * 0.58),
@@ -150,16 +167,21 @@ export function createHumanModel(options = {}) {
   nose.rotation.z = -Math.PI / 2
   headPivot.add(nose)
 
-  const eye = mesh(new THREE.SphereGeometry(0.027, 10, 8), palette.eye, { x: 0.275, y: 0.24, z: 0.13 })
-  headPivot.add(eye)
+  ;[-1, 1].forEach((side) => {
+    const eyeWhite = mesh(new THREE.SphereGeometry(0.038, 12, 8), palette.shirt, { x: 0.267, y: 0.235, z: side * 0.115 })
+    eyeWhite.scale.set(0.52, 0.72, 1)
+    const iris = mesh(new THREE.SphereGeometry(0.022, 10, 8), palette.eye, { x: 0.292, y: 0.235, z: side * 0.115 })
+    iris.scale.set(0.5, 0.72, 0.72)
+    const brow = mesh(new THREE.BoxGeometry(0.075, 0.016, 0.025), palette.hair, { x: 0.27, y: 0.298, z: side * 0.12 })
+    brow.rotation.set(0, side * 0.06, -0.08)
+    const ear = mesh(new THREE.SphereGeometry(0.055, 10, 8), palette.skinDark, { x: -0.005, y: 0.19, z: side * 0.25 })
+    ear.scale.set(0.7, 1, 0.45)
+    headPivot.add(eyeWhite, iris, brow, ear)
+  })
 
-  const brow = mesh(new THREE.BoxGeometry(0.08, 0.018, 0.024), palette.hair, { x: 0.29, y: 0.29, z: 0.13 })
-  brow.rotation.z = -0.12
-  headPivot.add(brow)
-
-  const ear = mesh(new THREE.SphereGeometry(0.055, 10, 8), palette.skinDark, { x: -0.01, y: 0.19, z: -0.25 })
-  ear.scale.set(0.7, 1, 0.45)
-  headPivot.add(ear)
+  const mouth = mesh(new THREE.BoxGeometry(0.016, 0.018, 0.105), palette.skinDark, { x: 0.278, y: 0.055 })
+  mouth.rotation.z = -0.05
+  headPivot.add(mouth)
 
   const leftArm = createArm(-1, palette)
   const rightArm = createArm(1, palette)
@@ -206,6 +228,11 @@ export function createHumanModel(options = {}) {
     rightAnkle: rightLeg.userData.ankle,
   }
   root.userData.phase = options.phase ?? 0
+  root.userData.gait = {
+    stride: options.stride ?? 0.92 + ((options.phase ?? 0) % 1) * 0.12,
+    bounce: options.bounce ?? 0.9 + ((options.phase ?? 0) % 0.7) * 0.16,
+    armSwing: options.armSwing ?? 0.88 + ((options.phase ?? 0) % 0.8) * 0.18,
+  }
   root.userData.direction = options.direction ?? 1
   root.userData.facingDirection = null
   root.userData.turnYaw = options.direction && options.direction < 0 ? Math.PI : 0
@@ -245,12 +272,16 @@ export function poseHuman(human, dt, speed, running = false, direction = 1) {
   const absSpeed = Math.abs(speed)
   human.userData.phase += dt * (running ? 7.2 : 4.9) * Math.min(1.32, 0.4 + absSpeed / 3.8)
   const phase = human.userData.phase
+  const gait = human.userData.gait || { stride: 1, bounce: 1, armSwing: 1 }
   const moving = absSpeed > 0.04
 
   if (!moving) {
-    const breath = Math.sin(phase * 0.38) * 0.01
+    const breath = Math.sin(phase * 0.38) * 0.012
     rig.hips.position.y = breath
+    rig.hips.position.z = Math.sin(phase * 0.17) * 0.004
+    rig.torso.rotation.x = Math.sin(phase * 0.22) * 0.006
     rig.torso.rotation.z *= 0.86
+    rig.headPivot.rotation.x = Math.sin(phase * 0.13) * 0.008
     rig.headPivot.rotation.z = Math.sin(phase * 0.22) * 0.014
     rig.leftArm.rotation.z += (-0.055 - rig.leftArm.rotation.z) * 0.12
     rig.rightArm.rotation.z += (0.055 - rig.rightArm.rotation.z) * 0.12
@@ -262,23 +293,27 @@ export function poseHuman(human, dt, speed, running = false, direction = 1) {
     return
   }
 
-  const strideAmp = running ? 0.68 : 0.46
-  const armAmp = running ? 0.58 : 0.42
+  const strideAmp = (running ? 0.68 : 0.46) * gait.stride
+  const armAmp = (running ? 0.58 : 0.42) * gait.armSwing
   const leftStride = Math.sin(phase)
   const rightStride = Math.sin(phase + Math.PI)
   const bounce = Math.abs(Math.sin(phase * 2))
 
-  rig.hips.position.y = bounce * (running ? 0.06 : 0.03)
+  rig.hips.position.y = bounce * (running ? 0.06 : 0.03) * gait.bounce
+  rig.hips.position.z = Math.sin(phase) * (running ? 0.026 : 0.016)
   rig.hips.rotation.z = Math.sin(phase) * (running ? 0.035 : 0.018)
+  rig.hips.rotation.x = Math.sin(phase * 2) * (running ? 0.018 : 0.01)
+  rig.torso.rotation.x = running ? -0.055 : -0.018
   rig.torso.rotation.z = -Math.sin(phase) * (running ? 0.042 : 0.022)
-  rig.headPivot.rotation.z = Math.sin(phase) * 0.014
+  rig.headPivot.rotation.x = bounce * (running ? -0.018 : -0.008)
+  rig.headPivot.rotation.z = Math.sin(phase) * 0.012
 
   rig.leftLeg.rotation.z = leftStride * strideAmp
   rig.rightLeg.rotation.z = rightStride * strideAmp
   rig.leftKnee.rotation.z = Math.max(0, -leftStride) * (running ? 0.82 : 0.54)
   rig.rightKnee.rotation.z = Math.max(0, -rightStride) * (running ? 0.82 : 0.54)
-  rig.leftAnkle.rotation.z = -rig.leftKnee.rotation.z * 0.3
-  rig.rightAnkle.rotation.z = -rig.rightKnee.rotation.z * 0.3
+  rig.leftAnkle.rotation.z = -rig.leftKnee.rotation.z * 0.3 - leftStride * 0.08
+  rig.rightAnkle.rotation.z = -rig.rightKnee.rotation.z * 0.3 - rightStride * 0.08
 
   rig.leftArm.rotation.z = -leftStride * armAmp - 0.05
   rig.rightArm.rotation.z = -rightStride * armAmp + 0.05

@@ -64,6 +64,8 @@ function createBackgroundBuilding({ x, z, width, height, depth, color = 0x7a817c
   addBox(group, [width, height, depth], wall, [0, height / 2, 0])
   addBox(group, [width + 0.32, 0.4, depth + 0.34], wallDark, [0, 0.18, 0])
   addBox(group, [width * 0.42, height * 0.78, depth * 0.56], wallLight, [-width * 0.18, height * 0.44, -depth * 0.08])
+  addBox(group, [width * 0.28, height * 0.5, depth * 0.4], wallDark, [width * 0.24, height * 0.27, -depth * 0.18])
+  addBox(group, [width * 0.64, 0.22, depth * 0.1], frame, [0, 0.92, depth / 2 + 0.12])
   const levels = Math.max(2, Math.floor(height / 2.1))
   const columns = Math.max(2, Math.floor(width / 1.5))
   for (let level = 0; level < levels; level += 1) {
@@ -83,8 +85,18 @@ function createBackgroundBuilding({ x, z, width, height, depth, color = 0x7a817c
       addWindow(group, width / 2 + 0.045, py, pz, paneWidth, 1.1, glass, frame)
     }
   }
+  for (let col = 0; col < Math.max(3, columns - 1); col += 1) {
+    const paneWidth = width / Math.max(3, columns - 1) * 0.76
+    const px = -width / 2 + (col + 0.5) * (width / Math.max(3, columns - 1))
+    addWindow(group, px, 1.62, depth / 2 + 0.06, paneWidth, 1.64, glass, frame)
+  }
+  for (let col = 0; col < Math.max(4, columns); col += 1) {
+    const finX = -width / 2 + col * (width / Math.max(1, columns - 1))
+    addBox(group, [0.09, height * 0.92, 0.14], frame, [finX, height * 0.48, depth / 2 + 0.08])
+  }
   addBox(group, [width * 0.34, 0.55, depth * 0.2], frame, [width * 0.16, height + 0.36, -depth * 0.14])
   addBox(group, [width * 0.16, 0.36, depth * 0.12], wallDark, [-width * 0.22, height + 0.26, depth * 0.14])
+  addBox(group, [width * 0.16, 0.42, depth * 0.18], wallDark, [width * 0.22, height + 0.32, -depth * 0.08])
   if (roof) addBox(group, [width + 0.6, 0.24, depth + 0.6], frame, [0, height + 0.12, 0])
   return group
 }
@@ -244,27 +256,27 @@ export function createOutdoorWorld() {
 
   const pedestrianSpecs = [
     {
-      model: { name: 'walker-a', jacket: 0x6c6257, trousers: 0x3e4140, skin: 0xb98463, scale: 0.92, phase: 1.4, shoulderWidth: 1.08, accessory: 'backpack', hairStyle: 'crop' },
+      model: { name: 'walker-a', jacket: 0x6c6257, jacketDark: 0x4d463f, trousers: 0x3e4140, skin: 0xb98463, scale: 0.92, phase: 1.4, shoulderWidth: 1.08, bodyWidth: 0.98, headScale: 0.98, accessory: 'backpack', hairStyle: 'crop' },
       start: [10.5, 5.0],
       motion: { minX: 5, maxX: 20, speed: 1.0, direction: 1, laneZ: 5.0, pause: 0.2, sway: 0.08 },
     },
     {
-      model: { name: 'walker-b', jacket: 0x4e6175, trousers: 0x2b3137, skin: 0xd1a17e, hair: 0x3c2f29, scale: 0.88, phase: 3.2, bodyWidth: 0.94, armLength: 1.05, accessory: 'satchel', hairStyle: 'bun' },
+      model: { name: 'walker-b', jacket: 0x4e6175, jacketDark: 0x38495a, trousers: 0x2b3137, skin: 0xd1a17e, hair: 0x3c2f29, scale: 0.88, phase: 3.2, bodyWidth: 0.94, shoulderWidth: 0.92, armLength: 1.05, headScale: 1.02, accessory: 'satchel', hairStyle: 'bun' },
       start: [54, 5.15],
       motion: { minX: 47, maxX: 66, speed: 0.8, direction: -1, laneZ: 5.15, pause: 0.45, sway: 0.06 },
     },
     {
-      model: { name: 'walker-c', jacket: 0x785d4e, trousers: 0x45413f, skin: 0x8f624c, hair: 0x171716, scale: 0.96, phase: 4.4, coatLength: 0.2, headScale: 0.96 },
+      model: { name: 'walker-c', jacket: 0x785d4e, jacketDark: 0x5b473c, trousers: 0x45413f, skin: 0x8f624c, hair: 0x171716, scale: 0.96, phase: 4.4, coatLength: 0.2, bodyWidth: 1.02, headScale: 0.96 },
       start: [24, 4.95],
       motion: { minX: 20, maxX: 31, speed: 0.72, direction: 1, laneZ: 4.95, pause: 0.35, sway: 0.05 },
     },
     {
-      model: { name: 'walker-d', jacket: 0x55675c, jacketDark: 0x38473f, trousers: 0x2e3432, skin: 0x6e4739, hair: 0x1f1816, scale: 0.9, phase: 2.2, bodyWidth: 0.9, shoulderWidth: 0.92, hairStyle: 'crop' },
+      model: { name: 'walker-d', jacket: 0x55675c, jacketDark: 0x38473f, trousers: 0x2e3432, skin: 0x6e4739, hair: 0x1f1816, scale: 0.9, phase: 2.2, bodyWidth: 0.9, shoulderWidth: 0.92, legSpread: 0.94, hairStyle: 'crop' },
       start: [36.5, 4.55],
       motion: { minX: 33, maxX: 44, speed: 0.66, direction: 1, laneZ: 4.55, pause: 0.55, sway: 0.04 },
     },
     {
-      model: { name: 'walker-e', jacket: 0x6a5b71, jacketDark: 0x4a4150, trousers: 0x35363b, skin: 0xc89574, hair: 0x32231c, scale: 0.87, phase: 5.1, shoulderWidth: 0.96, coatLength: 0.12, accessory: 'backpack' },
+      model: { name: 'walker-e', jacket: 0x6a5b71, jacketDark: 0x4a4150, trousers: 0x35363b, skin: 0xc89574, hair: 0x32231c, scale: 0.87, phase: 5.1, bodyWidth: 0.95, shoulderWidth: 0.96, coatLength: 0.12, hairVolume: 1.08, accessory: 'backpack' },
       start: [63.8, 4.72],
       motion: { minX: 58, maxX: 68.2, speed: 0.74, direction: -1, laneZ: 4.72, pause: 0.28, sway: 0.05 },
     },
