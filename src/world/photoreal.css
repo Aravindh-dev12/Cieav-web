@@ -41,7 +41,6 @@
 .scene-glass,
 .consequence-panel,
 .interact-prompt,
-.control-hint,
 .touch-controls button {
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.58),
@@ -49,9 +48,53 @@
     0 2px 8px rgba(18,27,22,.055);
 }
 
+/* The world should be the interface. Do not repeat keyboard instructions in
+   multiple floating cards on desktop. */
+.control-hint {
+  display: none !important;
+}
+
+.interact-prompt {
+  transition:
+    transform .32s cubic-bezier(.2,.75,.2,1),
+    opacity .28s ease,
+    background .3s ease,
+    box-shadow .3s ease;
+}
+
+@media (min-width: 821px) {
+  .touch-controls,
+  .app-header__help {
+    display: none !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .touch-controls {
+    right: 14px;
+    bottom: 14px;
+    display: grid;
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(2, 44px);
+    gap: 5px;
+  }
+
+  .touch-controls button {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 16px;
+    transition: transform .16s ease, background .2s ease;
+  }
+
+  .touch-controls button:nth-child(1) { grid-column: 2; grid-row: 1; }
+  .touch-controls button:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .touch-controls button:nth-child(3) { grid-column: 2; grid-row: 2; }
+  .touch-controls button:nth-child(4) { grid-column: 3; grid-row: 2; }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .scene-glass,
-  .control-hint {
+  .scene-glass {
     transition: backdrop-filter .4s ease, background .4s ease;
   }
 }
