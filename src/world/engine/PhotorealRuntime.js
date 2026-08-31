@@ -261,7 +261,7 @@ export class PhotorealRuntime extends WorldRuntime {
         for (const npc of this.outdoor.npcs || []) {
           if (!npc.visible) continue
           const state = npc.userData.npc
-          npc.userData.realHuman?.update(dt, state?.speed || 0, false)
+          npc.userData.realHuman?.update(dt, state?.currentSpeed ?? state?.speed ?? 0, false)
         }
       }
 

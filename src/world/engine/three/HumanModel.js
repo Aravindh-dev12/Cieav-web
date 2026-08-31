@@ -26,7 +26,7 @@ function createArm(side, palette) {
   const hand = mesh(new THREE.SphereGeometry(0.105, 14, 10), palette.skin, { y: -0.59 })
   elbow.add(lower, hand)
   shoulder.add(upper, elbow)
-  shoulder.position.set(side * 0.43, 1.98, side * -0.02)
+  shoulder.position.set(0, 0.9, side * 0.43)
   shoulder.rotation.z = side * 0.08
   shoulder.userData.elbow = elbow
   return shoulder
@@ -40,12 +40,12 @@ function createLeg(side, palette) {
   const shin = limbSegment(0.12, 0.095, 0.76, palette.trousersDark)
   const ankle = new THREE.Group()
   ankle.position.y = -0.72
-  const foot = mesh(new THREE.BoxGeometry(0.22, 0.16, 0.48), palette.shoes, { x: 0.09, y: -0.07, z: 0.11 })
-  foot.geometry.translate(0.08, 0, 0.08)
+  const foot = mesh(new THREE.BoxGeometry(0.48, 0.16, 0.22), palette.shoes, { x: 0.11, y: -0.07 })
+  foot.geometry.translate(0.08, 0, 0)
   ankle.add(foot)
   knee.add(shin, ankle)
   hip.add(thigh, knee)
-  hip.position.set(side * 0.2, 1.31, side * -0.015)
+  hip.position.set(0, 1.31, side * 0.18)
   hip.userData.knee = knee
   hip.userData.ankle = ankle
   return hip
@@ -69,6 +69,13 @@ export function createHumanModel(options = {}) {
   root.name = options.name ?? 'human'
   const baseScale = Math.abs(options.scale ?? 1)
   root.scale.setScalar(baseScale)
+  const bodyWidth = options.bodyWidth ?? 1
+  const shoulderWidth = options.shoulderWidth ?? 1
+  const legSpread = options.legSpread ?? 1
+  const armLength = options.armLength ?? 1
+  const coatLength = options.coatLength ?? 0
+  const headScale = options.headScale ?? 1
+  const hairVolume = options.hairVolume ?? 1
 
   const shadow = mesh(
     new THREE.CircleGeometry(0.48, 28),
@@ -87,7 +94,7 @@ export function createHumanModel(options = {}) {
 
   const pelvis = mesh(new THREE.CapsuleGeometry(0.31, 0.3, 4, 10), palette.trousers, { y: 1.24 })
   pelvis.rotation.z = Math.PI / 2
-  pelvis.scale.set(0.76, 0.82, 0.82)
+  pelvis.scale.set(0.76 * bodyWidth, 0.82, 0.82 * legSpread)
   hips.add(pelvis)
 
   const torso = new THREE.Group()
@@ -95,8 +102,14 @@ export function createHumanModel(options = {}) {
   hips.add(torso)
 
   const torsoMesh = mesh(new THREE.CylinderGeometry(0.39, 0.34, 0.92, 16), palette.jacket, { y: 0.52 })
-  torsoMesh.scale.z = 0.76
+  torsoMesh.scale.set(bodyWidth, 1 + coatLength * 0.08, 0.76 * shoulderWidth)
   torso.add(torsoMesh)
+
+  if (coatLength > 0.04) {
+    const coat = mesh(new THREE.BoxGeometry(0.54 * bodyWidth, 0.42 + coatLength, 0.34 * shoulderWidth), palette.jacketDark, { x: 0.02, y: 0.18 - coatLength * 0.12, z: 0 })
+    coat.rotation.z = 0.03
+    torso.add(coat)
+  }
 
   const shirt = mesh(new THREE.BoxGeometry(0.16, 0.72, 0.035), palette.shirt, { x: 0.345, y: 0.53, z: 0.04 })
   shirt.rotation.y = Math.PI / 2
@@ -114,7 +127,7 @@ export function createHumanModel(options = {}) {
   torso.add(headPivot)
 
   const head = mesh(new THREE.SphereGeometry(0.29, 24, 18), palette.skin, { y: 0.18 })
-  head.scale.set(0.9, 1.08, 0.86)
+  head.scale.set(0.9 * headScale, 1.08 * headScale, 0.86 * headScale)
   headPivot.add(head)
 
   const hairCap = mesh(
@@ -122,8 +135,16 @@ export function createHumanModel(options = {}) {
     palette.hair,
     { y: 0.27 },
   )
-  hairCap.scale.set(0.92, 0.78, 0.88)
+  hairCap.scale.set(0.92 * headScale, 0.78 * hairVolume, 0.88 * headScale)
   headPivot.add(hairCap)
+
+  if (options.hairStyle === 'bun') {
+    const bun = mesh(new THREE.SphereGeometry(0.11, 12, 10), palette.hair, { x: -0.05, y: 0.42, z: -0.03 })
+    bun.scale.set(0.9, 0.8, 0.9)
+    headPivot.add(bun)
+  } else if (options.hairStyle === 'crop') {
+    hairCap.scale.y *= 0.72
+  }
 
   const nose = mesh(new THREE.ConeGeometry(0.045, 0.12, 10), palette.skinDark, { x: 0.28, y: 0.18 })
   nose.rotation.z = -Math.PI / 2
@@ -142,11 +163,29 @@ export function createHumanModel(options = {}) {
 
   const leftArm = createArm(-1, palette)
   const rightArm = createArm(1, palette)
+  leftArm.position.z *= shoulderWidth
+  rightArm.position.z *= shoulderWidth
+  leftArm.scale.y = armLength
+  rightArm.scale.y = armLength
   torso.add(leftArm, rightArm)
 
   const leftLeg = createLeg(-1, palette)
   const rightLeg = createLeg(1, palette)
+  leftLeg.position.z *= legSpread
+  rightLeg.position.z *= legSpread
   hips.add(leftLeg, rightLeg)
+
+  if (options.accessory === 'backpack') {
+    const bag = mesh(new THREE.BoxGeometry(0.24, 0.56, 0.48), palette.jacketDark, { x: -0.31, y: 0.62 })
+    bag.rotation.z = -0.04
+    torso.add(bag)
+  } else if (options.accessory === 'satchel') {
+    const strap = mesh(new THREE.BoxGeometry(0.04, 0.96, 0.05), palette.jacketDark, { x: 0.31, y: 0.56 })
+    strap.rotation.x = 0.68
+    const pouch = mesh(new THREE.BoxGeometry(0.18, 0.3, 0.28), palette.jacketDark, { x: -0.23, y: 0.1, z: 0.3 })
+    pouch.rotation.z = -0.08
+    torso.add(strap, pouch)
+  }
 
   root.userData.rig = {
     root,
@@ -169,12 +208,13 @@ export function createHumanModel(options = {}) {
   root.userData.phase = options.phase ?? 0
   root.userData.direction = options.direction ?? 1
   root.userData.facingDirection = null
+  root.userData.turnYaw = options.direction && options.direction < 0 ? Math.PI : 0
   root.userData.baseScale = baseScale
   root.userData.palette = palette
   return root
 }
 
-function applyFacing(human, direction) {
+function applyFacing(human, direction, dt = 0.016) {
   const facing = direction < 0 ? -1 : 1
   const baseScale = Math.abs(human.userData.baseScale ?? 1)
 
@@ -184,10 +224,15 @@ function applyFacing(human, direction) {
 
   // Only update yaw when direction changes. This lets interaction animations
   // temporarily rotate the root without being overwritten every frame.
-  if (human.userData.facingDirection !== facing) {
-    human.userData.facingDirection = facing
-    human.rotation.y = facing < 0 ? Math.PI : 0
-  }
+  human.userData.facingDirection = facing
+  const targetYaw = facing < 0 ? Math.PI : 0
+  const currentYaw = human.userData.turnYaw ?? human.rotation.y ?? 0
+  let delta = targetYaw - currentYaw
+  if (delta > Math.PI) delta -= Math.PI * 2
+  if (delta < -Math.PI) delta += Math.PI * 2
+  const nextYaw = currentYaw + delta * (1 - Math.exp(-10 * dt))
+  human.userData.turnYaw = nextYaw
+  human.rotation.y = nextYaw
 }
 
 export function poseHuman(human, dt, speed, running = false, direction = 1) {
@@ -195,7 +240,7 @@ export function poseHuman(human, dt, speed, running = false, direction = 1) {
   if (!rig) return
 
   human.userData.direction = direction || human.userData.direction || 1
-  applyFacing(human, human.userData.direction)
+  applyFacing(human, human.userData.direction, dt)
 
   const absSpeed = Math.abs(speed)
   human.userData.phase += dt * (running ? 7.2 : 4.9) * Math.min(1.32, 0.4 + absSpeed / 3.8)

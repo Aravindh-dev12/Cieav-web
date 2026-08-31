@@ -290,11 +290,40 @@ export class WorldRuntime {
     if (this.outdoor?.group.visible) {
       for (const npc of this.outdoor.npcs) {
         const state = npc.userData.npc
-        npc.position.x += state.direction * state.speed * dt
-        if (npc.position.x > state.maxX) state.direction = -1
-        if (npc.position.x < state.minX) state.direction = 1
+        if (!state) continue
+
+        if (state.pauseTimer > 0) {
+          state.pauseTimer = Math.max(0, state.pauseTimer - dt)
+        } else if (state.turning) {
+          state.direction = state.targetDirection
+          state.turning = false
+        } else {
+          const edgeRange = 1.2
+          const distanceToEdge = state.direction > 0
+            ? state.maxX - npc.position.x
+            : npc.position.x - state.minX
+          const edgeFactor = clamp(distanceToEdge / edgeRange, 0.22, 1)
+          state.currentSpeed = state.speed * edgeFactor
+          const step = state.direction * state.currentSpeed * dt
+          npc.position.x = clamp(npc.position.x + step, state.minX, state.maxX)
+
+          const reachedUpper = state.direction > 0 && npc.position.x >= state.maxX - 0.01
+          const reachedLower = state.direction < 0 && npc.position.x <= state.minX + 0.01
+          if (reachedUpper || reachedLower) {
+            state.turning = true
+            state.targetDirection = state.direction > 0 ? -1 : 1
+            state.pauseTimer = state.pause ?? 0.3
+            state.currentSpeed = 0
+          }
+        }
+
+        if (state.pauseTimer > 0 || state.turning) state.currentSpeed = 0
+
+        const sway = state.sway ?? 0
+        npc.position.z = (state.laneZ ?? npc.position.z) + Math.sin((npc.userData.phase || 0) * 0.45) * sway
         npc.position.y = terrainHeightAt(npc.position.x)
-        poseHuman(npc, dt, state.speed, false, state.direction)
+        const displayedSpeed = state.currentSpeed ?? state.speed
+        poseHuman(npc, dt, displayedSpeed, false, state.direction)
       }
     }
 
