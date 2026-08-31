@@ -2,23 +2,45 @@ import * as THREE from 'three/webgpu'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 
-// Dressed-only production cast. Do not put bare/painted-body MakeHuman bases
-// in this list: if a source is used here it must read as a clothed civilian.
+// Finished civilian avatars used for close-up browser presentation. These MPFB
+// exports contain authored face/skin/hair/clothing detail and are preferred over
+// generic sample/demo characters.
 const PRIMARY_CHARACTER_SOURCES = [
   {
-    id: 'rpm-campus-male',
-    url: 'https://readyplayerme.github.io/visage/male.glb',
+    id: 'civilian-liam',
+    url: 'https://raw.githubusercontent.com/privacypuppet/privacypuppet/main/public/mpfb_models/liam-v2.glb',
     rotationY: Math.PI / 2,
-    height: 1.78,
+    height: 1.79,
     role: 'civilian',
     tintClothing: false,
   },
   {
+    id: 'civilian-yuki',
+    url: 'https://raw.githubusercontent.com/privacypuppet/privacypuppet/main/public/mpfb_models/yuki-v2.glb',
+    rotationY: Math.PI / 2,
+    height: 1.68,
+    role: 'civilian',
+    tintClothing: false,
+  },
+  {
+    id: 'civilian-kofi',
+    url: 'https://raw.githubusercontent.com/privacypuppet/privacypuppet/main/public/mpfb_models/kofi-v2.glb',
+    rotationY: Math.PI / 2,
+    height: 1.82,
+    role: 'civilian',
+    tintClothing: false,
+  },
+]
+
+// Dressed fallbacks only. Bare body bases and tactical/sample soldiers are not
+// allowed in the production cast.
+const FALLBACK_CHARACTER_SOURCES = [
+  {
     id: 'makehuman-suited',
     url: 'https://raw.githubusercontent.com/kunalkushwaha/vsim/main/packages/assets/library/suited.glb',
     rotationY: 0,
-    height: 1.80,
-    role: 'civilian',
+    height: 1.8,
+    role: 'fallback',
     tintClothing: false,
   },
   {
@@ -26,21 +48,8 @@ const PRIMARY_CHARACTER_SOURCES = [
     url: 'https://three.ws/avatars/michelle.glb',
     rotationY: Math.PI / 2,
     height: 1.69,
-    role: 'civilian',
-    tintClothing: true,
-  },
-]
-
-// Dressed browser-friendly fallbacks only. The previous realistic-male/female
-// body bases were intentionally removed because they could render like mannequins.
-const FALLBACK_CHARACTER_SOURCES = [
-  {
-    id: 'default-civilian',
-    url: 'https://three.ws/avatars/default.glb',
-    rotationY: Math.PI / 2,
-    height: 1.74,
     role: 'fallback',
-    tintClothing: true,
+    tintClothing: false,
   },
 ]
 
@@ -85,18 +94,18 @@ function tuneMaterial(object, material) {
   const eyeLike = eyePattern.test(name)
   const clothingLike = clothingPattern.test(name)
 
-  // Preserve authored texture maps. Restrict only physically implausible values
-  // that make skin look like wax or clothing look like hard plastic.
+  // Keep the avatar's original color, normal and detail textures. Only constrain
+  // physically implausible response values that make a person look waxy/plastic.
   if ('metalness' in material && !/metal|zip|button|buckle/i.test(name)) material.metalness = 0
   if ('roughness' in material) {
-    if (skinLike) material.roughness = clamp(material.roughness ?? 0.56, 0.5, 0.68)
+    if (skinLike) material.roughness = clamp(material.roughness ?? 0.58, 0.52, 0.7)
     else if (hairLike) material.roughness = clamp(material.roughness ?? 0.7, 0.58, 0.84)
-    else if (eyeLike) material.roughness = clamp(material.roughness ?? 0.22, 0.14, 0.34)
-    else if (clothingLike) material.roughness = clamp(material.roughness ?? 0.8, 0.66, 0.95)
+    else if (eyeLike) material.roughness = clamp(material.roughness ?? 0.2, 0.12, 0.32)
+    else if (clothingLike) material.roughness = clamp(material.roughness ?? 0.8, 0.64, 0.95)
     else material.roughness = clamp(material.roughness ?? 0.7, 0.48, 0.94)
   }
-  if ('envMapIntensity' in material) material.envMapIntensity = skinLike ? 0.46 : eyeLike ? 1.02 : 0.76
-  if ('clearcoat' in material && skinLike) material.clearcoat = Math.min(material.clearcoat ?? 0, 0.05)
+  if ('envMapIntensity' in material) material.envMapIntensity = skinLike ? 0.42 : eyeLike ? 1.06 : 0.76
+  if ('clearcoat' in material && skinLike) material.clearcoat = Math.min(material.clearcoat ?? 0, 0.035)
   material.needsUpdate = true
 }
 
@@ -219,7 +228,7 @@ export class CharacterAssetController {
     if (this.mixer && this.idle) this.play(this.idle, 0)
   }
 
-  play(clip, fade = 0.36) {
+  play(clip, fade = 0.38) {
     if (!this.mixer || !clip) return
     const action = this.mixer.clipAction(clip)
     if (action === this.active) return
@@ -241,33 +250,34 @@ export class CharacterAssetController {
           : this.walk || this.idle
       this.play(clip)
       this.mixer.timeScale = state === 'idle'
-        ? 0.8
+        ? 0.78
         : state === 'run'
-          ? 0.94
-          : clamp(0.68 + abs * 0.075, 0.7, 0.94)
+          ? 0.92
+          : clamp(0.66 + abs * 0.072, 0.68, 0.92)
       this.mixer.update(dt)
       return
     }
 
     if (!this.hasManualLegs) return
 
-    // Restrained pedestrian fallback with relaxed shoulders and small stride.
-    this.phase += dt * (running ? 6.0 : 3.95) * clamp(0.44 + abs / 3.25, 0.44, 1.12)
+    // Deliberately understated civilian locomotion: short stride, relaxed arms,
+    // small torso counter-rotation and no combat-like shoulder swing.
+    this.phase += dt * (running ? 5.8 : 3.75) * clamp(0.44 + abs / 3.4, 0.44, 1.08)
     const swing = abs > 0.055 ? Math.sin(this.phase) : 0
-    const stride = running ? 0.47 : 0.28
+    const stride = running ? 0.44 : 0.25
     const kneeL = Math.max(0, -swing)
     const kneeR = Math.max(0, swing)
 
     easeBone(this.rig.leftUpLeg, this.bind.leftUpLeg, swing * stride)
     easeBone(this.rig.rightUpLeg, this.bind.rightUpLeg, -swing * stride)
-    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.58 : 0.33))
-    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.58 : 0.33))
-    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.3 : 0.17), 0, 0.06)
-    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.3 : 0.17), 0, -0.06)
-    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.12 - kneeR * 0.1)
-    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.12 - kneeL * 0.1)
-    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.055 ? -swing * 0.008 : 0)
-    easeBone(this.rig.head, this.bind.head, 0, abs > 0.055 ? swing * 0.006 : Math.sin(this.phase * 0.16) * 0.009, 0)
+    easeBone(this.rig.leftLeg, this.bind.leftLeg, -kneeL * (running ? 0.54 : 0.3))
+    easeBone(this.rig.rightLeg, this.bind.rightLeg, -kneeR * (running ? 0.54 : 0.3))
+    easeBone(this.rig.leftArm, this.bind.leftArm, -swing * (running ? 0.27 : 0.14), 0, 0.045)
+    easeBone(this.rig.rightArm, this.bind.rightArm, swing * (running ? 0.27 : 0.14), 0, -0.045)
+    easeBone(this.rig.leftForeArm, this.bind.leftForeArm, -0.1 - kneeR * 0.08)
+    easeBone(this.rig.rightForeArm, this.bind.rightForeArm, -0.1 - kneeL * 0.08)
+    easeBone(this.rig.spine, this.bind.spine, 0, 0, abs > 0.055 ? -swing * 0.006 : 0)
+    easeBone(this.rig.head, this.bind.head, 0, abs > 0.055 ? swing * 0.004 : Math.sin(this.phase * 0.15) * 0.007, 0)
   }
 
   dispose() {
@@ -296,7 +306,7 @@ export async function loadCharacterCatalog() {
   const primary = await loadSources(loader, PRIMARY_CHARACTER_SOURCES)
   const fallback = primary.length >= 3 ? [] : await loadSources(loader, FALLBACK_CHARACTER_SOURCES)
   const catalog = [...primary, ...fallback]
-  if (!catalog.length) throw new Error('No dressed civilian character asset could be loaded.')
+  if (!catalog.length) throw new Error('No finished civilian character asset could be loaded.')
   return catalog
 }
 
@@ -306,14 +316,14 @@ export function pickCharacterTemplate(catalog, role = 'traveler', index = 0) {
   const pool = needsMotion && motionReady.length ? motionReady : catalog
 
   const preferences = role === 'traveler'
-    ? ['rpm-campus-male', 'makehuman-suited', 'michelle-civilian', 'default-civilian']
+    ? ['civilian-liam', 'civilian-kofi', 'civilian-yuki', 'makehuman-suited', 'michelle-civilian']
     : role === 'operator'
-      ? ['makehuman-suited', 'rpm-campus-male', 'michelle-civilian', 'default-civilian']
+      ? ['civilian-kofi', 'civilian-liam', 'civilian-yuki', 'makehuman-suited', 'michelle-civilian']
       : index % 3 === 0
-        ? ['michelle-civilian', 'makehuman-suited', 'rpm-campus-male', 'default-civilian']
+        ? ['civilian-yuki', 'civilian-liam', 'civilian-kofi', 'makehuman-suited']
         : index % 3 === 1
-          ? ['makehuman-suited', 'rpm-campus-male', 'michelle-civilian', 'default-civilian']
-          : ['rpm-campus-male', 'michelle-civilian', 'makehuman-suited', 'default-civilian']
+          ? ['civilian-kofi', 'civilian-yuki', 'civilian-liam', 'makehuman-suited']
+          : ['civilian-liam', 'civilian-kofi', 'civilian-yuki', 'makehuman-suited']
 
   const ordered = preferences
     .map((id) => pool.find((template) => template.source.id === id))
