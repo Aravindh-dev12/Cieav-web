@@ -12,6 +12,7 @@ import { addEnvironmentDetailLayer } from './three/EnvironmentDetailLayer.js'
 import { attachHighDetailArchitecture, removeHighDetailArchitecture } from './three/BuildingAssetFactory.js'
 import { addDistantCityLayer, removeDistantCityLayer } from './three/DistantCityLayer.js'
 import { attachStreetAssets, removeStreetAssets } from './three/StreetAssetFactory.js'
+import { createSoulEntity } from './three/SoulEntity.js'
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
 const damp = (from, to, lambda, dt) => THREE.MathUtils.lerp(from, to, 1 - Math.exp(-lambda * dt))
@@ -24,6 +25,8 @@ export class PhotorealRuntime extends WorldRuntime {
     this.realFrameBase = this.frame
     this.frame = this.photorealFrame
     this.realLastTime = performance.now()
+    this.soulEntity = null
+    this.soulStage = 'AWAKENING'
 
     // The base runtime owns the actual camera values. User input only changes
     // these targets, so drag / zoom never snaps the rendered camera directly.
@@ -184,8 +187,48 @@ export class PhotorealRuntime extends WorldRuntime {
     this.camera.lookAt(focusX, focusY, focusZ)
   }
 
+  resolveSoulStage() {
+    if (this.inspectionOpen) return 'PROVING'
+    if (this.transitioning) return 'BOUNDARY'
+
+    if (this.interior?.group?.visible) {
+      return this.interiorTerminalDistance() < 4.3 ? 'PROVING' : 'CONSEQUENCE'
+    }
+
+    if (this.outdoor?.group?.visible) {
+      if (this.outdoorDoorDistance() < 7.2) return 'BOUNDARY'
+      return this.character.position.x < 24 ? 'AWAKENING' : 'LEARNING'
+    }
+
+    return this.soulStage
+  }
+
+  updateSoul(dt, time) {
+    if (!this.soulEntity || !this.character) return
+
+    const nextStage = this.resolveSoulStage()
+    if (nextStage !== this.soulStage) {
+      this.soulStage = nextStage
+      this.emitState({ soulStage: nextStage })
+    }
+
+    this.soulEntity.update({
+      dt,
+      time,
+      character: this.character,
+      stage: this.soulStage,
+      inside: Boolean(this.interior?.group?.visible),
+    })
+  }
+
   async init() {
     await super.init()
+
+    // The player's navigation rig remains the collision anchor, but the visible
+    // identity is the AI Soul. Tools live inside its 3D field rather than in UI.
+    this.character.visible = false
+    this.soulEntity = createSoulEntity()
+    this.scene.add(this.soulEntity.group)
 
     addEnvironmentDetailLayer(this)
     addDistantCityLayer(this)
@@ -245,7 +288,7 @@ export class PhotorealRuntime extends WorldRuntime {
     this.rendererName = this.rendererName.includes('WEBGPU')
       ? 'WEBGPU / HIGH-FIDELITY PBR'
       : 'WEBGL2 / HIGH-FIDELITY PBR'
-    this.emitState({ renderer: this.rendererName })
+    this.emitState({ renderer: this.rendererName, soulStage: this.soulStage })
   }
 
   photorealFrame = (time) => {
@@ -275,6 +318,7 @@ export class PhotorealRuntime extends WorldRuntime {
       }
     }
 
+    this.updateSoul(dt, time)
     this.realFrameBase(time)
   }
 
@@ -291,6 +335,8 @@ export class PhotorealRuntime extends WorldRuntime {
     }
 
     disposePhotorealResources(this)
+    this.soulEntity?.dispose?.()
+    this.soulEntity = null
     super.destroy()
   }
 }
