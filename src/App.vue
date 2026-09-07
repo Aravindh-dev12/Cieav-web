@@ -1,25 +1,14 @@
 <template>
   <main class="cieav-app cosmic-app">
-    <header class="glass-panel app-header cosmic-header">
-      <a class="app-brand" href="#world" aria-label="CIEAV interactive planetary network">
+    <header class="cosmic-hud" aria-label="CIEAV navigation status">
+      <a class="cosmic-brand" href="#world" aria-label="CIEAV interactive planetary network">
         <img :src="logoMark" alt="" />
         <span>CIEAV</span>
       </a>
 
-      <div class="app-header__state" aria-live="polite">
+      <div class="cosmic-hud__state" aria-live="polite">
         <span>{{ worldState.location || 'NEXUS-7 ORBIT' }}</span>
-        <strong>{{ worldState.layer ? `LAYER ${worldState.layer.toUpperCase()}` : 'AUTHORITY = 0' }}</strong>
-      </div>
-
-      <div class="app-header__help">
-        <span>TRANSFER</span>
-        <kbd>W</kbd><kbd>S</kbd>
-        <span>ORBIT</span>
-        <kbd>A</kbd><kbd>D</kbd>
-        <span>CAMERA DRAG</span>
-        <span>ZOOM SCROLL</span>
-        <span>INSPECT</span>
-        <kbd>E</kbd>
+        <strong>{{ worldState.layer ? worldState.layer.toUpperCase() : 'DEEP SPACE' }}</strong>
       </div>
     </header>
 
