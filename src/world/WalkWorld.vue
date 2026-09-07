@@ -1,20 +1,34 @@
 <template>
-  <section class="world-experience" aria-label="Interactive CIEAV consequence world">
+  <section class="world-experience cosmic-experience" aria-label="Interactive CIEAV planetary internet model">
     <div
       ref="host"
       class="world-canvas-host"
       tabindex="0"
-      aria-label="Walk directly through the world with W A S D or the arrow keys. Press E near interactive objects."
+      aria-label="Navigate the probe with W A S D or the arrow keys. Move between trust orbits and press E near a beacon to inspect the layer."
     ></div>
 
     <div class="world-vignette" aria-hidden="true"></div>
 
+    <aside v-if="!state.inspection" class="glass-panel scene-glass cosmic-intro" aria-label="Experience introduction">
+      <div class="glass-kicker">
+        <span>{{ cosmicWorld.eyebrow }}</span>
+        <i aria-hidden="true"></i>
+        <small>{{ cosmicWorld.name }}</small>
+      </div>
+      <h1>{{ cosmicWorld.title }}</h1>
+      <p>{{ cosmicWorld.copy }}</p>
+      <div class="scene-rule">
+        <span>WORLD RULE</span>
+        <strong>{{ cosmicWorld.rule }}</strong>
+      </div>
+    </aside>
+
     <div class="glass-chip control-hint">
-      <span>MOVE</span>
-      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
-      <span>OR</span>
-      <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd>
-      <span>RUN</span>
+      <span>TRANSFER</span>
+      <kbd>W</kbd><kbd>S</kbd>
+      <span>ORBIT</span>
+      <kbd>A</kbd><kbd>D</kbd>
+      <span>BOOST</span>
       <kbd>SHIFT</kbd>
     </div>
 
@@ -29,10 +43,10 @@
       <i aria-hidden="true">↗</i>
     </button>
 
-    <div class="touch-controls" aria-label="Direct walking controls">
+    <div class="touch-controls" aria-label="Probe navigation controls">
       <button
         type="button"
-        aria-label="Walk forward"
+        aria-label="Transfer inward"
         @pointerdown.prevent="startMove('w')"
         @pointerup="stopMove('w')"
         @pointercancel="stopMove('w')"
@@ -40,7 +54,7 @@
       >↑</button>
       <button
         type="button"
-        aria-label="Move left"
+        aria-label="Orbit left"
         @pointerdown.prevent="startMove('a')"
         @pointerup="stopMove('a')"
         @pointercancel="stopMove('a')"
@@ -48,7 +62,7 @@
       >←</button>
       <button
         type="button"
-        aria-label="Walk backward"
+        aria-label="Transfer outward"
         @pointerdown.prevent="startMove('s')"
         @pointerup="stopMove('s')"
         @pointercancel="stopMove('s')"
@@ -56,7 +70,7 @@
       >↓</button>
       <button
         type="button"
-        aria-label="Move right"
+        aria-label="Orbit right"
         @pointerdown.prevent="startMove('d')"
         @pointerup="stopMove('d')"
         @pointercancel="stopMove('d')"
@@ -65,71 +79,59 @@
     </div>
 
     <Transition name="glass-rise">
-      <aside v-if="state.inspection" class="glass-panel consequence-panel" aria-live="polite">
+      <aside v-if="state.inspection" class="glass-panel consequence-panel cosmic-layer-panel" aria-live="polite">
         <div class="consequence-panel__top">
           <div>
-            <span>{{ consequenceScenario.stage }}</span>
-            <strong>{{ consequenceScenario.objective }}</strong>
+            <span>LAYER {{ activeLayer.index }} / {{ activeLayer.short }}</span>
+            <strong>{{ activeLayer.name }}</strong>
           </div>
-          <button type="button" aria-label="Close consequence inspection" @click="closeInspection">×</button>
+          <button type="button" aria-label="Close layer inspection" @click="closeInspection">×</button>
         </div>
 
         <div class="proposal-flow">
           <div>
-            <span>MODEL / AGENT PROPOSAL</span>
-            <strong>{{ consequenceScenario.proposal }}</strong>
+            <span>ENTERS THIS ORBIT</span>
+            <strong>{{ activeLayer.input }}</strong>
           </div>
           <i aria-hidden="true">→</i>
           <div class="proposal-flow__resolved">
-            <span>TRUSTED CONSEQUENCE</span>
-            <strong>{{ consequenceScenario.primary.type }}</strong>
+            <span>LEAVES THIS ORBIT AS</span>
+            <strong>{{ activeLayer.output }}</strong>
           </div>
         </div>
 
-        <div class="consequence-grid">
-          <div>
-            <span>VALUE</span>
-            <strong>{{ consequenceScenario.primary.amount }}</strong>
-          </div>
-          <div>
-            <span>TARGET</span>
-            <strong>{{ consequenceScenario.primary.target }}</strong>
-          </div>
-          <div>
-            <span>REASON</span>
-            <strong>{{ consequenceScenario.primary.reason }}</strong>
+        <div class="consequence-grid cosmic-layer-grid">
+          <div class="cosmic-trust-cell">
+            <span>TRUST PROPERTY</span>
+            <strong>{{ activeLayer.trust }}</strong>
           </div>
           <div class="authority-cell">
             <span>AUTHORITY</span>
-            <strong>{{ consequenceScenario.authority }}</strong>
+            <strong>{{ activeLayer.authority }}</strong>
           </div>
         </div>
 
         <div class="canonical-row">
-          <span>CANONICAL REALITY</span>
-          <code>{{ consequenceScenario.canonicalReality }}</code>
+          <span>NETWORK ROUTE</span>
+          <code>{{ activeLayer.route }}</code>
         </div>
 
         <div class="proof-row">
-          <span>PROOF PLAN</span>
+          <span>PROOF / READBACK</span>
           <div>
-            <b v-for="item in consequenceScenario.proofPlan" :key="item">{{ item }}</b>
+            <b v-for="item in activeLayer.proof" :key="item">{{ item }}</b>
           </div>
         </div>
 
         <p class="consequence-note">
-          Nothing executes here. This room only makes the proposed consequence explicit and proofable.
+          This orbit is one trust transformation in the CIEAV network model. The visual system stays non-human: probe, planet, spacecraft, signals, and verifiable boundaries.
         </p>
 
         <button type="button" class="glass-action" @click="closeInspection">
-          RETURN TO ROOM <span>ESC</span>
+          RETURN TO ORBIT <span>ESC</span>
         </button>
       </aside>
     </Transition>
-
-    <div v-if="state.transition" class="transition-status" aria-live="polite">
-      <span>{{ state.transition === 'entering' ? 'CROSSING THE INTEGRITY BOUNDARY' : 'RETURNING TO THE COGNITIVE WORLD' }}</span>
-    </div>
 
     <div v-if="error" class="glass-panel world-error" role="alert">
       <strong>Rendering could not start.</strong>
@@ -139,9 +141,9 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { PhotorealRuntime } from './engine/PhotorealRuntime.js'
-import { consequenceScenario } from './cieav/journeyDefinition.js'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { CosmicRuntime } from './engine/CosmicRuntime.js'
+import { cosmicWorld, internetLayers } from './cieav/cosmicModel.js'
 
 const emit = defineEmits(['state-change'])
 const host = ref(null)
@@ -149,13 +151,18 @@ const error = ref('')
 let runtime = null
 
 const state = reactive({
-  mode: 'outside',
+  mode: 'cosmic',
   renderer: 'INITIALIZING',
-  location: 'outside',
+  location: 'NEXUS-7 ORBIT',
   prompt: null,
   inspection: false,
   transition: null,
+  layer: null,
 })
+
+const activeLayer = computed(() => (
+  internetLayers.find((layer) => layer.id === state.layer) || internetLayers[0]
+))
 
 function applyState(next) {
   Object.assign(state, next)
@@ -180,7 +187,7 @@ function stopMove(key) {
 
 onMounted(async () => {
   try {
-    runtime = new PhotorealRuntime(host.value, { onState: applyState })
+    runtime = new CosmicRuntime(host.value, { onState: applyState })
     await runtime.init()
     host.value?.focus({ preventScroll: true })
   } catch (reason) {
