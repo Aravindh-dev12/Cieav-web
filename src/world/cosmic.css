@@ -1,310 +1,398 @@
 :root {
-  color: #eef5ef;
-  background: #010306;
-  --glass-bg: rgba(9, 15, 17, 0.5);
-  --glass-bg-strong: rgba(10, 18, 20, 0.76);
-  --glass-dark: rgba(4, 8, 10, 0.84);
-  --glass-border: rgba(190, 226, 213, 0.16);
-  --ink: #eef5ef;
-  --muted: rgba(220, 235, 230, 0.56);
-  --green: #86e8a3;
-  --amber: #eab672;
-  --red: #ff756d;
+  color: #edf3f0;
+  background: #000104;
+  --ink: #edf3f0;
+  --muted: rgba(225, 235, 232, .54);
+  --green: #9ce7bf;
+  --amber: #efbe7b;
+  --red: #ff786f;
 }
 
-body {
-  background: #010306;
+html,
+body,
+#app,
+.cieav-app.cosmic-app {
+  background: #000104;
 }
 
 .cieav-app.cosmic-app {
-  background:
-    radial-gradient(circle at 46% 38%, rgba(75, 133, 75, 0.13), transparent 33%),
-    radial-gradient(circle at 70% 66%, rgba(50, 78, 131, 0.12), transparent 38%),
-    #010306;
+  min-height: 100svh;
 }
 
 .cosmic-world-canvas {
-  filter: contrast(1.06) saturate(1.11) brightness(.97);
+  cursor: grab;
+  touch-action: none;
+  filter: contrast(1.075) saturate(1.05) brightness(.96);
 }
 
-.cosmic-header,
-.cosmic-experience .glass-panel,
-.cosmic-experience .glass-chip {
-  border-color: rgba(190, 226, 213, 0.16);
-  background:
-    linear-gradient(145deg, rgba(14, 24, 25, .72), rgba(4, 9, 11, .42));
-  box-shadow:
-    inset 0 1px 0 rgba(231, 255, 246, .07),
-    0 22px 60px rgba(0, 0, 0, .34);
-  backdrop-filter: blur(26px) saturate(1.16);
-  -webkit-backdrop-filter: blur(26px) saturate(1.16);
+.cosmic-world-canvas.is-camera-dragging {
+  cursor: grabbing;
 }
 
-.cosmic-header {
-  background:
-    linear-gradient(145deg, rgba(11, 18, 20, .82), rgba(4, 8, 10, .58));
+/* No dashboard card: the world owns the viewport. */
+.cosmic-hud {
+  position: absolute;
+  z-index: 80;
+  inset: 0 0 auto 0;
+  height: 86px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 1, 4, .56), rgba(0, 1, 4, 0));
 }
 
-.cosmic-header .app-brand,
-.cosmic-header .app-header__state,
-.cosmic-header .app-header__help {
-  color: var(--ink);
+.cosmic-brand {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(243, 247, 245, .9);
+  text-decoration: none;
+  font: 500 12px/1 'DM Mono', monospace;
+  letter-spacing: .22em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .8);
 }
 
-.cosmic-header .app-brand img {
-  filter: brightness(1.45) saturate(.72);
+.cosmic-brand img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(1.55) saturate(.6);
+  opacity: .88;
 }
 
-.cosmic-header .app-header__state span,
-.cosmic-header .app-header__help {
-  color: rgba(220, 235, 230, .52);
+.cosmic-hud__state {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  color: rgba(229, 238, 234, .48);
+  font: 500 8px/1 'DM Mono', monospace;
+  letter-spacing: .16em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .9);
 }
 
-.cosmic-header .app-header__state strong {
-  color: #8fe6a4;
-  text-shadow: 0 0 18px rgba(115, 255, 153, .18);
-}
-
-.cosmic-header kbd,
-.cosmic-experience kbd {
-  border-color: rgba(191, 225, 214, .18);
-  background: rgba(227, 245, 237, .055);
-  color: #e8f2ed;
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .04);
+.cosmic-hud__state strong {
+  color: rgba(178, 232, 206, .82);
+  font: inherit;
+  letter-spacing: .18em;
 }
 
 .cosmic-experience .world-vignette {
+  z-index: 10;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, .26), transparent 21%, transparent 72%, rgba(0, 0, 0, .38)),
-    radial-gradient(circle at 48% 45%, transparent 40%, rgba(0, 0, 0, .28) 78%, rgba(0, 0, 0, .58) 100%);
+    linear-gradient(180deg, rgba(0, 0, 0, .18), transparent 20%, transparent 73%, rgba(0, 0, 0, .42)),
+    radial-gradient(circle at 48% 45%, transparent 44%, rgba(0, 0, 0, .12) 72%, rgba(0, 0, 0, .42) 100%);
 }
 
 .cosmic-experience .world-vignette::before {
-  opacity: .12;
-  mix-blend-mode: screen;
+  opacity: .035;
+  mix-blend-mode: soft-light;
   background-image:
-    radial-gradient(circle at 14% 19%, rgba(188, 255, 209, .42) 0 .5px, transparent .7px),
-    radial-gradient(circle at 73% 61%, rgba(142, 176, 255, .34) 0 .5px, transparent .75px),
-    radial-gradient(circle at 42% 83%, rgba(255, 213, 150, .25) 0 .45px, transparent .7px);
-  background-size: 17px 19px, 29px 31px, 41px 47px;
+    radial-gradient(circle at 25% 20%, white 0 .5px, transparent .65px),
+    radial-gradient(circle at 76% 64%, white 0 .45px, transparent .65px);
+  background-size: 17px 19px, 29px 31px;
 }
 
 .cosmic-experience .world-vignette::after {
-  background:
-    linear-gradient(90deg, rgba(111, 255, 151, .025), transparent 30%, transparent 70%, rgba(117, 140, 255, .025)),
-    linear-gradient(180deg, rgba(255, 219, 167, .02), transparent 36%);
+  background: linear-gradient(90deg, rgba(77, 133, 179, .018), transparent 34%, transparent 67%, rgba(133, 103, 69, .018));
 }
 
-.cosmic-intro {
-  width: min(430px, calc(100vw - 40px));
-  background:
-    linear-gradient(145deg, rgba(11, 20, 20, .72), rgba(3, 8, 9, .44)) !important;
+.cosmic-control-line {
+  position: absolute;
+  z-index: 34;
+  left: 28px;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(226, 235, 232, .38);
+  font: 500 7px/1 'DM Mono', monospace;
+  letter-spacing: .13em;
+  pointer-events: none;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .95);
 }
 
-.cosmic-intro .glass-kicker {
-  color: #94e8a3;
+.cosmic-control-line i {
+  width: 16px;
+  height: 1px;
+  background: rgba(211, 226, 220, .18);
 }
 
-.cosmic-intro .glass-kicker i {
-  background: rgba(151, 231, 176, .18);
+.cosmic-interact {
+  position: absolute;
+  z-index: 48;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(242, 247, 244, .92);
+  cursor: pointer;
+  font: 500 9px/1 'DM Mono', monospace;
+  letter-spacing: .14em;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 1), 0 0 22px rgba(97, 245, 164, .22);
 }
 
-.cosmic-intro h1 {
-  max-width: 12ch;
-  color: #f1f4ea;
-  text-shadow: 0 6px 30px rgba(0, 0, 0, .32);
+.cosmic-interact::before,
+.cosmic-interact::after {
+  content: '';
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(164, 233, 195, .58));
 }
 
-.cosmic-intro p,
-.cosmic-intro .scene-rule span {
-  color: rgba(222, 235, 226, .57);
+.cosmic-interact::after {
+  transform: scaleX(-1);
 }
 
-.cosmic-intro .scene-rule {
-  border-color: rgba(177, 217, 194, .13);
+.cosmic-interact kbd {
+  min-width: 25px;
+  height: 25px;
+  border: 1px solid rgba(204, 236, 222, .3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .34);
+  color: #eff7f2;
+  box-shadow: 0 0 16px rgba(72, 220, 142, .1);
+  backdrop-filter: blur(8px);
 }
 
-.cosmic-intro .scene-rule strong {
-  color: #d5e878;
-  font-size: 7px;
+.cosmic-touch-controls {
+  display: none;
 }
 
-.cosmic-experience .control-hint {
-  display: flex !important;
-  color: rgba(221, 235, 229, .55);
-  background: rgba(6, 13, 15, .56);
-}
-
-.cosmic-experience .interact-prompt {
-  border-color: rgba(138, 239, 171, .22);
-  background:
-    linear-gradient(145deg, rgba(20, 37, 34, .82), rgba(6, 14, 15, .68));
-  color: #eef7f0;
-  box-shadow:
-    inset 0 1px 0 rgba(223, 255, 235, .08),
-    0 18px 58px rgba(0, 0, 0, .38),
-    0 0 42px rgba(94, 232, 135, .055);
-}
-
-.cosmic-experience .interact-prompt:hover {
-  background: rgba(18, 34, 31, .92);
-}
-
-.cosmic-experience .touch-controls button {
-  border-color: rgba(187, 225, 212, .15);
-  background: rgba(8, 16, 18, .66);
-  color: #ecf6f0;
-}
-
+/* Inspection becomes an edge telemetry layer, not a floating card. */
 .cosmic-layer-panel {
-  border-color: rgba(177, 224, 196, .17) !important;
+  position: absolute;
+  z-index: 70;
+  inset: 0 0 0 auto;
+  width: min(520px, 46vw);
+  padding: 118px 42px 42px 84px;
+  color: #eef5f1;
   background:
-    linear-gradient(145deg, rgba(12, 23, 23, .92), rgba(4, 9, 11, .8)) !important;
-  color: #edf5ef;
-  box-shadow:
-    inset 0 1px 0 rgba(225, 255, 236, .07),
-    0 28px 88px rgba(0, 0, 0, .52) !important;
+    linear-gradient(90deg, rgba(0, 2, 5, 0), rgba(0, 3, 6, .52) 18%, rgba(0, 3, 6, .88) 64%, rgba(0, 3, 6, .96));
+  pointer-events: auto;
 }
 
-.cosmic-layer-panel .consequence-panel__top,
-.cosmic-layer-panel .canonical-row,
-.cosmic-layer-panel .proof-row,
-.cosmic-layer-panel .consequence-grid > div,
-.cosmic-layer-panel .proposal-flow > div {
-  border-color: rgba(181, 221, 197, .12);
+.cosmic-layer-panel__inner {
+  width: 100%;
+  max-width: 410px;
+  margin-left: auto;
 }
 
-.cosmic-layer-panel .consequence-panel__top span,
-.cosmic-layer-panel .proposal-flow span,
-.cosmic-layer-panel .consequence-grid span,
-.cosmic-layer-panel .canonical-row span,
-.cosmic-layer-panel .proof-row > span,
-.cosmic-layer-panel .consequence-note {
-  color: rgba(214, 232, 223, .52);
+.cosmic-layer-panel__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(190, 223, 210, .16);
 }
 
-.cosmic-layer-panel .consequence-panel__top strong {
-  color: #f0f5ed;
+.cosmic-layer-panel__top span,
+.cosmic-layer-flow span,
+.cosmic-layer-data dt {
+  display: block;
+  color: rgba(211, 228, 220, .46);
+  font: 500 8px/1.25 'DM Mono', monospace;
+  letter-spacing: .14em;
 }
 
-.cosmic-layer-panel .consequence-panel__top button {
-  border-color: rgba(196, 227, 212, .14);
-  background: rgba(236, 248, 241, .045);
-  color: #edf5ef;
+.cosmic-layer-panel__top strong {
+  display: block;
+  margin-top: 9px;
+  color: #f2f6f3;
+  font: 400 clamp(29px, 3vw, 44px)/.92 'Newsreader', Georgia, serif;
+  letter-spacing: -.04em;
+  text-shadow: 0 5px 24px rgba(0, 0, 0, .8);
 }
 
-.cosmic-layer-panel .proposal-flow > div,
-.cosmic-layer-panel .consequence-grid > div,
-.cosmic-layer-panel .canonical-row,
-.cosmic-layer-panel .proof-row {
-  background: rgba(236, 247, 240, .028);
+.cosmic-layer-panel__top button {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: rgba(232, 241, 237, .62);
+  cursor: pointer;
+  font: 300 28px/1 sans-serif;
 }
 
-.cosmic-layer-panel .proposal-flow__resolved {
-  background: rgba(118, 221, 146, .075) !important;
+.cosmic-layer-flow {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
 }
 
-.cosmic-layer-grid {
-  grid-template-columns: minmax(0, 1.45fr) minmax(160px, .7fr);
+.cosmic-layer-flow strong {
+  display: block;
+  margin-top: 7px;
+  color: rgba(241, 247, 243, .88);
+  font: 500 12px/1.45 'Manrope', sans-serif;
 }
 
-.cosmic-trust-cell strong {
-  font-weight: 500;
-  line-height: 1.48;
+.cosmic-layer-flow i {
+  color: rgba(172, 222, 198, .4);
+  font-style: normal;
 }
 
-.cosmic-layer-panel .authority-cell strong {
-  color: #ffbb70;
+.cosmic-layer-trust {
+  margin: 24px 0 0;
+  color: rgba(232, 241, 236, .68);
+  font: 400 13px/1.7 'Manrope', sans-serif;
 }
 
-.cosmic-layer-panel .canonical-row code {
-  color: #a8e8bb;
+.cosmic-layer-data {
+  margin: 24px 0 0;
+  display: grid;
+  gap: 15px;
 }
 
-.cosmic-layer-panel .proof-row b {
-  border-color: rgba(118, 232, 150, .16);
-  background: rgba(116, 232, 149, .065);
-  color: #b6edc5;
+.cosmic-layer-data > div {
+  padding-top: 12px;
+  border-top: 1px solid rgba(181, 219, 202, .1);
 }
 
-.cosmic-layer-panel .glass-action {
-  border-color: rgba(165, 220, 185, .16);
-  background: rgba(224, 244, 232, .92);
-  color: #07100d;
+.cosmic-layer-data dd {
+  margin: 7px 0 0;
+  color: rgba(236, 243, 239, .78);
+  font: 500 10px/1.55 'DM Mono', monospace;
+  overflow-wrap: anywhere;
 }
 
-.cosmic-layer-panel .glass-action span {
-  color: rgba(7, 16, 13, .55);
+.cosmic-layer-data code {
+  color: #a8dfc1;
+  font: inherit;
+}
+
+.cosmic-return {
+  margin-top: 28px;
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 1px solid rgba(175, 230, 203, .34);
+  background: transparent;
+  color: rgba(236, 244, 240, .84);
+  cursor: pointer;
+  font: 500 8px/1 'DM Mono', monospace;
+  letter-spacing: .13em;
+}
+
+.cosmic-return span {
+  margin-left: 10px;
+  color: rgba(218, 232, 225, .4);
 }
 
 .cosmic-experience .world-error {
-  background: rgba(27, 9, 9, .88);
-  color: #ffe8e4;
+  background: rgba(30, 5, 7, .9);
+  color: #ffeae7;
+}
+
+.glass-rise-enter-active,
+.glass-rise-leave-active {
+  transition: opacity .42s ease, transform .5s cubic-bezier(.2,.7,.2,1);
+}
+
+.glass-rise-enter-from,
+.glass-rise-leave-to {
+  opacity: 0;
+  transform: translateX(28px);
 }
 
 @media (max-width: 820px) {
-  .cosmic-header {
-    grid-template-columns: auto 1fr;
-    height: 58px;
-    padding: 0 13px;
+  .cosmic-hud {
+    height: 72px;
+    padding: 18px 16px;
   }
 
-  .cosmic-header .app-header__state {
-    justify-self: end;
-  }
-
-  .cosmic-header .app-header__state strong {
-    display: none;
-  }
-
-  .cosmic-intro {
-    top: 90px;
-    left: 14px;
-    width: min(340px, calc(100vw - 28px));
-    padding: 17px 18px 15px;
-  }
-
-  .cosmic-intro h1 {
-    margin-top: 15px;
-    font-size: clamp(34px, 11vw, 48px);
-  }
-
-  .cosmic-intro p {
+  .cosmic-brand {
     font-size: 10px;
   }
 
-  .cosmic-experience .control-hint {
-    display: none !important;
+  .cosmic-brand img {
+    width: 21px;
+    height: 21px;
   }
 
-  .cosmic-layer-panel {
-    top: 86px;
-    right: 14px;
-    width: calc(100vw - 28px);
-    max-height: calc(100% - 108px);
-    padding: 18px;
+  .cosmic-hud__state {
+    max-width: 52vw;
   }
 
-  .cosmic-layer-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 560px) {
-  .cosmic-header .app-header__state span {
-    max-width: 150px;
+  .cosmic-hud__state span {
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .cosmic-intro .scene-rule strong {
-    max-width: 55%;
-    text-align: right;
-    line-height: 1.35;
+  .cosmic-control-line {
+    display: none;
   }
 
-  .cosmic-experience .interact-prompt {
-    bottom: 76px;
+  .cosmic-touch-controls {
+    right: 14px;
+    bottom: 14px;
+    display: grid;
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(2, 44px);
+    gap: 5px;
+  }
+
+  .cosmic-touch-controls button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(210, 232, 223, .16);
+    border-radius: 50%;
+    background: rgba(0, 3, 6, .3);
+    color: rgba(242, 247, 244, .82);
+    backdrop-filter: blur(10px);
+    box-shadow: none;
+  }
+
+  .cosmic-touch-controls button:nth-child(1) { grid-column: 2; grid-row: 1; }
+  .cosmic-touch-controls button:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .cosmic-touch-controls button:nth-child(3) { grid-column: 2; grid-row: 2; }
+  .cosmic-touch-controls button:nth-child(4) { grid-column: 3; grid-row: 2; }
+
+  .cosmic-interact {
+    bottom: 82px;
+    max-width: calc(100vw - 120px);
+    text-align: center;
+  }
+
+  .cosmic-interact::before,
+  .cosmic-interact::after {
+    width: 18px;
+  }
+
+  .cosmic-layer-panel {
+    inset: 0;
+    width: 100%;
+    padding: 96px 22px 26px;
+    background: linear-gradient(90deg, rgba(0, 3, 6, .62), rgba(0, 3, 6, .94));
+  }
+
+  .cosmic-layer-panel__inner {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .cosmic-hud__state strong {
+    display: none;
+  }
+
+  .cosmic-layer-flow {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .cosmic-layer-flow i {
+    transform: rotate(90deg);
+    width: fit-content;
   }
 }
